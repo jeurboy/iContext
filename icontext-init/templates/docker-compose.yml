@@ -1,0 +1,43 @@
+# {{PROJECT_NAME}} — local dev stack
+# Ports: Postgres {{DB_PORT}} · web {{WEB_PORT}} · api {{API_PORT}}
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: {{PROJECT_SLUG}}-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
+      POSTGRES_DB: ${POSTGRES_DB:-{{PROJECT_SLUG}}}
+    ports:
+      - "{{DB_PORT}}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-app}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./api
+    container_name: {{PROJECT_SLUG}}-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@db:5432/${POSTGRES_DB:-{{PROJECT_SLUG}}}?sslmode=disable
+    ports:
+      - "{{API_PORT}}:8080"
+
+  web:
+    build: ./web
+    container_name: {{PROJECT_SLUG}}-web
+    depends_on:
+      - api
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:{{API_PORT}}
+    ports:
+      - "{{WEB_PORT}}:3000"
+
+volumes:
+  db_data:

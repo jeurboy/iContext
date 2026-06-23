@@ -1,0 +1,20 @@
+openapi: 3.0.3
+info:
+  title: {{PROJECT_NAME}} API
+  version: 0.0.1
+  description: |
+    API specification for {{PROJECT_NAME}}.
+    Source of truth for endpoints; keep in sync as features land.
+servers:
+  - url: http://localhost:{{API_PORT}}
+    description: local
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: ok
+# TODO: document real endpoints as features are implemented.
+components:
+  schemas: {}
