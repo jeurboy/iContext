@@ -69,29 +69,31 @@
 ### 11. Workflow + Plan Standard
 - Build context first → then features one at a time via `/icontext-feature`. Never commit/push unless told.
 
-#### 11.1 Plan file structure (every `plans/NNN-<name>.md` — same shape; each section has a primary owner)
-Roles: **BU** ธุรกิจ · **PO** เจ้าของงาน · **DEV** พัฒนา · **QA** ทดสอบ · **OPS** DevOps/Deploy · **STK** Stakeholder
+#### 11.1 Plan structure (every plan is a **folder** `plans/NNN-<name>/` split by role; sections 0–11)
+Roles: **BU** ธุรกิจ · **PO** เจ้าของงาน · **DEV** พัฒนา · **QA** ทดสอบ · **OPS** DevOps/Deploy · **STK** Stakeholder.
+Each section lives in exactly one role file:
 
-| # | Section | Owner |
-|---|---------|-------|
-| 0 | Decisions | STK BU PO |
-| 1 | Goal | STK BU PO |
-| 2 | Scope (in/out) | PO DEV |
-| 3 | User Stories (mandatory) | PO QA |
-| 4 | Persona Panel | STK BU PO DEV |
-| 5 | Tech & Architecture | DEV OPS |
-| 6 | Data Model / Schema | DEV OPS |
-| 7 | API Contract | DEV QA |
-| 8 | Security & Privacy | DEV QA OPS |
-| 9 | Test Plan (>80%) | QA DEV OPS |
-| 10 | Tasks / Checklist | DEV PO OPS |
-| 11 | Open Questions | PO BU STK |
+| # | Section | Owner | File |
+|---|---------|-------|------|
+| 0 | Decisions | STK BU PO | bu.md |
+| 1 | Goal | STK BU PO | bu.md |
+| 2 | Scope (in/out) | PO DEV | po.md |
+| 3 | User Stories (mandatory) | PO QA | po.md |
+| 4 | Persona Panel | STK BU PO DEV | stk.md |
+| 5 | Tech & Architecture | DEV OPS | dev.md |
+| 6 | Data Model / Schema | DEV OPS | dev.md |
+| 7 | API Contract | DEV QA | dev.md |
+| 8 | Security & Privacy | DEV QA OPS | ops.md |
+| 9 | Test Plan (>80%) | QA DEV OPS | qa.md |
+| 10 | Tasks / Checklist | DEV PO OPS | po.md |
+| 11 | Open Questions | PO BU STK | po.md |
 
+The folder also has `README.md` (index + canonical Status). Template: `plans/_TEMPLATE/`.
 Status lifecycle: `todo → implement → ready to test → done`
 
 #### 11.2 Rules for every plan
 - **ref CONTEXT.md** always.
-- **Update status in 3 places in one go:** the plan file · `plans/README.md` · `PLAN.md`.
+- **Update status in 3 places in one go:** the plan's `README.md` · `plans/README.md` · `PLAN.md`.
 - **sync API spec** (`docs/openapi.yaml`) before `done`.
 - **User Stories complete** before `done`.
 - **test > 80%** before `done`.

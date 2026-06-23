@@ -5,7 +5,7 @@ Generic agent boilerplate (any AI). The single source of truth is **CONTEXT.md**
 ## Read first
 - `CONTEXT.md` — architecture §1–13 (read before anything)
 - `PLAN.md` — status dashboard of all features
-- `plans/` — one plan per feature (`NNN-name.md`); index in `plans/README.md`
+- `plans/` — one folder per feature (`NNN-name/`, role-split); index in `plans/README.md`
 - `ROLE.md` — persona panel for feature consultation
 
 ## กฎเหล็ก · Hard rules

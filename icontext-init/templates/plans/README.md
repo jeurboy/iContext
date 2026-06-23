@@ -1,13 +1,14 @@
 # Plans index — {{PROJECT_NAME}}
 
-One file per feature: `NNN-<slug>.md`. Template: [`_TEMPLATE.md`](./_TEMPLATE.md).
+Each feature is a **folder** `NNN-<slug>/` containing role files (`bu/po/dev/qa/ops/stk.md`)
+plus a `README.md` index. Template: [`_TEMPLATE/`](./_TEMPLATE/). Section→file map: CONTEXT.md §11.1.
 Every plan refs [CONTEXT.md](../CONTEXT.md). Status mirror of [`../PLAN.md`](../PLAN.md).
 
-> On any status change, update **3 places**: the plan file · this README · `../PLAN.md`.
+> On any status change, update **3 places**: the plan's `README.md` · this index · `../PLAN.md`.
 
 | Plan | Feature | Status |
 |------|---------|--------|
-| _TEMPLATE | (template) | — |
-<!-- add a row per plan, e.g. | 001-booking | Booking flow | todo | -->
+| [_TEMPLATE](./_TEMPLATE/) | (template folder) | — |
+<!-- e.g. | [001-booking](./001-booking/) | Booking flow | todo | -->
 
 Status: `todo → implement → ready to test → done`

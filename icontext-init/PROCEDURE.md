@@ -13,9 +13,14 @@ feature plans are made later by the separate `icontext-feature` procedure.
 - **Hybrid input:** ask only the key parameters; leave the rest as `<!-- TODO: ... -->`.
 - **Stop at context.** Do not generate feature plans here.
 
-## Step 0 — Pre-flight: required companion skills
-Check `gstack`, `ux-ui-pro-max`, `impeccable` (see `reference/required-skills.md`). If a tool
-to check installation isn't available in your agent, just remind the user of the links.
+## Step 0 — Update check + pre-flight
+- **Update check (every run):** run `check-update.sh` (next to this file) and surface its one
+  line. It compares the local `VERSION` to the published one and is best-effort — it never
+  blocks (offline/unpublished just prints "skipped"). If an update is available, mention it,
+  then continue.
+- **Required companion skills:** check `gstack`, `ux-ui-pro-max`, `impeccable` (see
+  `reference/required-skills.md`). If your agent can't check installation, just remind the user
+  of the links.
 
 ## Step 1 — Choose mode
 Detect whether the target dir already has code (look for `package.json`, `go.mod`,
@@ -44,7 +49,7 @@ matching `templates/stacks/<layer>-<choice>/STRUCTURE.md` into each service dir.
 ├── ROLE.md                              persona panel (BU/PO/DEV/QA/OPS/STK)
 ├── PLAN.md                              status dashboard of all plans
 ├── docker-compose.yml                   pg:{{DB_PORT}} web:{{WEB_PORT}} api:{{API_PORT}}
-├── plans/_TEMPLATE.md  plans/README.md  L3 — plan template (§0–11) + plans index
+├── plans/_TEMPLATE/  plans/README.md   L3 — plan template folder (role-split §0–11) + index
 ├── styles/css/tokens.css                central tokens (NO inline colors)
 ├── styles/components/*.html             style guide, one file per component
 ├── docs/openapi.yaml                    API spec
@@ -53,7 +58,7 @@ matching `templates/stacks/<layer>-<choice>/STRUCTURE.md` into each service dir.
 
 Embed the standing rules into the L1 files + CONTEXT.md: summarize stack+arch before
 implementing; tests unit(API)+Playwright(UI) coverage >80%; styles use central tokens only;
-each service its own repo/submodule; plans are `NNN-name.md` using the §0–11 structure, ref
+each service its own repo/submodule; plans are folders `NNN-name/` (role-split §0–11), ref
 CONTEXT.md, carry status `todo → implement → ready to test → done`; a plan reaches `done`
 only when API spec synced + User Stories complete + tests >80%; on status change update the
 3 places (plan file · plans/README.md · PLAN.md). The full plan-section spec (with role

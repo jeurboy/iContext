@@ -1,6 +1,6 @@
 ---
 name: icontext-init
-version: 1.0.0
+version: 1.1.0
 description: Scaffold a layered context (L1 agent files / L2 CONTEXT.md / L3 plans) plus
              service skeletons (web/mobile/api/db) for a project. Greenfield (new) or
              brownfield (read & summarize an existing codebase). Asks a few key params,
@@ -24,6 +24,7 @@ This skill is portable across agents — see [adapters/](./adapters/) for Gemini
 SKILL.md is the Claude Code entry point.
 
 ## Claude-specific mappings
+- **Step 0 update check** — run `bash check-update.sh` via `Bash` and show its one-line result.
 - **Step 0 / Step 1 detection** — use `Bash` for the file-presence checks shown in PROCEDURE.md.
 - **Step 2A params** — gather with `AskUserQuestion` (or read them straight from the user's
   prompt if already provided). Keep it hybrid: ask the few keys, placeholder the rest.
