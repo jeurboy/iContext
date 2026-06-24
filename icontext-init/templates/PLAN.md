@@ -7,10 +7,10 @@ Detailed plans live in [`plans/`](./plans/); architecture in [`CONTEXT.md`](./CO
 
 | # | Feature | Status | Owner | Plan |
 |---|---------|--------|-------|------|
-<!-- | 001 | Booking flow | todo | Ploy | plans/001-booking.md | -->
+<!-- | 001 | Booking flow | to do | Ploy | plans/001-booking/ | -->
 
-### Legend
-`todo` → `implement` → `ready to test` → `done`
+### Legend — task status
+`to do` → `plan` → `ready to implement` → `implement` → `ready to test` → `done`
 
 ### Gates before `done`
 API spec synced · User Stories complete · test coverage > 80%.

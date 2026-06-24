@@ -1,0 +1,36 @@
+{
+  // {{PROJECT_NAME}} — VS Code debug configs. Trim to the stacks you actually use.
+  // Ports come from CONTEXT.md §6: api {{API_PORT}} · web {{WEB_PORT}} · db {{DB_PORT}}.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "API ({{API_STACK}})",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/api",
+      "env": { "PORT": "{{API_PORT}}" }
+    },
+    {
+      "name": "Web ({{WEB_STACK}})",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "env": { "PORT": "{{WEB_PORT}}" }
+    },
+    {
+      "name": "App ({{MOBILE_STACK}})",
+      "type": "dart",
+      "request": "launch",
+      "program": "${workspaceFolder}/app/lib/main.dart"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "API + Web",
+      "configurations": ["API ({{API_STACK}})", "Web ({{WEB_STACK}})"]
+    }
+  ]
+}

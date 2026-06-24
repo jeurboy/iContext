@@ -47,7 +47,19 @@
 | db | {{DB_STACK}} | {{DB_PORT}} | docker-compose.yml |
 
 ### 7. Data Model
-<!-- TODO: entities + relationships. (Brief rule: one model can have many physical units.) -->
+> Single source of truth for entities. Keep in sync with the plan's schema section + DB migrations
+> (§11.3). Update this whenever the data model changes.
+
+**Entities**
+| Entity | Key fields | Description |
+|--------|-----------|-------------|
+| <!-- e.g. User --> | id, ... | <!-- TODO --> |
+
+**Relationships**
+<!-- TODO: e.g. User 1—N Order; Order N—N Product (via OrderItem). One model can have many physical units. -->
+
+**ERD / notes**
+<!-- TODO: link or embed a diagram; note enums, indexes, soft-delete, audit fields -->
 
 ---
 ## คุณภาพ & ความปลอดภัย · Quality & Security
@@ -60,6 +72,9 @@
 - A plan reaches `done` only when: API spec synced · User Stories complete · tests > 80%.
 
 ### 10. Skills ที่ใช้ · Skills Used
+- **Install first (every project):** `gstack` — https://github.com/garrytan/gstack — provides the
+  `/gstack-*` commands incl. **`/autoplan`** and the plan-review chain (`/plan-ceo-review`,
+  `/plan-eng-review`, `/plan-design-review`, `/plan-devex-review`) used before implementing.
 - `gstack` · `ux-ui-pro-max` · `impeccable` (design/QA companions)
 - `icontext-init` (scaffold) · `icontext-feature` (plans)
 
@@ -89,7 +104,8 @@ Each section lives in exactly one role file:
 | 11 | Open Questions | PO BU STK | po.md |
 
 The folder also has `README.md` (index + canonical Status). Template: `plans/_TEMPLATE/`.
-Status lifecycle: `todo → implement → ready to test → done`
+Task status lifecycle: `to do → plan → ready to implement → implement → ready to test → done`
+(ready to implement = review chain §11.4 done).
 
 #### 11.2 Rules for every plan
 - **ref CONTEXT.md** always.
@@ -97,6 +113,25 @@ Status lifecycle: `todo → implement → ready to test → done`
 - **sync API spec** (`docs/openapi.yaml`) before `done`.
 - **User Stories complete** before `done`.
 - **test > 80%** before `done`.
+
+#### 11.3 Keep everything in sync on architecture-impacting change
+Whenever a change affects the **core architecture** (§3–6) — services, data model, API contract,
+or shared conventions — update all of these **together, in the same change**, so nothing drifts:
+- **Context** — this `CONTEXT.md` (architecture §3–6 and **§7 Data Model** especially).
+- **Plan** — the affected `plans/NNN-*/` (Tech & Architecture · Data Model/Schema · API Contract).
+- **Doc** — `docs/openapi.yaml` (API spec) and any other docs the change touches.
+- **Style** — `styles/css/tokens.css` + `styles/components/` when UI / look-and-feel is affected.
+- **Data model** — keep §7 here, the plan's schema section, and DB migrations consistent.
+
+#### 11.4 Review chain — run before implementing any plan
+Before moving a plan to **`ready to implement`** (i.e. before any implementation), run the review
+chain (sequentially, or all at once via **`/autoplan`**):
+- **`/plan-ceo-review`** — scope / ambition
+- **`/plan-eng-review`** — architecture / edge cases
+- **`/plan-design-review`** — if the feature has UI
+- **`/plan-devex-review`** — if developer-facing (API, SDK, CLI)
+
+These come from the `gstack` skill (§10). Capture outcomes in the plan before implementation.
 
 ### 12. Design Tokens
 - Central tokens in `styles/css/tokens.css`. **Never inline colors / look-and-feel.** Web (Tailwind)

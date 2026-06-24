@@ -9,6 +9,6 @@ Every plan refs [CONTEXT.md](../CONTEXT.md). Status mirror of [`../PLAN.md`](../
 | Plan | Feature | Status |
 |------|---------|--------|
 | [_TEMPLATE](./_TEMPLATE/) | (template folder) | — |
-<!-- e.g. | [001-booking](./001-booking/) | Booking flow | todo | -->
+<!-- e.g. | [001-booking](./001-booking/) | Booking flow | to do | -->
 
-Status: `todo → implement → ready to test → done`
+Task status: `to do → plan → ready to implement → implement → ready to test → done`

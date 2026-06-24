@@ -4,7 +4,9 @@ Cursor uses rules (`.cursor/rules/*.mdc`) and chat. To run this workflow:
 
 1. In chat:
    > Read `PROCEDURE.md` in this folder and execute it to scaffold my project's context
-   > backbone. Ask me the key parameters; leave the rest as TODO. Don't commit.
+   > backbone. Confirm every CONTEXT.md section with me before writing it (a detailed interview
+   > on a first-time init). If a backbone already exists, only fill the missing pieces and never
+   > delete or overwrite my existing context. Don't commit.
 2. Tool mapping:
    - Questions → ask inline in chat.
    - Detection / `git init` → terminal.
