@@ -45,11 +45,43 @@ non-blocking (offline/unpublished just prints "skipped"). When an update exists 
 
 ## Install
 
+### One-liner (recommended) — pick your tool
+
 ```bash
-git clone <this-repo> iContext
+# Claude Code (global)
+curl -fsSL https://raw.githubusercontent.com/jeurboy/iContext/main/install.sh | bash -s -- claude
+
+# Cursor (run in your project folder)
+curl -fsSL https://raw.githubusercontent.com/jeurboy/iContext/main/install.sh | bash -s -- cursor
+
+# Copilot / Gemini / Codex / Windsurf / Cline / Aider … — change the trailing word per the table
+curl -fsSL https://raw.githubusercontent.com/jeurboy/iContext/main/install.sh | bash -s -- <tool>
+```
+
+| tool | target | scope |
+|------|--------|-------|
+| `claude` *(default)* | `~/.claude/skills/` | global slash-command skills |
+| `claude-project` | `./.claude/skills/` | this project |
+| `cursor` | `./.cursor/rules/icontext.mdc` | project rule |
+| `copilot` | `./.github/instructions/icontext.instructions.md` | project |
+| `windsurf` | `./.windsurf/rules/icontext.md` | project |
+| `cline` | `./.clinerules/icontext.md` | project |
+| `gemini` | `./.gemini/GEMINI.md` | project |
+| `codex` | `./AGENTS.md` *(append)* | project |
+| `aider` | `./CONVENTIONS.md` *(append)* | project |
+
+Skill files are cached at `~/.icontext/` (override with `ICONTEXT_HOME`); non-Claude tools get a
+small pointer file that references them. For Claude Code, the full skill folders are installed so
+`/icontext-init` works as a slash command.
+
+### From a clone
+
+```bash
+git clone https://github.com/jeurboy/iContext.git
 cd iContext
-./install.sh          # copies skills into ~/.claude/skills/
-# or: ./install.sh --link   (symlink instead of copy — repo stays the single source of truth)
+./install.sh                 # Claude Code, copy (default)
+./install.sh --link          # symlink instead — repo stays the single source of truth
+./install.sh cursor          # …or target any tool from the table above
 ```
 
 Restart Claude Code, then run `/icontext-init` in a project directory.
@@ -108,6 +140,8 @@ iContext/
 - **6-state task status** — `to do → plan → ready to implement → implement → ready to test → done`.
 - **icontext-feature scaffolding pre-check** — style guide · `docs/openapi.yaml` · `.vscode/launch.json`.
 - Added `adapters/claude.md` for both skills.
+- **Multi-tool one-liner installer** — `curl … | bash -s -- <tool>` for Claude Code, Cursor,
+  Copilot, Gemini, Codex, Windsurf, Cline, Aider; self-clones and caches at `~/.icontext/`.
 
 ### 1.1.0
 - Role-split plan folders + self-update check.
