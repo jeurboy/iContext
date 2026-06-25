@@ -47,9 +47,14 @@ In every mode, write each CONTEXT.md section only after confirming it per **Step
 ## Step 2A — Greenfield: interview in depth, then generate
 This is a **first-time context init** — capture the real context, don't just fill defaults.
 Start with the key params: project name + description, platforms (web/mobile/both), reference
-site(s), stack (defaults below, overridable), ports (defaults: db `5415`, web `3900`, api `8180`).
-Then run the **detailed per-section interview in Step 2D** (first-time-init depth) to flesh out
-every CONTEXT.md section before writing.
+site(s), stack (defaults below, overridable), ports (defaults: db `5415`, web `3900`, api `8180`),
+and **the actual service directories**. `api/`, `web/`, `app/` are only the defaults — ask the
+owner what the project's services really are and what each dir is called (e.g. `backend/`,
+`frontend/`, `admin/`, `worker/`, `packages/<name>/`, or a single dir). There may be one service
+or many; don't assume the three-way split. Record the confirmed list in CONTEXT.md §6 (Services)
+and use those exact names everywhere (tree, docker-compose, `.vscode/launch.json`, submodule
+wiring). Then run the **detailed per-section interview in Step 2D** (first-time-init depth) to
+flesh out every CONTEXT.md section before writing.
 
 **Stack catalog (default ⭐ + alternatives → recommended pieces):**
 - Web: **Next.js (App Router)** ⭐ / Remix / Vite+React / Nuxt / SvelteKit → React Query + Tailwind + Playwright
@@ -72,8 +77,11 @@ matching `templates/stacks/<layer>-<choice>/STRUCTURE.md` into each service dir.
 ├── styles/components/*.html             style guide, one file per component
 ├── docs/openapi.yaml                    API spec (a.k.a. openapi.yml)
 ├── .vscode/launch.json                  debug configs (api/web/app · ports from §6)
-├── api/  web/  app/                     service skeletons (own git repos / submodules)
+├── <service dirs>                       service skeletons — names per the owner (default api/ web/ app/)
 ```
+Service dir names above are the **default example**, not a requirement — substitute the actual
+dirs the owner confirmed (could be one dir, or `backend/ frontend/ admin/ …`). In **brownfield**
+(Step 2B), detect the real service dirs from the repo instead of asking.
 
 Embed the standing rules into the L1 files + CONTEXT.md: summarize stack+arch before
 implementing; tests unit(API)+Playwright(UI) coverage >80%; styles use central tokens only;
@@ -83,7 +91,12 @@ only when API spec synced + User Stories complete + tests >80%; on status change
 3 places (plan file · plans/README.md · PLAN.md). The full plan-section spec (with role
 owners) is CONTEXT.md §11.1.
 
-Git wiring: `git init` at root and in each service dir. **Do not commit.**
+Git wiring: `git init` at the root. **Before wiring each service as a git submodule, confirm the
+repo strategy with the owner** (`AskUserQuestion`) — submodules are a strong opinion and not what
+everyone wants. Offer: (a) **git submodules** — each service its own repo wired under the root
+(the default iContext layout); (b) **monorepo** — services as plain folders, one repo at the root;
+(c) **separate repos, not wired** — `git init` each service but don't add as submodules. Apply the
+owner's choice and record it in CONTEXT.md §5 (Repo Structure) + §2 (Key Decisions). **Do not commit.**
 
 ## Step 2B — Brownfield: read & summarize an existing codebase
 Produce the same backbone, but with CONTEXT.md **derived from real code** (read-only first;

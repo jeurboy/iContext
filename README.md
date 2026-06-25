@@ -1,6 +1,6 @@
 # iContext
 
-**Version 1.2.0** · two portable agent-skills that bootstrap and maintain a **layered project
+**Version 1.3.0** · two portable agent-skills that bootstrap and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
@@ -123,6 +123,14 @@ iContext/
 - Stack defaults (Next.js · Flutter · Go+GORM clean-arch · Postgres) are overridable per project.
 
 ## Changelog
+
+### 1.3.0
+- **Confirm the repo strategy before wiring submodules** — `icontext-init` asks the owner to pick
+  git submodules (default), a monorepo, or separate un-wired repos, and records the choice.
+- **Custom service directories** — services no longer assumed to be `api/ web/ app/`; the owner
+  names the real dirs (e.g. `backend/ frontend/ admin/ worker/`), and brownfield detects them.
+- **Review polish** — broadened skill descriptions for better triggering, and reframed caps-heavy
+  directives as reasoning (per the skill-creator review).
 
 ### 1.2.0
 - **Update/sync mode** — re-running `icontext-init` on an existing backbone fills only the missing

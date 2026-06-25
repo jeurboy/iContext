@@ -1,6 +1,6 @@
 ---
 name: icontext-init
-version: 1.2.0
+version: 1.3.0
 description: Scaffold a layered context (L1 agent files / L2 CONTEXT.md / L3 plans) plus
              service skeletons (web/mobile/api/db) for a project. Greenfield (new),
              brownfield (read & summarize an existing codebase), or update/sync (fill only the
@@ -51,7 +51,9 @@ Two invariants worth holding in mind (full detail in PROCEDURE):
 - **Step 2D section confirm** — drive the per-section confirm/edit/skip loop with
   `AskUserQuestion` (batch related sections into one prompt to keep it short).
 - **File creation** — use `Write`/`Edit`, copying from `templates/` and substituting `{{VARS}}`.
-- **Git** — `git init` only; never commit/push unless told.
+- **Git** — `git init` only; **confirm the repo strategy (submodules / monorepo / separate repos)
+  with `AskUserQuestion` before wiring services as submodules** (PROCEDURE Step 2A). Never
+  commit/push unless told.
 
 ## Stop rule
 Finish at context review (PROCEDURE Step 3). Do not create feature plans here — that is the
