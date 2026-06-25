@@ -5,8 +5,11 @@ description: Scaffold a layered context (L1 agent files / L2 CONTEXT.md / L3 pla
              service skeletons (web/mobile/api/db) for a project. Greenfield (new),
              brownfield (read & summarize an existing codebase), or update/sync (fill only the
              missing pieces of an existing iContext backbone). Confirms every CONTEXT.md section
-             with the project owner, then writes CONTEXT.md for review. Idempotent — safe to
-             re-run. Use when starting/onboarding a web/mobile project and you want a context backbone.
+             with the project owner, then writes CONTEXT.md for review. Idempotent & non-destructive
+             — safe to re-run. Use when starting or onboarding a web/mobile project, and also
+             whenever an existing iContext project's context is stale, incomplete, or missing
+             pieces — even if the user just says "update my context", "sync the backbone", or
+             "fill in CONTEXT.md".
 allowed-tools:
   - Read
   - Write
@@ -18,28 +21,23 @@ allowed-tools:
 
 # icontext-init
 
-> **ALWAYS DO THIS FIRST — every single invocation, no exceptions:**
-> run `bash check-update.sh` via `Bash` and surface its output (shows the local **version** line
-> + whether an update is available). Do this *before* reading the rest or asking anything. It is
-> best-effort and never blocks (offline/unpublished just prints "skipped"). If an update is
-> available, mention it, then continue.
+> **Run `bash check-update.sh` first** (via `Bash`) and surface its output — it shows the local
+> version and whether an update is available. Doing this up front means you and the user both know
+> which version is in play before anything changes; it's cheap, best-effort, and never blocks
+> (offline/unpublished just prints "skipped"). If an update is available, mention it, then continue.
 
-The full, agent-neutral workflow lives in **[PROCEDURE.md](./PROCEDURE.md)** in this folder.
-**Read PROCEDURE.md and execute its steps.** Templates are in `templates/`.
+The full, agent-neutral workflow lives in **[PROCEDURE.md](./PROCEDURE.md)** — read it and execute
+its steps. Templates are in `templates/`. Portable across agents — see [adapters/](./adapters/)
+for Claude/Gemini/Codex/Cursor; SKILL.md is the Claude Code entry point (`adapters/claude.md`
+mirrors the mapping).
 
-This skill is portable across agents — see [adapters/](./adapters/) for Claude/Gemini/Codex/Cursor.
-SKILL.md is the Claude Code entry point (`adapters/claude.md` documents the same mapping for parity).
-
-**Non-destructive (hard rule):** this skill NEVER deletes, overwrites, or rewrites existing
-context — it only **adds the missing pieces**. Existing files and CONTEXT.md sections are kept
-verbatim unless the owner explicitly edits them. It is **idempotent**: re-running on an existing
-backbone enters **UPDATE/SYNC mode** and fills only the gaps (PROCEDURE Step 2C).
-**Section-by-section confirmation:** every CONTEXT.md section (§1–13) is confirmed with the
-project owner via `AskUserQuestion` before it is written/updated (PROCEDURE Step 2D). On a
-**first-time init** the confirm is a deep, detailed interview per section; on UPDATE/SYNC it's a
-light touch that only asks about the missing pieces. **Mandatory fields are always asked** in
-every mode — e.g. if the context has no **project description** (§1), ask the user; never write
-the context with it left blank/placeholder.
+Two invariants worth holding in mind (full detail in PROCEDURE):
+- **Non-destructive & idempotent** — the skill only *adds* what's missing. It doesn't delete or
+  rewrite existing context, because the owner's wording is the source of truth; on an existing
+  backbone it runs in UPDATE/SYNC mode and fills only the gaps (Step 2C).
+- **Confirm every section with the owner** — walk CONTEXT.md §1–13 via `AskUserQuestion` before
+  writing (Step 2D): a deep interview on a first-time init, a light touch on update/sync, and
+  mandatory fields (e.g. project description) are asked rather than left blank.
 
 ## Claude-specific mappings
 - **Step 0 update check** — run `bash check-update.sh` via `Bash` and show its one-line result.

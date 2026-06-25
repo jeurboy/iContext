@@ -2,9 +2,10 @@
 name: icontext-feature
 version: 1.2.0
 description: Generate a numbered feature plan (plans/NNN-name/ folder, split by role) with the standard
-             section-0-to-11 structure + role owners + status lifecycle + optional persona
-             panel. Use AFTER icontext-init, whenever adding a new feature to the project.
-             Stops at the plan - does not implement.
+             section-0-to-11 structure + role owners + task-status lifecycle + optional persona
+             panel. Use AFTER icontext-init, whenever adding a new feature or capability to a project
+             that already has a CONTEXT.md backbone — even if the user just says "plan this feature",
+             "write a plan for X", or "spec out the next thing". Stops at the plan - does not implement.
 allowed-tools:
   - Read
   - Write
@@ -15,11 +16,10 @@ allowed-tools:
 
 # icontext-feature
 
-> **ALWAYS DO THIS FIRST — every single invocation, no exceptions:**
-> run `bash check-update.sh` via `Bash` and surface its output (shows the local **version** line
-> + whether an update is available). Do this *before* reading the rest or asking anything. It is
-> best-effort and never blocks (offline/unpublished just prints "skipped"). If an update is
-> available, mention it, then continue.
+> **Run `bash check-update.sh` first** (via `Bash`) and surface its output — it shows the local
+> version and whether an update is available, so you and the user share the same picture before
+> anything changes. It's best-effort and never blocks (offline/unpublished just prints "skipped").
+> If an update is available, mention it, then continue.
 
 The full, agent-neutral workflow lives in **[PROCEDURE.md](./PROCEDURE.md)**.
 **Read PROCEDURE.md and execute its steps.** The plan template folder is `templates/plan-template/`.

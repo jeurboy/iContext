@@ -13,20 +13,21 @@ feature plans are made later by the separate `icontext-feature` procedure.
 - **Section-by-section confirmation:** confirm every CONTEXT.md section (§1–13) with the project
   owner before writing it (Step 2D). Never silently auto-fill or leave a bare placeholder
   without surfacing the section for confirm / edit / skip.
-- **Non-destructive (hard rule):** NEVER delete, overwrite, or rewrite existing context. The
-  skill only **adds the missing pieces**. Existing files and existing CONTEXT.md sections are
-  preserved verbatim; the owner may change content only by explicitly editing it during the
-  Step 2D confirm. When in doubt, leave it and report it — do not touch it.
-- **Idempotent:** if an iContext backbone already exists, run UPDATE/SYNC (Step 2C) — fill only
-  what's missing, following the non-destructive rule above.
+- **Non-destructive — only add what's missing.** Don't delete or rewrite existing context: the
+  owner's wording is the source of truth, and silently overwriting it destroys intent that the
+  files were meant to capture. Existing files and CONTEXT.md sections stay verbatim; the owner
+  changes content only by explicitly editing it during the Step 2D confirm. When in doubt, leave
+  it and report it rather than touch it.
+- **Idempotent:** re-running on an existing backbone is safe — it enters UPDATE/SYNC (Step 2C)
+  and fills only the gaps, following the non-destructive rule above.
 - **Stop at context.** Do not generate feature plans here.
 
 ## Step 0 — Update check + pre-flight
-- **Update check (FIRST, every run, before anything else):** run `check-update.sh` (next to this
-  file) and surface its output — it prints the local **version** and whether an update is
-  available. It compares the local `VERSION` to the published one and is best-effort — it never
-  blocks (offline/unpublished just prints "skipped"). If an update is available, mention it,
-  then continue.
+- **Update check, up front:** run `check-update.sh` (next to this file) before the real work and
+  surface its output — it prints the local **version** and whether an update is available. Running
+  it first means you and the user share the same picture of which version is acting before anything
+  changes. It compares the local `VERSION` to the published one, is best-effort, and never blocks
+  (offline/unpublished just prints "skipped"). If an update is available, mention it, then continue.
 - **Required companion skills:** check `gstack`, `ux-ui-pro-max`, `impeccable` (see
   `reference/required-skills.md`). If your agent can't check installation, just remind the user
   of the links.
@@ -99,8 +100,8 @@ never overwrite source).
    Don't move source — document the actual layout; put suggestions under "Migration notes".
 
 ## Step 2C — Update/Sync: fill only what's missing (idempotent)
-The project already has an iContext backbone. **Never overwrite a file that exists and has real
-content.** Audit, then patch only the gaps.
+The project already has an iContext backbone, so treat it as the source of truth: leave any file
+that exists and has real content untouched, and patch only the gaps. Audit first, then add.
 1. **Inventory** every expected artifact and mark present/absent: L1 `CLAUDE.md`/`AGENT.md`/
    `GEMINI.md`; `CONTEXT.md` §1–13 (per-section); `ROLE.md`; `PLAN.md`; `plans/_TEMPLATE/` +
    `plans/README.md`; `docker-compose.yml`; `docs/openapi.yaml`; `styles/css/tokens.css`;
