@@ -1,15 +1,20 @@
 ---
 name: icontext-init
-version: 1.3.0
-description: Scaffold a layered context (L1 agent files / L2 CONTEXT.md / L3 plans) plus
-             service skeletons (web/mobile/api/db) for a project. Greenfield (new),
-             brownfield (read & summarize an existing codebase), or update/sync (fill only the
-             missing pieces of an existing iContext backbone). Confirms every CONTEXT.md section
-             with the project owner, then writes CONTEXT.md for review. Idempotent & non-destructive
-             — safe to re-run. Use when starting or onboarding a web/mobile project, and also
-             whenever an existing iContext project's context is stale, incomplete, or missing
-             pieces — even if the user just says "update my context", "sync the backbone", or
-             "fill in CONTEXT.md".
+version: 1.4.0
+description: Use this skill to establish or refresh the foundational, whole-project context that
+             lets any AI session instantly understand a codebase's architecture — the "iContext" /
+             CONTEXT.md backbone (L1 agent files / L2 CONTEXT.md / L3 plans) plus web/mobile/api/db
+             service skeletons. Trigger in two situations. (1) Setting up from scratch — "set up
+             iContext", "bootstrap the project context", "scaffold the context backbone", or
+             "onboard our architecture" — for a new project or by reading an existing codebase,
+             naming the stack, services, ports, and data model so the AI knows the system from day
+             one. (2) Updating an existing backbone — a stale or partial CONTEXT.md, an unfinished
+             data-model or security section, a newly added service or second app to sync in, or a
+             missing scaffolded artifact like the OpenAPI spec or style tokens; it interviews the
+             owner section by section and adds only what's missing, never overwriting their words.
+             Do NOT use for per-feature work — planning or building one feature or endpoint,
+             generating a standalone OpenAPI spec, rewriting a README, or showing a plan-status
+             dashboard.
 allowed-tools:
   - Read
   - Write

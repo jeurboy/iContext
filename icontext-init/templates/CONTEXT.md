@@ -133,6 +133,31 @@ chain (sequentially, or all at once via **`/autoplan`**):
 
 These come from the `gstack` skill (§10). Capture outcomes in the plan before implementation.
 
+#### 11.5 Implementation loop (loop engineering) — status `implement`
+Once a plan is `ready to implement`, build it as a **tight iterative loop**, not one big pass.
+The reason: small slices are easier to test, regressions surface immediately, and the owner stays
+in the loop instead of reviewing a giant diff at the end. Each cycle:
+
+1. **Slice** — take the smallest increment that moves one User Story (po.md §3) forward.
+2. **Implement** the slice, keeping §11.3 in sync (context · plan · doc · style · data model).
+3. **Test it — concretely.** Follow the plan's `qa.md` §9:
+   - Unit-test the API logic; **Playwright** the UI flow. Cover happy path + the edge/error cases
+     listed in qa.md Test Scenarios.
+   - State the test method in the plan: the exact command to run (e.g. `go test ./...`,
+     `npm run test:e2e`), the expected result, and how coverage is measured. Aim for **> 80%**.
+   - Prefer running the real app and observing behaviour (gstack `/qa` to test systematically,
+     `/verify` to confirm a change actually works) over assuming.
+4. **Retest / regression** — after every change, re-run the **whole relevant suite**, not just the
+   new test, so a fix doesn't quietly break something else. Fix until green; mark each `qa.md`
+   Test Case `pass`.
+5. **Review with the owner** — show what was built (diff · screenshots · the running app),
+   **explain how you tested it** (what ran, what you observed, current coverage), and **ask for
+   feedback explicitly**. Don't assume silence = approval.
+6. **Fold in feedback** → back to step 1 for the next slice.
+
+Repeat until every User Story passes, acceptance criteria (bu.md / qa.md) are met, and coverage
+is > 80% — then move the plan to **`ready to test`** for a final QA pass before `done`.
+
 ### 12. Design Tokens
 - Central tokens in `styles/css/tokens.css`. **Never inline colors / look-and-feel.** Web (Tailwind)
   and mobile (theme) mirror these tokens.

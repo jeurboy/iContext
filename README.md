@@ -1,6 +1,6 @@
 # iContext
 
-**Version 1.3.0** · two portable agent-skills that bootstrap and maintain a **layered project
+**Version 1.4.0** · two portable agent-skills that bootstrap and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
@@ -123,6 +123,14 @@ iContext/
 - Stack defaults (Next.js · Flutter · Go+GORM clean-arch · Postgres) are overridable per project.
 
 ## Changelog
+
+### 1.4.0
+- **Implementation loop (loop engineering)** — `CONTEXT.md` §11.5 + plan `qa.md` now spell out the
+  `implement` phase as a tight iterate-and-retest loop: slice → implement → test (with the exact
+  run commands + coverage method) → re-run the whole suite (regression) → review with the owner
+  and ask for feedback → repeat, until User Stories pass and coverage > 80%.
+- **Optimized `icontext-init` description** — restructured for sharper triggering (two clear
+  situations + explicit "do NOT use" cases), from a skill-creator description pass.
 
 ### 1.3.0
 - **Confirm the repo strategy before wiring submodules** — `icontext-init` asks the owner to pick

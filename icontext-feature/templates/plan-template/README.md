@@ -18,7 +18,7 @@
 | [bu.md](./bu.md) | BU · Business | 0 Decisions · 1 Goal · Use Cases · User Stories · Acceptance Criteria · Definition of Done |
 | [po.md](./po.md) | PO · Product Owner | 2 Scope · 3 User Stories · 10 Tasks/Checklist · 11 Open Questions |
 | [dev.md](./dev.md) | DEV · Development | 5 Tech & Architecture · 6 Data Model/Schema · Migration scripts · 7 API Contract · API changes · Pages/routes |
-| [qa.md](./qa.md) | QA · Testing | 9 Test Plan (>80%) · Test Scenarios · Test Cases · Test Status · Test Coverage |
+| [qa.md](./qa.md) | QA · Testing | 9 Test Plan (>80%) · How to run · Implementation loop & regression · Test Scenarios · Test Cases · Test Status · Test Coverage |
 | [ops.md](./ops.md) | OPS · DevOps/Deploy | 8 Security & Privacy · Deploy/Migrations |
 | [stk.md](./stk.md) | STK · Stakeholder | 4 Persona Panel |
 

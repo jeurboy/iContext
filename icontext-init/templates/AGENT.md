@@ -15,6 +15,9 @@ Generic agent boilerplate (any AI). The single source of truth is **CONTEXT.md**
   after (via `/autoplan`, or one by one): `/plan-ceo-review` (scope) · `/plan-eng-review`
   (architecture/edge cases) · `/plan-design-review` (if UI) · `/plan-devex-review` (if
   developer-facing: API/SDK/CLI).
+- **Implement as a loop, not one big pass** (CONTEXT.md §11.5): slice → implement → test → retest
+  the whole relevant suite → review with the owner and ask for feedback → repeat, until User
+  Stories pass and coverage > 80%.
 - **Task status:** `to do → plan → ready to implement → implement → ready to test → done`.
 - **Never `git commit` / `git push` unless explicitly told.**
 - Summarize tech stack + architecture (CONTEXT.md §3–6) **before** implementing any service.

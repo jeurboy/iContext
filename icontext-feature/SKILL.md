@@ -1,6 +1,6 @@
 ---
 name: icontext-feature
-version: 1.3.0
+version: 1.4.0
 description: Generate a numbered feature plan (plans/NNN-name/ folder, split by role) with the standard
              section-0-to-11 structure + role owners + task-status lifecycle + optional persona
              panel. Use AFTER icontext-init, whenever adding a new feature or capability to a project
