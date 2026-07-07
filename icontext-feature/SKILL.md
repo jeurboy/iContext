@@ -1,6 +1,6 @@
 ---
 name: icontext-feature
-version: 1.4.0
+version: 1.5.0
 description: Generate a numbered feature plan (plans/NNN-name/ folder, split by role) with the standard
              section-0-to-11 structure + role owners + task-status lifecycle + optional persona
              panel. Use AFTER icontext-init, whenever adding a new feature or capability to a project
@@ -21,6 +21,12 @@ allowed-tools:
 > anything changes. It's best-effort and never blocks (offline/unpublished just prints "skipped").
 > If an update is available, mention it, then continue.
 
+> **Then grill before planning (required).** Run the **`/grill-with-docs`** skill first — interview
+> the user about this feature until every branch of the decision tree is resolved, sharpening domain
+> terminology and updating `CONTEXT.md` + ADRs inline. Only start scaffolding / writing the plan
+> **after** the grill. Do this for every plan; do not skip. (Falls back to `/grill-me` if
+> `grill-with-docs` isn't installed.)
+
 The full, agent-neutral workflow lives in **[PROCEDURE.md](./PROCEDURE.md)**.
 **Read PROCEDURE.md and execute its steps.** The plan template folder is `templates/plan-template/`.
 
@@ -28,6 +34,9 @@ Portable across agents - see [adapters/](./adapters/). SKILL.md is the Claude Co
 
 ## Claude-specific mappings
 - **Step 0 update check** - run `bash check-update.sh` via `Bash` and show its one-line result.
+- **Step 0.5 grill (required)** - run the **`/grill-with-docs`** skill to stress-test the feature and
+  build/refresh `CONTEXT.md` + ADRs before writing anything. Proceed to the plan only once the key
+  decisions are resolved.
 - **Step 1 scaffolding check** - use `Bash` to check for `styles/` (style guide),
   `docs/openapi.yaml`, and `.vscode/launch.json`. For any that are missing, ask with
   `AskUserQuestion` (multi-select) whether to create them, then create approved ones from the

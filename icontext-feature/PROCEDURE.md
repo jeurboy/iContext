@@ -36,6 +36,14 @@ List the `plans/NNN-*/` folders, take the highest `NNN`, +1 (zero-padded, 3 digi
 ## Step 3 — Gather the brief
 Ask: feature name (→ slug), one-paragraph intent, services touched (api/web/app). Keep short.
 
+## Step 3.5 — Grill the plan (required, every run)
+Before writing anything, run a **grilling / stress-test pass**: interview the user about this feature
+until every branch of the decision tree is resolved, and sharpen domain terminology + record decisions
+into `CONTEXT.md` + ADRs (`docs/adr/`) as you go. Proceed to the plan only once the key decisions settle.
+- **Claude Code**: run the `/grill-with-docs` skill (falls back to `/grill-me` or `/grilling` if not installed).
+- **Other agents**: do the equivalent — relentless Q&A on scope, edge cases, and trade-offs (give a
+  recommended answer per question), then capture the resolved terms/decisions into `CONTEXT.md` + `docs/adr/`.
+
 ## Step 4 — Persona panel (ask every time)
 Ask: "Run a Persona Panel review with `ROLE.md` for this feature?"
 - Yes → for each persona output ✅ works / ⚠️ concern / 💡 suggestion, specific to the feature;
