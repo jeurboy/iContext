@@ -10,9 +10,13 @@ adapters — Claude normally reads `SKILL.md` → `PROCEDURE.md` directly.
    - **Update check (FIRST, every run)** → `bash check-update.sh` via `Bash`; surface its output
      (local **version** + update availability).
    - **Next plan number** → `Bash` to list `plans/NNN-*/` and compute `NNN`.
-   - **Feature brief + persona-panel prompt** → `AskUserQuestion`.
+   - **Feature brief + optional persona prompt** → `AskUserQuestion`.
+   - **Requirement workflow** → gather the minimal brief, run `/grill-with-docs`, then use
+     `ROLE.md` as a multi-agent requirement review panel before writing final plan content.
    - **Write plan** → copy `templates/plan-template/` to `plans/NNN-<slug>/` (role files
      bu/po/dev/qa/ops/stk.md + README.md) with `Write`, fill sections, set `Task status: plan`, ref
      `CONTEXT.md`; register status in `plans/README.md` + `PLAN.md`.
+   - **Plan preparation** → run gstack `/autoplan` (or the individual review chain) and apply
+     accepted changes before implementation.
 3. Honor the rules in `PROCEDURE.md`: never `git commit`/`git push` unless told; stop at the
    written plan (do not implement the feature).

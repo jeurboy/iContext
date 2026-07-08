@@ -6,12 +6,13 @@ to continue anyway.
 | Skill | Source |
 |-------|--------|
 | `gstack` | https://github.com/garrytan/gstack |
-| `ux-ui-pro-max` | https://ui-ux-pro-max-skill.nextlevelbuilder.io |
+| `ui-ux-pro-max` | https://ui-ux-pro-max-skill.nextlevelbuilder.io |
 | `impeccable` | https://impeccable.style |
+| `grill-with-docs` | https://github.com/mattpocock/skills |
 
 Check (Claude Code layout):
 ```bash
-for s in gstack ux-ui-pro-max impeccable; do
+for s in gstack ui-ux-pro-max impeccable grill-with-docs; do
   test -d "$HOME/.claude/skills/$s" && echo "OK  $s" || echo "MISSING  $s"
 done
 ```

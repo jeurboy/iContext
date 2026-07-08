@@ -10,7 +10,7 @@ adapters — you normally don't need to read it; Claude reads `SKILL.md` → `PR
    - **Update check (FIRST, every run)** → `bash check-update.sh` via `Bash`; surface its output
      (local **version** + update availability).
    - **Mode detection / `git init`** → `Bash` file-presence checks. Detect an existing iContext
-     backbone first → **update/sync** (fill gaps only).
+     backbone first (including Codex `AGENTS.md`) → **update/sync** (fill gaps only).
    - **Per-section confirm** → `AskUserQuestion` (first-time init = detailed interview; update/sync
      = light, gaps only).
    - **Brownfield inventory** → dispatch the `Explore` agent (read-only fan-out) for large repos,

@@ -28,13 +28,14 @@ feature plans are made later by the separate `icontext-feature` procedure.
   it first means you and the user share the same picture of which version is acting before anything
   changes. It compares the local `VERSION` to the published one, is best-effort, and never blocks
   (offline/unpublished just prints "skipped"). If an update is available, mention it, then continue.
-- **Required companion skills:** check `gstack`, `ux-ui-pro-max`, `impeccable` (see
+- **Required companion skills:** check `gstack`, `ui-ux-pro-max`, `impeccable`, and
+  `grill-with-docs` (see
   `reference/required-skills.md`). If your agent can't check installation, just remind the user
   of the links.
 
 ## Step 1 — Choose mode
 **First, detect an existing iContext backbone** at the target root: `CONTEXT.md` plus any of
-`CLAUDE.md`/`AGENT.md`/`GEMINI.md`, `ROLE.md`, `PLAN.md`, `plans/`.
+`CLAUDE.md`/`AGENTS.md`/`AGENT.md`/`GEMINI.md`, `ROLE.md`, `PLAN.md`, `plans/`.
 - Backbone present → **UPDATE/SYNC** → Step 2C. *Do not re-scaffold.*
 
 If no backbone, detect whether the target dir already has code (look for `package.json`, `go.mod`,
@@ -67,7 +68,8 @@ matching `templates/stacks/<layer>-<choice>/STRUCTURE.md` into each service dir.
 
 ```
 <root>/
-├── CLAUDE.md  AGENT.md  GEMINI.md       L1 — agent boilerplate (all point to CONTEXT.md)
+├── CLAUDE.md  AGENTS.md  AGENT.md  GEMINI.md
+│                                          L1 — agent boilerplate (all point to CONTEXT.md)
 ├── CONTEXT.md                           L2 — architecture §1–13 (single source of truth)
 ├── ROLE.md                              persona panel (BU/PO/DEV/QA/OPS/STK)
 ├── PLAN.md                              status dashboard of all plans
@@ -84,8 +86,10 @@ dirs the owner confirmed (could be one dir, or `backend/ frontend/ admin/ …`).
 (Step 2B), detect the real service dirs from the repo instead of asking.
 
 Embed the standing rules into the L1 files + CONTEXT.md: summarize stack+arch before
-implementing; tests unit(API)+Playwright(UI) coverage >80%; styles use central tokens only;
-each service its own repo/submodule; plans are folders `NNN-name/` (role-split §0–11), ref
+implementing; run `/grill-with-docs` during requirement discovery; use `ROLE.md` as a multi-agent
+requirement review panel before locking plan scope; use gstack `/autoplan` to prepare the plan
+before implementation; tests unit(API)+Playwright(UI) coverage >80%; styles use central tokens
+only; each service its own repo/submodule; plans are folders `NNN-name/` (role-split §0–11), ref
 CONTEXT.md, carry task status `to do → plan → ready to implement → implement → ready to test → done`; a plan reaches `done`
 only when API spec synced + User Stories complete + tests >80%; on status change update the
 3 places (plan file · plans/README.md · PLAN.md). The full plan-section spec (with role
@@ -108,15 +112,15 @@ never overwrite source).
 4. Extract API surface from routes/controllers → `docs/`.
 5. Detect real conventions (naming, lint, tests, coverage). Record, don't impose.
 6. Unknowns → `<!-- TODO: confirm ... -->`. Never invent facts.
-7. Write the backbone AROUND the repo (CLAUDE/AGENTS/GEMINI, CONTEXT filled, ROLE, plan
+7. Write the backbone AROUND the repo (CLAUDE/AGENTS/AGENT/GEMINI, CONTEXT filled, ROLE, plan
    template, docs). Don't duplicate existing `styles/` or compose files; reference them.
    Don't move source — document the actual layout; put suggestions under "Migration notes".
 
 ## Step 2C — Update/Sync: fill only what's missing (idempotent)
 The project already has an iContext backbone, so treat it as the source of truth: leave any file
 that exists and has real content untouched, and patch only the gaps. Audit first, then add.
-1. **Inventory** every expected artifact and mark present/absent: L1 `CLAUDE.md`/`AGENT.md`/
-   `GEMINI.md`; `CONTEXT.md` §1–13 (per-section); `ROLE.md`; `PLAN.md`; `plans/_TEMPLATE/` +
+1. **Inventory** every expected artifact and mark present/absent: L1 `CLAUDE.md`/`AGENTS.md`/
+   `AGENT.md`/`GEMINI.md`; `CONTEXT.md` §1–13 (per-section); `ROLE.md`; `PLAN.md`; `plans/_TEMPLATE/` +
    `plans/README.md`; `docker-compose.yml`; `docs/openapi.yaml`; `styles/css/tokens.css`;
    `styles/components/*.html`; each service's `STRUCTURE.md`.
 2. **Missing files** → create from `templates/`, substituting `{{VARS}}` read from the existing

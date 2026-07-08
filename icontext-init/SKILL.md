@@ -1,20 +1,13 @@
 ---
 name: icontext-init
-version: 1.4.0
-description: Use this skill to establish or refresh the foundational, whole-project context that
-             lets any AI session instantly understand a codebase's architecture — the "iContext" /
-             CONTEXT.md backbone (L1 agent files / L2 CONTEXT.md / L3 plans) plus web/mobile/api/db
-             service skeletons. Trigger in two situations. (1) Setting up from scratch — "set up
-             iContext", "bootstrap the project context", "scaffold the context backbone", or
-             "onboard our architecture" — for a new project or by reading an existing codebase,
-             naming the stack, services, ports, and data model so the AI knows the system from day
-             one. (2) Updating an existing backbone — a stale or partial CONTEXT.md, an unfinished
-             data-model or security section, a newly added service or second app to sync in, or a
-             missing scaffolded artifact like the OpenAPI spec or style tokens; it interviews the
-             owner section by section and adds only what's missing, never overwriting their words.
-             Do NOT use for per-feature work — planning or building one feature or endpoint,
-             generating a standalone OpenAPI spec, rewriting a README, or showing a plan-status
-             dashboard.
+description: Establish or refresh the whole-project iContext backbone so agents understand a
+             codebase's architecture, conventions, workflow, and plan status. Use for greenfield
+             setup, brownfield onboarding, or update/sync when CONTEXT.md, L1 agent files
+             (CLAUDE.md, AGENTS.md, AGENT.md, GEMINI.md), ROLE.md, plans/, docs/openapi.yaml,
+             styles/, service skeletons, or data/security sections are missing or stale. It
+             interviews section-by-section and only adds missing context. Do NOT use for
+             per-feature planning, implementation, standalone OpenAPI generation, README rewrites,
+             or plan dashboards; use icontext-feature for one feature plan.
 allowed-tools:
   - Read
   - Write

@@ -1,7 +1,7 @@
 # {{PROJECT_NAME}} — CONTEXT.md (Layer 2 · single source of truth)
 
 > Architecture §1–13. **Read this before anything.** Every plan in `plans/` must `ref` this file.
-> Companion indexes: `PLAN.md` (status dashboard) · `plans/README.md` (plan index) · `ROLE.md` (persona panel).
+> Companion indexes: `PLAN.md` (status dashboard) · `plans/README.md` (plan index) · `ROLE.md` (multi-agent role panel).
 
 ---
 ## ผลิตภัณฑ์ & ทิศทาง · Product & Direction
@@ -35,7 +35,7 @@
 
 ### 5. โครงสร้าง Repo · Repo Structure
 - Mono-root with each service as its **own git repo wired as a submodule**: `api/`, `web/`, `app/`.
-- Context backbone (this file, `CLAUDE.md`/`AGENT.md`/`GEMINI.md`, `ROLE.md`, `plans/`, `styles/`,
+- Context backbone (this file, `CLAUDE.md`/`AGENTS.md`/`AGENT.md`/`GEMINI.md`, `ROLE.md`, `plans/`, `styles/`,
   `docs/`, `PLAN.md`) lives at the root.
 
 ### 6. รายการ Service · Services
@@ -75,7 +75,8 @@
 - **Install first (every project):** `gstack` — https://github.com/garrytan/gstack — provides the
   `/gstack-*` commands incl. **`/autoplan`** and the plan-review chain (`/plan-ceo-review`,
   `/plan-eng-review`, `/plan-design-review`, `/plan-devex-review`) used before implementing.
-- `gstack` · `ux-ui-pro-max` · `impeccable` (design/QA companions)
+- `gstack` · `ui-ux-pro-max` · `impeccable` (design/QA companions)
+- `grill-with-docs` (or equivalent grilling workflow) for requirement discovery + ADR/domain updates
 - `icontext-init` (scaffold) · `icontext-feature` (plans)
 
 ---
@@ -83,6 +84,32 @@
 
 ### 11. Workflow + Plan Standard
 - Build context first → then features one at a time via `/icontext-feature`. Never commit/push unless told.
+
+#### 11.0 Main development workflow
+Use this workflow for every non-trivial feature so requirements, plan, context, and tests stay in
+sync:
+
+1. **Context check** — read `CONTEXT.md`, `PLAN.md`, `plans/README.md`, and the relevant existing
+   plan(s). Confirm the feature belongs in this project and note affected services from §6.
+2. **Requirement discovery with `/grill-with-docs`** — before writing the plan, interview the owner
+   until the requirement, edge cases, decisions, and domain terms are clear. Capture durable
+   decisions in `docs/adr/` and update `CONTEXT.md` (especially §2, §7, §8, §13) when the feature
+   changes project knowledge. If `/grill-with-docs` is unavailable, run the same grilling process
+   manually and document the outcome.
+3. **Requirement review with `ROLE.md` multi-agent panel** — use the roles/personas in `ROLE.md`
+   to review the requirement before locking scope. If the agent supports subagents, run one reviewer
+   per role/persona; otherwise emulate separate BU/PO/DEV/QA/OPS/STK passes. Capture works /
+   concerns / suggestions / requirement changes in the plan's §4 (`stk.md`) and fold accepted
+   changes back into `bu.md`, `po.md`, `dev.md`, `qa.md`, and `ops.md`.
+4. **Plan creation** — create `plans/NNN-<name>/` via `/icontext-feature`, fill the role-split
+   files, set `Task status: plan`, and register the plan in `plans/README.md` + `PLAN.md`.
+5. **Plan preparation with gstack `/autoplan`** — run `/autoplan` (or the review chain in §11.4)
+   to challenge scope, architecture, design, and developer experience. Apply accepted changes, then
+   move the plan to `ready to implement`.
+6. **Implementation loop** — implement in small slices following §11.5. Keep `CONTEXT.md`, the plan,
+   `docs/openapi.yaml`, styles, and data model in sync when architecture changes.
+7. **Final QA + done gates** — move to `ready to test`, run the test plan, confirm User Stories are
+   complete, sync the API spec, keep coverage > 80%, then mark `done` in all three status locations.
 
 #### 11.1 Plan structure (every plan is a **folder** `plans/NNN-<name>/` split by role; sections 0–11)
 Roles: **BU** ธุรกิจ · **PO** เจ้าของงาน · **DEV** พัฒนา · **QA** ทดสอบ · **OPS** DevOps/Deploy · **STK** Stakeholder.
@@ -94,7 +121,7 @@ Each section lives in exactly one role file:
 | 1 | Goal | STK BU PO | bu.md |
 | 2 | Scope (in/out) | PO DEV | po.md |
 | 3 | User Stories (mandatory) | PO QA | po.md |
-| 4 | Persona Panel | STK BU PO DEV | stk.md |
+| 4 | Requirement Review / Persona Panel | STK BU PO DEV QA OPS | stk.md |
 | 5 | Tech & Architecture | DEV OPS | dev.md |
 | 6 | Data Model / Schema | DEV OPS | dev.md |
 | 7 | API Contract | DEV QA | dev.md |
@@ -123,9 +150,10 @@ or shared conventions — update all of these **together, in the same change**, 
 - **Style** — `styles/css/tokens.css` + `styles/components/` when UI / look-and-feel is affected.
 - **Data model** — keep §7 here, the plan's schema section, and DB migrations consistent.
 
-#### 11.4 Review chain — run before implementing any plan
-Before moving a plan to **`ready to implement`** (i.e. before any implementation), run the review
-chain (sequentially, or all at once via **`/autoplan`**):
+#### 11.4 Plan review chain — run `/autoplan` before implementing any plan
+Before moving a plan to **`ready to implement`** (i.e. before any implementation), run gstack
+**`/autoplan`** to prepare the plan. It runs the review chain sequentially and applies decisions,
+or run the individual reviews when `/autoplan` is unavailable:
 - **`/plan-ceo-review`** — scope / ambition
 - **`/plan-eng-review`** — architecture / edge cases
 - **`/plan-design-review`** — if the feature has UI

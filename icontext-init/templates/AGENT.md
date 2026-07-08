@@ -6,11 +6,14 @@ Generic agent boilerplate (any AI). The single source of truth is **CONTEXT.md**
 - `CONTEXT.md` — architecture §1–13 (read before anything)
 - `PLAN.md` — status dashboard of all features
 - `plans/` — one folder per feature (`NNN-name/`, role-split); index in `plans/README.md`
-- `ROLE.md` — persona panel for feature consultation
+- `ROLE.md` — multi-agent role panel for requirement review and feature consultation
 
 ## กฎเหล็ก · Hard rules
 - **Install `gstack` first:** https://github.com/garrytan/gstack — needed for `/autoplan` + the
   plan-review chain. Remind the user to install it if missing.
+- **Requirement workflow before every feature plan:** run `/grill-with-docs` to sharpen
+  requirements and update `CONTEXT.md` + ADRs; then use `ROLE.md` as a multi-agent panel to review
+  the requirements before locking scope.
 - **Before implementing any plan, run the review chain** — move it to `ready to implement` only
   after (via `/autoplan`, or one by one): `/plan-ceo-review` (scope) · `/plan-eng-review`
   (architecture/edge cases) · `/plan-design-review` (if UI) · `/plan-devex-review` (if

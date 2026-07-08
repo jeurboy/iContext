@@ -20,7 +20,7 @@ set -euo pipefail
 
 REPO_URL="${ICONTEXT_REPO:-https://github.com/jeurboy/iContext.git}"
 ICONTEXT_HOME="${ICONTEXT_HOME:-$HOME/.icontext}"
-SKILLS=(icontext-init icontext-feature)
+SKILLS=(icontext-init icontext-update icontext-feature)
 
 TOOL="claude"
 MODE="copy"
@@ -76,15 +76,21 @@ install_claude() {                      # $1 = destination skills dir
 
 pointer_body() {                        # $1 = adapter name
   cat <<EOF
-iContext gives you two workflows to scaffold & maintain this project's layered context.
+iContext gives you three workflows to scaffold & maintain this project's layered context.
 
 Skill files (read these to run the workflow):
 - \`$ICONTEXT_HOME/icontext-init/PROCEDURE.md\` — scaffold or update/sync the context backbone
   (CONTEXT.md, L1 agent files, plans/, styles/, docs/). Idempotent & non-destructive.
+- \`$ICONTEXT_HOME/icontext-update/PROCEDURE.md\` — backfill an existing CONTEXT.md/iContext
+  project with missing sections and latest templates. Confirms every change before writing.
 - \`$ICONTEXT_HOME/icontext-feature/PROCEDURE.md\` — add one feature plan (role-split folder).
 
-Tool-specific notes: \`$ICONTEXT_HOME/icontext-init/adapters/$1.md\` (when present).
-To start: follow icontext-init's PROCEDURE.md, then icontext-feature's for each feature.
+Tool-specific notes (when present):
+- \`$ICONTEXT_HOME/icontext-init/adapters/$1.md\`
+- \`$ICONTEXT_HOME/icontext-update/adapters/$1.md\`
+- \`$ICONTEXT_HOME/icontext-feature/adapters/$1.md\`
+To start: follow icontext-init's PROCEDURE.md, use icontext-update for existing contexts, then
+icontext-feature for each feature.
 EOF
 }
 

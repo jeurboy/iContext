@@ -1,7 +1,9 @@
-# {{PROJECT_NAME}} — ROLE.md (Persona Panel)
+# {{PROJECT_NAME}} — ROLE.md (Multi-Agent Role Panel)
 
-The persona panel consulted in each plan's **§4 Persona Panel**. `/icontext-feature` asks every
-time whether to run it. Sections in a plan are owned by these roles (see CONTEXT.md §11.1).
+Use this panel during requirement discovery and plan review. The primary workflow is:
+`/grill-with-docs` sharpens the requirement → this role panel reviews it → `/autoplan` prepares
+the plan for implementation. Each feature records the outcome in **§4 Requirement Review /
+Persona Panel** (`stk.md`). Sections in a plan are owned by these roles (see CONTEXT.md §11.1).
 
 ## Responsibility roles
 | Tag | Role | Cares about |
@@ -24,6 +26,21 @@ time whether to run it. Sections in a plan are owned by these roles (see CONTEXT
 
 <!-- TODO: add a dedicated QA persona if needed; until then Dev Lead covers QA review. -->
 
-## How a Persona Review runs
-For the feature, each persona gives: ✅ what works · ⚠️ concern · 💡 suggestion. Keep it short
-and specific. Collect into the plan's **§4 Persona Panel** section.
+## Requirement Review Protocol
+Run this after `/grill-with-docs` and before locking the plan scope.
+
+If the agent supports subagents, dispatch one reviewer per role/persona in parallel. If not,
+simulate separate passes in one response. Each reviewer must stay in their lane and return:
+
+| Field | Meaning |
+|-------|---------|
+| Works | What is clear, valuable, or ready |
+| Concern | The biggest ambiguity, risk, missing requirement, or edge case |
+| Suggestion | The concrete requirement/acceptance/test/design change they recommend |
+| Plan impact | Which role file should change: `bu.md`, `po.md`, `dev.md`, `qa.md`, `ops.md`, or `stk.md` |
+
+Fold accepted changes back into the plan before moving to `/autoplan`.
+
+## Persona Panel Protocol
+For a lighter stakeholder pass, each persona gives: what works · concern · suggestion. Keep it
+short and specific. Collect into the plan's **§4 Requirement Review / Persona Panel** section.

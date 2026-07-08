@@ -1,12 +1,13 @@
 # icontext-feature (portable skill)
 
-Generate one feature plan (`plans/NNN-<slug>/ (folder, role files)`) using the standard §0–11 structure with
-role owners, a status lifecycle, and an optional persona-panel review. Pairs with
+Generate one feature plan (`plans/NNN-<slug>/ (folder, role files)`) using the standard §0–11
+structure with role owners, a status lifecycle, `/grill-with-docs` requirement discovery,
+`ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pairs with
 `icontext-init`. Stops at the plan — never implements.
 
-## Prerequisite — grill skills (recommended)
-The plan flow **grills the feature before writing it** (see PROCEDURE.md Step 3.5). For Claude Code,
-install Matt Pocock's grill skills once:
+## Prerequisite — grill skills
+The plan flow **grills the feature before writing it** and then reviews the requirement through
+`ROLE.md` (see PROCEDURE.md Steps 3.5–4). For Claude Code, install Matt Pocock's grill skills once:
 
 ```
 npx skills@latest add mattpocock/skills
@@ -15,6 +16,7 @@ npx skills@latest add mattpocock/skills
 Select `grill-me` + `grill-with-docs` (which pull in `grilling` + `domain-modeling`), target Claude
 Code, then run `/setup-matt-pocock-skills`. Source: <https://github.com/mattpocock/skills>.
 If they aren't installed, the flow falls back to `/grill-me` / `/grilling`, or a manual relentless-Q&A pass.
+After that, run the `ROLE.md` multi-agent panel before `/autoplan`.
 
 ## One procedure, many agents
 Workflow defined once in **[PROCEDURE.md](./PROCEDURE.md)**. Thin entry points per agent:

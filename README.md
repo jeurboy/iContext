@@ -1,18 +1,20 @@
 # iContext
 
-**Version 1.4.0** · two portable agent-skills that bootstrap and maintain a **layered project
+**Version 1.7.0** · three portable agent-skills that bootstrap and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
 | Skill | Command | Does |
 |-------|---------|------|
 | **icontext-init** | `/icontext-init` | Scaffold the context backbone (L1 agent files · L2 `CONTEXT.md` · L3 `plans/`) + service skeletons. **Greenfield** (new), **brownfield** (read & summarize an existing codebase), or **update/sync** (fill only the missing pieces of an existing backbone). Confirms every `CONTEXT.md` section with you first; **idempotent & non-destructive** — re-running never deletes or overwrites your context. |
-| **icontext-feature** | `/icontext-feature` | Add one feature plan — a **folder** `plans/NNN-name/` split into role files — with the standard §0–11 structure, role owners, task-status lifecycle, and optional persona-panel review. Pre-checks required scaffolding (style guide · `docs/openapi.yaml` · `.vscode/launch.json`) and offers to create what's missing. |
+| **icontext-update** | `/icontext-update` | Update an existing iContext project that already has `CONTEXT.md` to the latest template shape. Adds missing sections/artifacts such as `AGENTS.md`, `CONTEXT.md §11.0`, `ROLE.md` requirement-review protocol, refreshed plan templates, docs/styles/launch scaffolding, and service `STRUCTURE.md` files. Confirmation-first and additive only — reports every proposed change, waits for approval, and preserves owner-authored content. |
+| **icontext-feature** | `/icontext-feature` | Add one feature plan — a **folder** `plans/NNN-name/` split into role files — with the standard §0–11 structure, role owners, task-status lifecycle, requirement grilling via `/grill-with-docs`, `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pre-checks required scaffolding (style guide · `docs/openapi.yaml` · `.vscode/launch.json`) and offers to create what's missing. |
 
 ## The 3-layer context model
 
 ```
-Layer 1  CLAUDE.md · AGENT.md · GEMINI.md   agent boilerplate (hard rules, vendor-neutral)
+Layer 1  CLAUDE.md · AGENTS.md · AGENT.md · GEMINI.md
+                                                agent boilerplate (hard rules, vendor-neutral)
 Layer 2  CONTEXT.md                          architecture §1–13 — single source of truth
 Layer 3  plans/NNN-name/                     one folder per feature, each refs CONTEXT.md
          PLAN.md · plans/README.md           status dashboards (kept in sync, 3 places)
@@ -29,13 +31,17 @@ plans/NNN-name/
 ├── dev.md      5 Tech & Architecture · 6 Data Model · Migration scripts · 7 API Contract · API changes · Pages/routes
 ├── qa.md       9 Test Plan (>80%) · Test Scenarios · Test Cases · Test Status · Test Coverage
 ├── ops.md      8 Security & Privacy · Deploy/Migrations
-└── stk.md      4 Persona Panel
+└── stk.md      4 Requirement Review / Persona Panel
 ```
 
+Main feature workflow:
+`/grill-with-docs` requirement discovery → `ROLE.md` multi-agent requirement review → write the
+role-split plan → gstack `/autoplan` plan preparation → iterative implementation → QA gates.
+
 Task status flows `to do → plan → ready to implement → implement → ready to test → done`
-(reach `ready to implement` only after the review chain). Before implementing any plan, run the
-review chain via `/autoplan`: `/plan-ceo-review` (scope) · `/plan-eng-review` (architecture) ·
-`/plan-design-review` (if UI) · `/plan-devex-review` (if developer-facing).
+(reach `ready to implement` only after `/autoplan` or the review chain). Before implementing any
+plan, run the review chain via `/autoplan`: `/plan-ceo-review` (scope) · `/plan-eng-review`
+(architecture) · `/plan-design-review` (if UI) · `/plan-devex-review` (if developer-facing).
 
 ## Self-update check
 Each skill ships a `VERSION` + `check-update.sh`. On **every run** (Step 0) the skill compares
@@ -107,13 +113,17 @@ Skills live at the repo root (no wrapper folder):
 iContext/
 ├── README.md
 ├── install.sh
+├── scripts/            validation helpers
 ├── icontext-init/      SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/ · adapters/ · reference/
+├── icontext-update/    SKILL.md · PROCEDURE.md · VERSION · check-update.sh · adapters/
 └── icontext-feature/   SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/ · adapters/
 ```
 
 ## Conventions baked in
 - Never `git commit` / `git push` unless explicitly told.
 - **Install `gstack`** (https://github.com/garrytan/gstack) — provides `/autoplan` + the plan-review chain.
+- **Before writing any plan, run requirement discovery** (`/grill-with-docs`) and review the
+  requirement with the multi-agent role panel in `ROLE.md`.
 - **Before implementing any plan, run the review chain** (`/autoplan`): ceo · eng · design (if UI) · devex (if dev-facing).
 - **Confirm every `CONTEXT.md` section** with the owner before writing; **non-destructive** — never delete/overwrite existing context, only add what's missing.
 - **On architecture-impacting change, update context · plan · doc · style · data model together** (no drift).
@@ -122,7 +132,33 @@ iContext/
 - Each service is its own git repo, wired as a submodule under the root.
 - Stack defaults (Next.js · Flutter · Go+GORM clean-arch · Postgres) are overridable per project.
 
+## Validate
+
+```bash
+./scripts/validate.sh
+python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-init
+python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-update
+python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-feature
+```
+
 ## Changelog
+
+### 1.7.0
+- **New `icontext-update` skill** — for projects that already have `CONTEXT.md`; backfills missing
+  sections/artifacts from the latest templates without overwriting existing context. It reports and
+  confirms every proposed change before writing.
+- Installer, pointers, README, and validation now include all three skills:
+  `icontext-init`, `icontext-update`, and `icontext-feature`.
+
+### 1.6.0
+- **Codex L1 template** — scaffold now includes `AGENTS.md` and update/sync detects it.
+- **Main development workflow in CONTEXT.md** — `/grill-with-docs` for requirements, `ROLE.md`
+  multi-agent requirement review, gstack `/autoplan` for plan preparation, then implementation and
+  QA gates.
+- **ROLE.md upgraded** — now defines a repeatable multi-agent requirement review protocol.
+- **Codex validation cleanup** — removed unsupported `version` frontmatter from skill files; version
+  stays in each `VERSION` file.
+- **Companion skill naming** — corrected `ui-ux-pro-max` and added `grill-with-docs`.
 
 ### 1.4.0
 - **Implementation loop (loop engineering)** — `CONTEXT.md` §11.5 + plan `qa.md` now spell out the

@@ -1,8 +1,9 @@
 # icontext-init (portable skill)
 
-Scaffold a layered context backbone (L1 agent files / L2 `CONTEXT.md` / L3 `plans/`) plus
-service skeletons for a web/mobile project. Works **greenfield** (new project) or
-**brownfield** (read & summarize an existing codebase). Pairs with the `icontext-feature` skill.
+Scaffold a layered context backbone (L1 agent files including Codex `AGENTS.md` / L2
+`CONTEXT.md` / L3 `plans/`) plus service skeletons for a web/mobile project. Works
+**greenfield** (new project), **brownfield** (read & summarize an existing codebase), or
+**update/sync** (fill missing context artifacts only). Pairs with the `icontext-feature` skill.
 
 ## One procedure, many agents
 The workflow is defined once, agent-neutrally, in **[PROCEDURE.md](./PROCEDURE.md)**. Each agent
@@ -26,7 +27,7 @@ icontext-init/
 ├── PROCEDURE.md        agent-neutral source of truth
 ├── README.md           this file
 ├── adapters/           per-agent entry points (gemini, codex, cursor)
-├── templates/          files copied into the new project (with {{VARS}})
+├── templates/          files copied into the new project (with {{VARS}}), incl. AGENTS.md
 │   └── stacks/         structure guides per technology choice
 └── reference/          companion-skill links
 ```

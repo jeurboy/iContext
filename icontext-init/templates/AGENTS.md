@@ -1,13 +1,13 @@
-# {{PROJECT_NAME}} — CLAUDE.md (Layer 1)
+# {{PROJECT_NAME}} — AGENTS.md (Layer 1, Codex)
 
-Agent boilerplate for Claude. Single source of truth: **[CONTEXT.md](./CONTEXT.md)**.
-(Mirror of `AGENTS.md` / `AGENT.md` / `GEMINI.md`.)
+Agent boilerplate for OpenAI Codex. Single source of truth: **CONTEXT.md**.
+(Mirror of `AGENT.md` / `CLAUDE.md` / `GEMINI.md`.)
 
 ## Read first
-- [CONTEXT.md](./CONTEXT.md) — architecture §1–13 (read before anything)
-- [PLAN.md](./PLAN.md) — status dashboard of all features
-- [plans/](./plans/) — one plan per feature; index in [plans/README.md](./plans/README.md)
-- [ROLE.md](./ROLE.md) — multi-agent role panel for requirement review and feature consultation
+- `CONTEXT.md` — architecture §1–13 (read before anything)
+- `PLAN.md` — status dashboard of all features
+- `plans/` — one folder per feature (`NNN-name/`, role-split); index in `plans/README.md`
+- `ROLE.md` — multi-agent role panel for requirement review and feature consultation
 
 ## กฎเหล็ก · Hard rules
 - **Install `gstack` first:** https://github.com/garrytan/gstack — needed for `/autoplan` + the
@@ -27,13 +27,12 @@ Agent boilerplate for Claude. Single source of truth: **[CONTEXT.md](./CONTEXT.m
 - Summarize tech stack + architecture (CONTEXT.md §3–6) **before** implementing any service.
 - Tests: unit (API) + Playwright (UI), **coverage > 80%**.
 - `styles/`: no inline colors / look-and-feel — central tokens in `styles/css/tokens.css` only.
-- New feature ⇒ add a plan via `/icontext-feature`, ref CONTEXT.md, set status.
+- New feature ⇒ add a plan (`/icontext-feature`), ref CONTEXT.md, set status.
 - A plan reaches `done` only when: API spec synced · User Stories complete · tests > 80%.
 - On status change, update **3 places**: plan file · `plans/README.md` · `PLAN.md`.
 - **Any change that impacts the core architecture ⇒ update in sync, in the same change:**
   `CONTEXT.md` (incl. **§7 Data Model**) · the affected `plans/` plan · `docs/openapi.yaml` (API
   doc) · `styles/` tokens. Never let context, plan, doc, data model, and style drift apart.
-- Build context first; implement features one at a time, only when asked.
 
 ## Services (each its own git repo / submodule)
 - `api/` — {{API_STACK}} · `web/` — {{WEB_STACK}} · `app/` — {{MOBILE_STACK}}
