@@ -28,8 +28,8 @@ feature plans are made later by the separate `icontext-feature` procedure.
   it first means you and the user share the same picture of which version is acting before anything
   changes. It compares the local `VERSION` to the published one, is best-effort, and never blocks
   (offline/unpublished just prints "skipped"). If an update is available, mention it, then continue.
-- **Required companion skills:** check `gstack`, `ui-ux-pro-max`, `impeccable`, and
-  `grill-with-docs` (see
+- **Required companion skills:** check `gstack`, `ui-ux-pro-max`, `impeccable`,
+  `grill-with-docs`, and `wayfinder` (see
   `reference/required-skills.md`). If your agent can't check installation, just remind the user
   of the links.
 
@@ -86,10 +86,12 @@ dirs the owner confirmed (could be one dir, or `backend/ frontend/ admin/ …`).
 (Step 2B), detect the real service dirs from the repo instead of asking.
 
 Embed the standing rules into the L1 files + CONTEXT.md: summarize stack+arch before
-implementing; run `/grill-with-docs` during requirement discovery; use `ROLE.md` as a multi-agent
-requirement review panel before locking plan scope; use gstack `/autoplan` to prepare the plan
-before implementation; tests unit(API)+Playwright(UI) coverage >80%; styles use central tokens
-only; each service its own repo/submodule; plans are folders `NNN-name/` (role-split §0–11), ref
+implementing; ask the user to choose `/grill-with-docs` or `/wayfinder` during requirement
+discovery (use `/wayfinder` for large/foggy requirements without a clear solution path); use
+`ROLE.md` as a multi-agent requirement review panel before locking plan scope; use gstack
+`/autoplan` to prepare the plan before implementation; tests unit(API)+Playwright(UI) coverage
+>80%; styles use central tokens only; each service its own repo/submodule; plans are folders
+`NNN-name/` (role-split §0–11), ref
 CONTEXT.md, carry task status `to do → plan → ready to implement → implement → ready to test → done`; a plan reaches `done`
 only when API spec synced + User Stories complete + tests >80%; on status change update the
 3 places (plan file · plans/README.md · PLAN.md). The full plan-section spec (with role

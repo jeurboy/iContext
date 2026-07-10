@@ -2,8 +2,9 @@
 
 Update an existing iContext project to the latest template shape. Use it when the project already
 has `CONTEXT.md` or an iContext backbone, but is missing newer sections such as the main
-development workflow, Codex `AGENTS.md`, `ROLE.md` multi-agent requirement review, refreshed plan
-templates, style/docs scaffolding, or service `STRUCTURE.md` files.
+development workflow, Codex `AGENTS.md`, selectable requirement discovery (`/grill-with-docs` or
+`/wayfinder`), `ROLE.md` multi-agent requirement review, refreshed plan templates, style/docs
+scaffolding, or service `STRUCTURE.md` files.
 
 The workflow is additive and confirmation-first: it inventories gaps, shows each proposed file
 creation or patch, waits for user confirmation, then creates missing files, inserts missing

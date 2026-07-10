@@ -3,8 +3,9 @@ name: icontext-update
 description: Update an existing iContext project to the latest template shape. Use when a project
              already has CONTEXT.md or an iContext backbone and the user wants to sync missing
              sections, L1 agent files including AGENTS.md, ROLE.md workflow guidance, plan
-             templates, docs/openapi.yaml, styles, launch config, or service STRUCTURE files from
-             the current iContext templates. Adds only missing artifacts or missing sections,
+             templates, selectable requirement discovery guidance (/grill-with-docs or /wayfinder),
+             docs/openapi.yaml, styles, launch config, or service STRUCTURE files from the current
+             iContext templates. Adds only missing artifacts or missing sections,
              confirms every proposed change with the user before writing, preserves owner-authored
              content, leaves TODOs for unknown facts, and stops after the context/template backfill.
              Do NOT use for greenfield setup or one feature plan; use icontext-init or

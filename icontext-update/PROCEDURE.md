@@ -15,8 +15,9 @@
   explicitly approves the listed batch.
 - **Do not invent facts.** When a required value cannot be inferred, write `<!-- TODO: ... -->` or
   ask the owner if the field is mandatory for the backfill.
-- **Keep the latest workflow visible.** Ensure the context mentions `/grill-with-docs` requirement
-  discovery, `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation.
+- **Keep the latest workflow visible.** Ensure the context mentions the selectable requirement
+  discovery route (`/grill-with-docs` for clear-ish requirements, `/wayfinder` for large/foggy
+  requirements), `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation.
 - **Never commit / push** unless explicitly told.
 
 ## Step 0 — Update check
@@ -77,7 +78,8 @@ Patch only missing sections/headings:
 - **`ROLE.md`** — ensure the Requirement Review Protocol exists. If absent, append it from the
   latest template so future plans can use multi-agent requirement review.
 - **Plan templates** — ensure `plans/_TEMPLATE/README.md`, `bu.md`, `po.md`, `dev.md`, `qa.md`,
-  `ops.md`, and `stk.md` exist and include the latest §4 Requirement Review / Persona Panel shape.
+  `ops.md`, and `stk.md` exist and include the latest §4 Requirement Discovery / Requirement Review
+  / Persona Panel shape.
 - **Indexes** — ensure `PLAN.md` and `plans/README.md` exist. Do not reorder existing plans.
 
 When content is partially present, prefer the smallest additive patch: add the missing subsection,

@@ -20,10 +20,12 @@
 | [dev.md](./dev.md) | DEV · Development | 5 Tech & Architecture · 6 Data Model/Schema · Migration scripts · 7 API Contract · API changes · Pages/routes |
 | [qa.md](./qa.md) | QA · Testing | 9 Test Plan (>80%) · How to run · Implementation loop & regression · Test Scenarios · Test Cases · Test Status · Test Coverage |
 | [ops.md](./ops.md) | OPS · DevOps/Deploy | 8 Security & Privacy · Deploy/Migrations |
-| [stk.md](./stk.md) | STK · Stakeholder | 4 Requirement Review / Persona Panel |
+| [stk.md](./stk.md) | STK · Stakeholder | 4 Requirement Discovery / Requirement Review / Persona Panel |
 
 ### Requirement review — run before plan lock-in
-- [ ] `/grill-with-docs` requirement interview completed; decisions/terms captured in `CONTEXT.md` + ADRs
+- [ ] Requirement discovery route selected: `/grill-with-docs` for clear-ish requirements or `/wayfinder` for large/foggy requirements
+- [ ] Selected route completed; decisions/terms captured in `CONTEXT.md` + ADRs
+- [ ] If `/wayfinder` was used, map/tickets/decisions linked in [stk.md](./stk.md) §4.0 and planning-critical decisions are clear
 - [ ] `ROLE.md` multi-agent requirement review completed in [stk.md](./stk.md) §4.1
 - [ ] Accepted role-panel changes folded into BU/PO/DEV/QA/OPS files
 

@@ -1,14 +1,14 @@
 # iContext
 
-**Version 1.7.0** · three portable agent-skills that bootstrap and maintain a **layered project
+**Version 1.8.0** · three portable agent-skills that bootstrap and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
 | Skill | Command | Does |
 |-------|---------|------|
 | **icontext-init** | `/icontext-init` | Scaffold the context backbone (L1 agent files · L2 `CONTEXT.md` · L3 `plans/`) + service skeletons. **Greenfield** (new), **brownfield** (read & summarize an existing codebase), or **update/sync** (fill only the missing pieces of an existing backbone). Confirms every `CONTEXT.md` section with you first; **idempotent & non-destructive** — re-running never deletes or overwrites your context. |
-| **icontext-update** | `/icontext-update` | Update an existing iContext project that already has `CONTEXT.md` to the latest template shape. Adds missing sections/artifacts such as `AGENTS.md`, `CONTEXT.md §11.0`, `ROLE.md` requirement-review protocol, refreshed plan templates, docs/styles/launch scaffolding, and service `STRUCTURE.md` files. Confirmation-first and additive only — reports every proposed change, waits for approval, and preserves owner-authored content. |
-| **icontext-feature** | `/icontext-feature` | Add one feature plan — a **folder** `plans/NNN-name/` split into role files — with the standard §0–11 structure, role owners, task-status lifecycle, requirement grilling via `/grill-with-docs`, `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pre-checks required scaffolding (style guide · `docs/openapi.yaml` · `.vscode/launch.json`) and offers to create what's missing. |
+| **icontext-update** | `/icontext-update` | Update an existing iContext project that already has `CONTEXT.md` to the latest template shape. Adds missing sections/artifacts such as `AGENTS.md`, `CONTEXT.md §11.0`, selectable requirement discovery, `ROLE.md` requirement-review protocol, refreshed plan templates, docs/styles/launch scaffolding, and service `STRUCTURE.md` files. Confirmation-first and additive only — reports every proposed change, waits for approval, and preserves owner-authored content. |
+| **icontext-feature** | `/icontext-feature` | Add one feature plan — a **folder** `plans/NNN-name/` split into role files — with the standard §0–11 structure, role owners, task-status lifecycle, selectable requirement discovery (`/grill-with-docs` or `/wayfinder`), `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pre-checks required scaffolding (style guide · `docs/openapi.yaml` · `.vscode/launch.json`) and offers to create what's missing. |
 
 ## The 3-layer context model
 
@@ -31,12 +31,13 @@ plans/NNN-name/
 ├── dev.md      5 Tech & Architecture · 6 Data Model · Migration scripts · 7 API Contract · API changes · Pages/routes
 ├── qa.md       9 Test Plan (>80%) · Test Scenarios · Test Cases · Test Status · Test Coverage
 ├── ops.md      8 Security & Privacy · Deploy/Migrations
-└── stk.md      4 Requirement Review / Persona Panel
+└── stk.md      4 Requirement Discovery / Requirement Review / Persona Panel
 ```
 
 Main feature workflow:
-`/grill-with-docs` requirement discovery → `ROLE.md` multi-agent requirement review → write the
-role-split plan → gstack `/autoplan` plan preparation → iterative implementation → QA gates.
+choose `/grill-with-docs` or `/wayfinder` for requirement discovery → `ROLE.md` multi-agent
+requirement review → write the role-split plan → gstack `/autoplan` plan preparation → iterative
+implementation → QA gates.
 
 Task status flows `to do → plan → ready to implement → implement → ready to test → done`
 (reach `ready to implement` only after `/autoplan` or the review chain). Before implementing any
@@ -122,8 +123,9 @@ iContext/
 ## Conventions baked in
 - Never `git commit` / `git push` unless explicitly told.
 - **Install `gstack`** (https://github.com/garrytan/gstack) — provides `/autoplan` + the plan-review chain.
-- **Before writing any plan, run requirement discovery** (`/grill-with-docs`) and review the
-  requirement with the multi-agent role panel in `ROLE.md`.
+- **Before writing any plan, run requirement discovery**: choose `/grill-with-docs` for clear-ish
+  requirements or `/wayfinder` for large/foggy requirements without a clear solution path, then
+  review the requirement with the multi-agent role panel in `ROLE.md`.
 - **Before implementing any plan, run the review chain** (`/autoplan`): ceo · eng · design (if UI) · devex (if dev-facing).
 - **Confirm every `CONTEXT.md` section** with the owner before writing; **non-destructive** — never delete/overwrite existing context, only add what's missing.
 - **On architecture-impacting change, update context · plan · doc · style · data model together** (no drift).
@@ -142,6 +144,14 @@ python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validat
 ```
 
 ## Changelog
+
+### 1.8.0
+- **Wayfinder discovery route** — feature planning now asks the user to choose `/grill-with-docs`
+  for clear-ish requirements or `/wayfinder` for large/foggy requirements without a clear solution
+  path. If Wayfinder creates unresolved planning-critical tickets, `icontext-feature` stops at the
+  map and resumes plan creation once the way is clear.
+- **Plan §4 expanded** — `stk.md` now records Requirement Discovery separately from Requirement
+  Review / Persona Panel, including Wayfinder map/ticket links when used.
 
 ### 1.7.0
 - **New `icontext-update` skill** — for projects that already have `CONTEXT.md`; backfills missing

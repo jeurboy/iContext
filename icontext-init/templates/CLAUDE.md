@@ -12,9 +12,10 @@ Agent boilerplate for Claude. Single source of truth: **[CONTEXT.md](./CONTEXT.m
 ## กฎเหล็ก · Hard rules
 - **Install `gstack` first:** https://github.com/garrytan/gstack — needed for `/autoplan` + the
   plan-review chain. Remind the user to install it if missing.
-- **Requirement workflow before every feature plan:** run `/grill-with-docs` to sharpen
-  requirements and update `CONTEXT.md` + ADRs; then use `ROLE.md` as a multi-agent panel to review
-  the requirements before locking scope.
+- **Requirement workflow before every feature plan:** ask the user to choose `/grill-with-docs` or
+  `/wayfinder`. Use `/grill-with-docs` for clear-ish requirements that need sharper scope, terms,
+  edge cases, and ADRs; use `/wayfinder` for large/foggy requirements without a clear solution path.
+  Then use `ROLE.md` as a multi-agent panel to review the requirements before locking scope.
 - **Before implementing any plan, run the review chain** — move it to `ready to implement` only
   after (via `/autoplan`, or one by one): `/plan-ceo-review` (scope) · `/plan-eng-review`
   (architecture/edge cases) · `/plan-design-review` (if UI) · `/plan-devex-review` (if

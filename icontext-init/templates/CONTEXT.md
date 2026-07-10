@@ -76,7 +76,8 @@
   `/gstack-*` commands incl. **`/autoplan`** and the plan-review chain (`/plan-ceo-review`,
   `/plan-eng-review`, `/plan-design-review`, `/plan-devex-review`) used before implementing.
 - `gstack` · `ui-ux-pro-max` · `impeccable` (design/QA companions)
-- `grill-with-docs` (or equivalent grilling workflow) for requirement discovery + ADR/domain updates
+- `grill-with-docs` (or equivalent grilling workflow) for clear-ish requirement discovery + ADR/domain updates
+- `wayfinder` for large/foggy requirements where the solution path is not clear yet
 - `icontext-init` (scaffold) · `icontext-feature` (plans)
 
 ---
@@ -91,11 +92,15 @@ sync:
 
 1. **Context check** — read `CONTEXT.md`, `PLAN.md`, `plans/README.md`, and the relevant existing
    plan(s). Confirm the feature belongs in this project and note affected services from §6.
-2. **Requirement discovery with `/grill-with-docs`** — before writing the plan, interview the owner
-   until the requirement, edge cases, decisions, and domain terms are clear. Capture durable
-   decisions in `docs/adr/` and update `CONTEXT.md` (especially §2, §7, §8, §13) when the feature
-   changes project knowledge. If `/grill-with-docs` is unavailable, run the same grilling process
-   manually and document the outcome.
+2. **Requirement discovery route** — before writing the plan, ask the owner to choose:
+   `/grill-with-docs` for requirements that mostly fit in one planning session, or `/wayfinder` for
+   large/foggy requirements where the solution path is not clear yet. With `/grill-with-docs`,
+   interview the owner until the requirement, edge cases, decisions, and domain terms are clear.
+   With `/wayfinder`, chart/continue the map and do not write the iContext plan until
+   planning-critical tickets are resolved enough to produce a useful plan. Capture durable decisions
+   in `docs/adr/` and update `CONTEXT.md` (especially §2, §7, §8, §13) when the feature changes
+   project knowledge. If companion skills are unavailable, run the same discovery process manually
+   and document the outcome.
 3. **Requirement review with `ROLE.md` multi-agent panel** — use the roles/personas in `ROLE.md`
    to review the requirement before locking scope. If the agent supports subagents, run one reviewer
    per role/persona; otherwise emulate separate BU/PO/DEV/QA/OPS/STK passes. Capture works /
@@ -121,7 +126,7 @@ Each section lives in exactly one role file:
 | 1 | Goal | STK BU PO | bu.md |
 | 2 | Scope (in/out) | PO DEV | po.md |
 | 3 | User Stories (mandatory) | PO QA | po.md |
-| 4 | Requirement Review / Persona Panel | STK BU PO DEV QA OPS | stk.md |
+| 4 | Requirement Discovery / Requirement Review / Persona Panel | STK BU PO DEV QA OPS | stk.md |
 | 5 | Tech & Architecture | DEV OPS | dev.md |
 | 6 | Data Model / Schema | DEV OPS | dev.md |
 | 7 | API Contract | DEV QA | dev.md |

@@ -1,9 +1,10 @@
 # {{PROJECT_NAME}} — ROLE.md (Multi-Agent Role Panel)
 
 Use this panel during requirement discovery and plan review. The primary workflow is:
-`/grill-with-docs` sharpens the requirement → this role panel reviews it → `/autoplan` prepares
-the plan for implementation. Each feature records the outcome in **§4 Requirement Review /
-Persona Panel** (`stk.md`). Sections in a plan are owned by these roles (see CONTEXT.md §11.1).
+choose `/grill-with-docs` or `/wayfinder` for requirement discovery → this role panel reviews it
+→ `/autoplan` prepares the plan for implementation. Each feature records the outcome in **§4
+Requirement Discovery / Requirement Review / Persona Panel** (`stk.md`). Sections in a plan are
+owned by these roles (see CONTEXT.md §11.1).
 
 ## Responsibility roles
 | Tag | Role | Cares about |
@@ -27,7 +28,8 @@ Persona Panel** (`stk.md`). Sections in a plan are owned by these roles (see CON
 <!-- TODO: add a dedicated QA persona if needed; until then Dev Lead covers QA review. -->
 
 ## Requirement Review Protocol
-Run this after `/grill-with-docs` and before locking the plan scope.
+Run this after the selected requirement discovery route (`/grill-with-docs` or `/wayfinder`) and
+before locking the plan scope.
 
 If the agent supports subagents, dispatch one reviewer per role/persona in parallel. If not,
 simulate separate passes in one response. Each reviewer must stay in their lane and return:
@@ -43,4 +45,5 @@ Fold accepted changes back into the plan before moving to `/autoplan`.
 
 ## Persona Panel Protocol
 For a lighter stakeholder pass, each persona gives: what works · concern · suggestion. Keep it
-short and specific. Collect into the plan's **§4 Requirement Review / Persona Panel** section.
+short and specific. Collect into the plan's **§4 Requirement Discovery / Requirement Review /
+Persona Panel** section.

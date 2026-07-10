@@ -9,10 +9,11 @@ to continue anyway.
 | `ui-ux-pro-max` | https://ui-ux-pro-max-skill.nextlevelbuilder.io |
 | `impeccable` | https://impeccable.style |
 | `grill-with-docs` | https://github.com/mattpocock/skills |
+| `wayfinder` | https://www.aihero.dev/skills-wayfinder |
 
 Check (Claude Code layout):
 ```bash
-for s in gstack ui-ux-pro-max impeccable grill-with-docs; do
+for s in gstack ui-ux-pro-max impeccable grill-with-docs wayfinder; do
   test -d "$HOME/.claude/skills/$s" && echo "OK  $s" || echo "MISSING  $s"
 done
 ```
