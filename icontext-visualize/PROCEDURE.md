@@ -1,7 +1,8 @@
 # icontext-visualize - procedure (agent-neutral)
 
-> Source of truth for exporting iContext dependencies as a static graph. The output is a pair of
-> files, `context-graph.html` and `context-graph.js`, that can be opened directly in a browser.
+> Source of truth for exporting iContext dependencies as an interactive static graph. The output is
+> a pair of files, `context-graph.html` and `context-graph.js`, that can be opened directly in a
+> browser.
 
 ## Operating rules
 - **Requires an existing project context.** If the target root has no `CONTEXT.md`, stop and tell
@@ -27,6 +28,10 @@ At the target root, confirm `CONTEXT.md` exists. Choose the output directory:
 The expected outputs are:
 - `<output-dir>/context-graph.html`
 - `<output-dir>/context-graph.js`
+
+The graph should support zoom in/out, wheel zoom, panning by dragging empty space, animated node
+dragging, a visible start node with a control that focuses it, plan-status badges when plan files
+declare status, and a `View MD` action on selected Markdown-backed nodes.
 
 ## Step 2 - Run the exporter
 Run:

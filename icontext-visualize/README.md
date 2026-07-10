@@ -1,12 +1,14 @@
 # icontext-visualize (portable skill)
 
-Export an existing iContext project as a static dependency graph. The output is a pair of files,
-`context-graph.html` and `context-graph.js`, that can be opened directly in a browser without a
-server or package install.
+Export an existing iContext project as an interactive static dependency graph. The output is a pair
+of files, `context-graph.html` and `context-graph.js`, that can be opened directly in a browser
+without a server or package install.
 
 The exporter reads `CONTEXT.md`, agent files, role/status files, plans, docs, style artifacts,
 service `STRUCTURE.md` files, manifests, and useful Markdown references. It then builds a graph of
-how the project context depends on plans, services, API docs, styles, and supporting files.
+how the project context depends on plans, services, API docs, styles, and supporting files, with
+zoom controls, panning, start-node focus, animated node dragging, plan-status badges, and a `View MD`
+panel for Markdown-backed nodes.
 
 ## One procedure, many agents
 Workflow defined once in **[PROCEDURE.md](./PROCEDURE.md)**. Thin entry points per agent:

@@ -96,6 +96,33 @@ function firstHeading(markdown) {
   return match ? match[1].trim() : '';
 }
 
+function extractStatus(markdown) {
+  const match = markdown.match(/^\s*(?:[-*]\s*)?\*{0,2}(?:Task status|Status):\*{0,2}\s*([^\n<]+)/im);
+  if (!match) return '';
+
+  return match[1]
+    .replace(/<!--.*?-->/g, '')
+    .replace(/[`*_]/g, '')
+    .trim();
+}
+
+function markdownPayload(root, relativePath) {
+  if (!relativePath.endsWith('.md')) return '';
+
+  const text = readText(path.join(root, relativePath));
+  if (!text) return '';
+  if (text.length <= 180000) return text;
+  return text.slice(0, 180000) + '\n\n<!-- truncated for graph export -->';
+}
+
+function statusForFile(relativePath, markdown) {
+  if (!/^plans\/\d{3}[-_][^/]+\/(?:README|bu|po|dev|qa|ops|stk)\.md$/i.test(relativePath)) {
+    return '';
+  }
+
+  return extractStatus(markdown);
+}
+
 function headingSections(markdown) {
   const headings = [];
   const pattern = /^(#{1,4})\s+(.+)$/gm;
@@ -186,7 +213,7 @@ function detectPlans(root) {
       const dir = path.join(plansRoot, entry.name);
       const readme = path.join(dir, 'README.md');
       const text = readText(readme);
-      const status = (text.match(/Task status:\s*([^\n]+)/i) || [])[1]?.trim() || 'unknown';
+      const status = extractStatus(text) || 'unknown';
       const title = firstHeading(text) || entry.name;
       const roles = ['bu.md', 'po.md', 'dev.md', 'qa.md', 'ops.md', 'stk.md']
         .filter((name) => exists(path.join(dir, name)))
@@ -251,8 +278,8 @@ function makeGraph(root, title) {
   }
 
   const projectTitle = title || firstHeading(contextText) || path.basename(root);
-  addNode('project', projectTitle, 'project', { path: rel(root, root) || '.', summary: root });
-  addNode('context:CONTEXT.md', 'CONTEXT.md', 'context', { path: 'CONTEXT.md' });
+  addNode('project', projectTitle, 'project', { path: rel(root, root) || '.', summary: root, start: true });
+  addNode('context:CONTEXT.md', 'CONTEXT.md', 'context', { path: 'CONTEXT.md', markdown: contextText });
   addEdge('project', 'context:CONTEXT.md', 'source of truth', 'owns');
 
   for (const section of headingSections(contextText).filter((h) => h.depth <= 3)) {
@@ -260,6 +287,7 @@ function makeGraph(root, title) {
     addNode(id, section.title.replace(/^#+\s*/, ''), 'section', {
       path: 'CONTEXT.md',
       summary: section.body.split('\n').slice(0, 8).join('\n'),
+      markdown: section.body,
     });
     addEdge('context:CONTEXT.md', id, 'contains', 'contains');
   }
@@ -268,7 +296,7 @@ function makeGraph(root, title) {
   for (const name of l1Files) {
     const file = path.join(root, name);
     if (!exists(file)) continue;
-    addNode(`file:${name}`, name, 'agent', { path: name });
+    addNode(`file:${name}`, name, 'agent', { path: name, markdown: markdownPayload(root, name) });
     addEdge(`file:${name}`, 'context:CONTEXT.md', 'reads', 'reads');
     addEdge('project', `file:${name}`, 'agent entry', 'contains');
   }
@@ -277,7 +305,8 @@ function makeGraph(root, title) {
     const file = path.join(root, name);
     if (!exists(file)) continue;
     const type = name === 'ROLE.md' ? 'role' : 'status';
-    addNode(`file:${name}`, name, type, { path: name });
+    const text = markdownPayload(root, name);
+    addNode(`file:${name}`, name, type, { path: name, markdown: text });
     addEdge('context:CONTEXT.md', `file:${name}`, name === 'ROLE.md' ? 'role panel' : 'status sync', 'tracks');
   }
 
@@ -310,7 +339,10 @@ function makeGraph(root, title) {
       ? 'STRUCTURE.md'
       : `${service.path}/STRUCTURE.md`;
     if (exists(path.join(root, structurePath))) {
-      addNode(`file:${structurePath}`, structurePath, 'doc', { path: structurePath });
+      addNode(`file:${structurePath}`, structurePath, 'doc', {
+        path: structurePath,
+        markdown: markdownPayload(root, structurePath),
+      });
       addEdge(service.id, `file:${structurePath}`, 'structure guide', 'documents');
     }
   }
@@ -320,19 +352,30 @@ function makeGraph(root, title) {
       path: plan.path,
       status: plan.status,
       summary: `Task status: ${plan.status}`,
+      markdown: plan.readme ? markdownPayload(root, plan.readme) : '',
     });
     addEdge('context:CONTEXT.md', plan.id, 'feature plan', 'plans');
     if (nodes.has('file:PLAN.md')) addEdge('file:PLAN.md', plan.id, 'tracks', 'tracks');
     if (nodes.has('file:plans/README.md')) addEdge('file:plans/README.md', plan.id, 'indexes', 'indexes');
 
     if (plan.readme) {
-      addNode(`file:${plan.readme}`, path.basename(plan.path), 'plan-file', { path: plan.readme });
+      const readmeMarkdown = markdownPayload(root, plan.readme);
+      addNode(`file:${plan.readme}`, path.basename(plan.path), 'plan-file', {
+        path: plan.readme,
+        status: extractStatus(readmeMarkdown) || plan.status,
+        markdown: readmeMarkdown,
+      });
       addEdge(plan.id, `file:${plan.readme}`, 'readme', 'contains');
     }
 
     for (const rolePath of plan.roles) {
       const roleName = path.basename(rolePath, '.md').toUpperCase();
-      addNode(`file:${rolePath}`, `${path.basename(plan.path)} ${roleName}`, 'plan-role', { path: rolePath });
+      const roleMarkdown = markdownPayload(root, rolePath);
+      addNode(`file:${rolePath}`, `${path.basename(plan.path)} ${roleName}`, 'plan-role', {
+        path: rolePath,
+        status: extractStatus(roleMarkdown),
+        markdown: roleMarkdown,
+      });
       addEdge(plan.id, `file:${rolePath}`, roleName, 'role-split');
     }
   }
@@ -341,7 +384,12 @@ function makeGraph(root, title) {
     if (file === 'CONTEXT.md') continue;
     const id = `file:${file}`;
     const type = file.endsWith('.md') ? 'doc' : 'file';
-    addNode(id, file, type, { path: file });
+    const markdown = markdownPayload(root, file);
+    addNode(id, file, type, {
+      path: file,
+      markdown,
+      status: statusForFile(file, markdown),
+    });
     addEdge('context:CONTEXT.md', id, 'mentions', 'mentions');
   }
 
@@ -353,7 +401,8 @@ function makeGraph(root, title) {
     .slice(0, 80);
   for (const file of markdownDocs) {
     const id = `file:${file}`;
-    addNode(id, file, 'doc', { path: file });
+    const markdown = markdownPayload(root, file);
+    addNode(id, file, 'doc', { path: file, markdown, status: statusForFile(file, markdown) });
     addEdge('project', id, 'project doc', 'contains');
   }
 
@@ -362,6 +411,7 @@ function makeGraph(root, title) {
       title: projectTitle,
       generatedAt: new Date().toISOString(),
       root,
+      startNodeId: 'project',
       nodeCount: nodes.size,
       edgeCount: edges.size,
     },
@@ -423,6 +473,11 @@ function htmlTemplate(title) {
       position: relative;
       overflow: hidden;
       min-width: 0;
+      cursor: grab;
+      touch-action: none;
+    }
+    .graph-wrap.is-panning {
+      cursor: grabbing;
     }
     .toolbar {
       position: absolute;
@@ -448,10 +503,30 @@ function htmlTemplate(title) {
     input { width: min(360px, 45vw); }
     button { cursor: pointer; }
     button:hover { border-color: var(--accent); }
+    .icon-button {
+      width: 36px;
+      padding: 0;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .zoom-readout {
+      min-width: 56px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--muted);
+      box-shadow: 0 1px 2px rgba(17, 24, 39, .04);
+      font-size: 12px;
+    }
     svg {
       width: 100%;
       height: 100%;
       display: block;
+      user-select: none;
     }
     aside {
       border-left: 1px solid var(--line);
@@ -476,6 +551,24 @@ function htmlTemplate(title) {
     .detail {
       border-top: 1px solid var(--line);
       padding-top: 14px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .detail-actions {
+      display: flex;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .md-viewer {
+      max-height: 42vh;
+      margin: 0;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 12px;
+      font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       white-space: pre-wrap;
       overflow-wrap: anywhere;
     }
@@ -508,6 +601,41 @@ function htmlTemplate(title) {
       filter: drop-shadow(0 3px 5px rgba(17, 24, 39, .18));
     }
     .node:active circle { cursor: grabbing; }
+    .start-ring {
+      fill: none;
+      stroke: #f59e0b;
+      stroke-width: 3px;
+      stroke-dasharray: 4 5;
+      pointer-events: none;
+      animation: startPulse 1.6s ease-in-out infinite;
+    }
+    .start-label {
+      fill: #92400e;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,.9);
+      stroke-width: 3px;
+    }
+    @keyframes startPulse {
+      0%, 100% { opacity: .55; }
+      50% { opacity: 1; }
+    }
+    .status-pill {
+      fill: rgba(255,255,255,.96);
+      stroke: rgba(102,112,133,.35);
+      stroke-width: 1px;
+    }
+    .status-text {
+      fill: #344054;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,.9);
+      stroke-width: 2px;
+    }
     .link {
       stroke: #98a2b3;
       stroke-opacity: .55;
@@ -542,6 +670,10 @@ function htmlTemplate(title) {
       <div class="toolbar">
         <input data-search type="search" placeholder="Search nodes or paths">
         <select data-type-filter aria-label="Filter by type"></select>
+        <button class="icon-button" data-zoom-out type="button" title="Zoom out" aria-label="Zoom out">−</button>
+        <span class="zoom-readout" data-zoom-readout>100%</span>
+        <button class="icon-button" data-zoom-in type="button" title="Zoom in" aria-label="Zoom in">+</button>
+        <button data-start type="button">Start</button>
         <button data-reset type="button">Reset</button>
       </div>
       <svg data-graph role="img" aria-label="Context dependency graph"></svg>
@@ -553,6 +685,10 @@ function htmlTemplate(title) {
       </div>
       <div class="legend" data-legend></div>
       <div class="detail" data-detail>Select a node to inspect its context dependency.</div>
+      <div class="detail-actions">
+        <button data-view-md type="button" disabled>View MD</button>
+      </div>
+      <pre class="md-viewer" data-md-viewer hidden></pre>
     </aside>
   </main>
   <script src="./context-graph.js"></script>
@@ -575,6 +711,7 @@ function jsTemplate(graph) {
 (function () {
   const graph = window.ICONTEXT_GRAPH;
   const svg = document.querySelector('[data-graph]');
+  const graphWrap = document.querySelector('.graph-wrap');
   const search = document.querySelector('[data-search]');
   const typeFilter = document.querySelector('[data-type-filter]');
   const detail = document.querySelector('[data-detail]');
@@ -583,6 +720,12 @@ function jsTemplate(graph) {
   const nodeCount = document.querySelector('[data-node-count]');
   const edgeCount = document.querySelector('[data-edge-count]');
   const reset = document.querySelector('[data-reset]');
+  const zoomIn = document.querySelector('[data-zoom-in]');
+  const zoomOut = document.querySelector('[data-zoom-out]');
+  const zoomReadout = document.querySelector('[data-zoom-readout]');
+  const startButton = document.querySelector('[data-start]');
+  const viewMd = document.querySelector('[data-view-md]');
+  const mdViewer = document.querySelector('[data-md-viewer]');
 
   const colors = {
     project: '#0f766e',
@@ -600,6 +743,12 @@ function jsTemplate(graph) {
     'plan-role': '#d946ef',
     doc: '#334155',
     file: '#667085'
+  };
+
+  const viewport = {
+    x: 0,
+    y: 0,
+    k: 1
   };
 
   const state = {
@@ -621,6 +770,8 @@ function jsTemplate(graph) {
     .map((edge) => ({ ...edge, sourceNode: byId.get(edge.source), targetNode: byId.get(edge.target) }))
     .filter((edge) => edge.sourceNode && edge.targetNode);
 
+  const startNode = byId.get(graph.meta.startNodeId) || state.nodes.find((node) => node.start) || state.nodes[0];
+
   generated.textContent = 'Generated ' + new Date(graph.meta.generatedAt).toLocaleString();
   nodeCount.textContent = graph.nodes.length;
   edgeCount.textContent = graph.edges.length;
@@ -632,13 +783,23 @@ function jsTemplate(graph) {
       (colors[type] || '#667085') + ';margin-right:6px"></span>' + type + '</span>';
   }).join('');
 
+  let width = 900;
+  let height = 620;
+  let draggingNode = null;
+  let panStart = null;
+  let pointerStart = null;
+  let pointerMoved = false;
+  let alpha = 1;
+  let raf = 0;
+  let mdOpen = false;
+
   search.addEventListener('input', () => {
     state.query = search.value.trim().toLowerCase();
-    render();
+    wake(0.7);
   });
   typeFilter.addEventListener('change', () => {
     state.type = typeFilter.value;
-    render();
+    wake(0.7);
   });
   reset.addEventListener('click', () => {
     state.type = 'all';
@@ -647,12 +808,82 @@ function jsTemplate(graph) {
     search.value = '';
     typeFilter.value = 'all';
     fitToView();
-    render();
+    wake(0.9);
   });
+  zoomIn.addEventListener('click', () => {
+    zoomAt(1.18, { x: width / 2, y: height / 2 });
+  });
+  zoomOut.addEventListener('click', () => {
+    zoomAt(1 / 1.18, { x: width / 2, y: height / 2 });
+  });
+  startButton.addEventListener('click', () => {
+    focusStart();
+  });
+  viewMd.addEventListener('click', () => {
+    mdOpen = !mdOpen;
+    updateMarkdownViewer();
+  });
+  svg.addEventListener('wheel', (event) => {
+    event.preventDefault();
+    const factor = event.deltaY < 0 ? 1.12 : 1 / 1.12;
+    zoomAt(factor, svgClientPoint(event));
+  }, { passive: false });
+  svg.addEventListener('pointerdown', (event) => {
+    const group = event.target.closest ? event.target.closest('.node') : null;
+    pointerStart = svgClientPoint(event);
+    pointerMoved = false;
+    svg.setPointerCapture(event.pointerId);
 
-  let width = 900;
-  let height = 620;
-  let dragging = null;
+    if (group && group.dataset.nodeId) {
+      draggingNode = byId.get(group.dataset.nodeId);
+      selectNode(draggingNode, false);
+      wake(0.9);
+      return;
+    }
+
+    panStart = {
+      pointer: pointerStart,
+      x: viewport.x,
+      y: viewport.y
+    };
+    graphWrap.classList.add('is-panning');
+  });
+  svg.addEventListener('pointermove', (event) => {
+    if (!draggingNode && !panStart) return;
+    const point = svgClientPoint(event);
+    pointerMoved = pointerMoved || Math.hypot(point.x - pointerStart.x, point.y - pointerStart.y) > 4;
+
+    if (draggingNode) {
+      const graphPoint = screenToGraph(point);
+      draggingNode.x = graphPoint.x;
+      draggingNode.y = graphPoint.y;
+      draggingNode.vx = 0;
+      draggingNode.vy = 0;
+      wake(0.45);
+      draw();
+      return;
+    }
+
+    viewport.x = panStart.x + point.x - panStart.pointer.x;
+    viewport.y = panStart.y + point.y - panStart.pointer.y;
+    updateZoomReadout();
+    draw();
+  });
+  svg.addEventListener('pointerup', (event) => {
+    const group = event.target.closest ? event.target.closest('.node') : null;
+    if (!pointerMoved && group && group.dataset.nodeId) {
+      selectNode(byId.get(group.dataset.nodeId));
+    }
+    draggingNode = null;
+    panStart = null;
+    graphWrap.classList.remove('is-panning');
+    wake(0.35);
+  });
+  svg.addEventListener('pointercancel', () => {
+    draggingNode = null;
+    panStart = null;
+    graphWrap.classList.remove('is-panning');
+  });
 
   function visibleNode(node) {
     const typeOk = state.type === 'all' || node.type === state.type;
@@ -660,77 +891,78 @@ function jsTemplate(graph) {
     const queryOk = !query ||
       node.label.toLowerCase().includes(query) ||
       (node.path || '').toLowerCase().includes(query) ||
-      (node.summary || '').toLowerCase().includes(query);
+      (node.status || '').toLowerCase().includes(query) ||
+      (node.summary || '').toLowerCase().includes(query) ||
+      (node.markdown || '').toLowerCase().includes(query);
     return typeOk && queryOk;
   }
 
-  function layout(iterations) {
+  function layout() {
     width = svg.clientWidth || 900;
     height = svg.clientHeight || 620;
     const visible = state.nodes.filter(visibleNode);
     const visibleIds = new Set(visible.map((node) => node.id));
     const links = state.edges.filter((edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target));
-    const centerX = width / 2;
-    const centerY = height / 2;
+    const center = screenToGraph({ x: width / 2, y: height / 2 });
 
-    for (let tick = 0; tick < iterations; tick += 1) {
-      for (const edge of links) {
-        const a = edge.sourceNode;
-        const b = edge.targetNode;
+    for (const edge of links) {
+      const a = edge.sourceNode;
+      const b = edge.targetNode;
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+      const desired = edge.type === 'contains' ? 95 : 145;
+      const force = (distance - desired) * 0.014 * alpha;
+      const fx = (dx / distance) * force;
+      const fy = (dy / distance) * force;
+      if (a !== draggingNode) { a.vx += fx; a.vy += fy; }
+      if (b !== draggingNode) { b.vx -= fx; b.vy -= fy; }
+    }
+
+    for (let i = 0; i < visible.length; i += 1) {
+      for (let j = i + 1; j < visible.length; j += 1) {
+        const a = visible[i];
+        const b = visible[j];
         const dx = b.x - a.x;
         const dy = b.y - a.y;
-        const distance = Math.sqrt(dx * dx + dy * dy) || 1;
-        const desired = edge.type === 'contains' ? 95 : 145;
-        const force = (distance - desired) * 0.012;
+        const distanceSq = Math.max(dx * dx + dy * dy, 80);
+        const force = (680 / distanceSq) * alpha;
+        const distance = Math.sqrt(distanceSq);
         const fx = (dx / distance) * force;
         const fy = (dy / distance) * force;
-        if (a !== dragging) { a.vx += fx; a.vy += fy; }
-        if (b !== dragging) { b.vx -= fx; b.vy -= fy; }
+        if (a !== draggingNode) { a.vx -= fx; a.vy -= fy; }
+        if (b !== draggingNode) { b.vx += fx; b.vy += fy; }
       }
+    }
 
-      for (let i = 0; i < visible.length; i += 1) {
-        for (let j = i + 1; j < visible.length; j += 1) {
-          const a = visible[i];
-          const b = visible[j];
-          const dx = b.x - a.x;
-          const dy = b.y - a.y;
-          const distanceSq = Math.max(dx * dx + dy * dy, 60);
-          const force = 560 / distanceSq;
-          const distance = Math.sqrt(distanceSq);
-          const fx = (dx / distance) * force;
-          const fy = (dy / distance) * force;
-          if (a !== dragging) { a.vx -= fx; a.vy -= fy; }
-          if (b !== dragging) { b.vx += fx; b.vy += fy; }
-        }
-      }
-
-      for (const node of visible) {
-        const anchorBias = node.type === 'project' || node.type === 'context' ? 0.035 : 0.009;
-        if (node !== dragging) {
-          node.vx += (centerX - node.x) * anchorBias;
-          node.vy += (centerY - node.y) * anchorBias;
-          node.vx *= 0.74;
-          node.vy *= 0.74;
-          node.x += node.vx;
-          node.y += node.vy;
-          node.x = Math.max(36, Math.min(width - 36, node.x));
-          node.y = Math.max(74, Math.min(height - 36, node.y));
-        }
+    for (const node of visible) {
+      const anchorBias = node.start ? 0.05 : node.type === 'context' ? 0.025 : 0.007;
+      if (node !== draggingNode) {
+        node.vx += (center.x - node.x) * anchorBias * alpha;
+        node.vy += (center.y - node.y) * anchorBias * alpha;
+        node.vx *= 0.82;
+        node.vy *= 0.82;
+        node.x += node.vx;
+        node.y += node.vy;
       }
     }
   }
 
-  function render() {
-    layout(18);
+  function draw() {
+    width = svg.clientWidth || 900;
+    height = svg.clientHeight || 620;
     const visible = state.nodes.filter(visibleNode);
     const visibleIds = new Set(visible.map((node) => node.id));
     const links = state.edges.filter((edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target));
     svg.innerHTML = '';
 
+    const viewportLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     const linkLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     const labelLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     const nodeLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    svg.append(linkLayer, labelLayer, nodeLayer);
+    viewportLayer.setAttribute('transform', 'translate(' + viewport.x + ',' + viewport.y + ') scale(' + viewport.k + ')');
+    viewportLayer.append(linkLayer, labelLayer, nodeLayer);
+    svg.appendChild(viewportLayer);
 
     for (const edge of links) {
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -752,11 +984,26 @@ function jsTemplate(graph) {
     for (const node of visible) {
       const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       group.setAttribute('class', 'node');
+      group.dataset.nodeId = node.id;
       group.setAttribute('transform', 'translate(' + node.x + ',' + node.y + ')');
 
       const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       const degree = links.filter((edge) => edge.source === node.id || edge.target === node.id).length;
-      circle.setAttribute('r', Math.min(22, 9 + degree * 1.4));
+      const radius = Math.min(22, 9 + degree * 1.4);
+      if (node.start) {
+        const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        ring.setAttribute('class', 'start-ring');
+        ring.setAttribute('r', radius + 8);
+        group.appendChild(ring);
+
+        const startLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        startLabel.setAttribute('class', 'start-label');
+        startLabel.setAttribute('text-anchor', 'middle');
+        startLabel.setAttribute('dy', -radius - 12);
+        startLabel.textContent = 'START';
+        group.appendChild(startLabel);
+      }
+      circle.setAttribute('r', radius);
       circle.setAttribute('fill', colors[node.type] || '#667085');
       if (state.selected && state.selected.id === node.id) {
         circle.setAttribute('stroke', '#111827');
@@ -769,29 +1016,33 @@ function jsTemplate(graph) {
       text.textContent = compactLabel(node.label);
 
       group.append(circle, text);
-      group.addEventListener('click', () => selectNode(node));
-      group.addEventListener('pointerdown', (event) => {
-        dragging = node;
-        group.setPointerCapture(event.pointerId);
-      });
-      group.addEventListener('pointermove', (event) => {
-        if (dragging !== node) return;
-        const point = svgPoint(event);
-        node.x = point.x;
-        node.y = point.y;
-        node.vx = 0;
-        node.vy = 0;
-        render();
-      });
-      group.addEventListener('pointerup', () => {
-        dragging = null;
-      });
+      if (node.status && node.status !== 'unknown') {
+        const statusText = compactStatus(node.status);
+        const pillWidth = Math.max(42, statusText.length * 5.8 + 14);
+        const pill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        pill.setAttribute('class', 'status-pill');
+        pill.setAttribute('x', -pillWidth / 2);
+        pill.setAttribute('y', 36);
+        pill.setAttribute('width', pillWidth);
+        pill.setAttribute('height', 16);
+        pill.setAttribute('rx', 8);
+
+        const pillText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        pillText.setAttribute('class', 'status-text');
+        pillText.setAttribute('text-anchor', 'middle');
+        pillText.setAttribute('dy', 47);
+        pillText.textContent = statusText;
+        group.append(pill, pillText);
+      }
       nodeLayer.appendChild(group);
     }
+    updateZoomReadout();
   }
 
-  function selectNode(node) {
+  function selectNode(node, shouldDraw = true) {
+    if (!node) return;
     state.selected = node;
+    mdOpen = false;
     const related = state.edges
       .filter((edge) => edge.source === node.id || edge.target === node.id)
       .map((edge) => {
@@ -804,12 +1055,14 @@ function jsTemplate(graph) {
       node.label,
       '',
       'Type: ' + node.type,
+      node.start ? 'Start: yes' : '',
       node.path ? 'Path: ' + node.path : '',
       node.status ? 'Status: ' + node.status : '',
       node.summary ? '\\n' + node.summary : '',
       related ? '\\nDependencies:\\n' + related : ''
     ].filter(Boolean).join('\\n');
-    render();
+    updateMarkdownViewer();
+    if (shouldDraw) draw();
   }
 
   function compactLabel(label) {
@@ -817,16 +1070,49 @@ function jsTemplate(graph) {
     return value.length > 34 ? value.slice(0, 31) + '...' : value;
   }
 
-  function svgPoint(event) {
-    const point = svg.createSVGPoint();
-    point.x = event.clientX;
-    point.y = event.clientY;
-    return point.matrixTransform(svg.getScreenCTM().inverse());
+  function compactStatus(status) {
+    const value = String(status).replace(/\\s+/g, ' ').trim();
+    return value.length > 28 ? value.slice(0, 25) + '...' : value;
+  }
+
+  function updateMarkdownViewer() {
+    const markdown = state.selected && state.selected.markdown ? state.selected.markdown : '';
+    viewMd.disabled = !markdown;
+    viewMd.textContent = mdOpen ? 'Hide MD' : 'View MD';
+    mdViewer.hidden = !mdOpen || !markdown;
+    mdViewer.textContent = markdown;
+  }
+
+  function svgClientPoint(event) {
+    const rect = svg.getBoundingClientRect();
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top
+    };
+  }
+
+  function screenToGraph(point) {
+    return {
+      x: (point.x - viewport.x) / viewport.k,
+      y: (point.y - viewport.y) / viewport.k
+    };
+  }
+
+  function zoomAt(factor, point) {
+    const before = screenToGraph(point);
+    viewport.k = Math.max(0.35, Math.min(2.8, viewport.k * factor));
+    viewport.x = point.x - before.x * viewport.k;
+    viewport.y = point.y - before.y * viewport.k;
+    updateZoomReadout();
+    draw();
   }
 
   function fitToView() {
     width = svg.clientWidth || 900;
     height = svg.clientHeight || 620;
+    viewport.x = 0;
+    viewport.y = 0;
+    viewport.k = 1;
     const cx = width / 2;
     const cy = height / 2;
     state.nodes.forEach((node, index) => {
@@ -839,9 +1125,44 @@ function jsTemplate(graph) {
     });
   }
 
-  window.addEventListener('resize', () => render());
+  function focusStart() {
+    if (!startNode) return;
+    state.type = 'all';
+    state.query = '';
+    search.value = '';
+    typeFilter.value = 'all';
+    selectNode(startNode, false);
+    viewport.k = Math.max(viewport.k, 1.05);
+    viewport.x = width / 2 - startNode.x * viewport.k;
+    viewport.y = height / 2 - startNode.y * viewport.k;
+    wake(0.65);
+  }
+
+  function updateZoomReadout() {
+    zoomReadout.textContent = Math.round(viewport.k * 100) + '%';
+  }
+
+  function wake(strength) {
+    alpha = Math.max(alpha, strength);
+    if (!raf) raf = requestAnimationFrame(frame);
+  }
+
+  function frame() {
+    raf = 0;
+    layout();
+    draw();
+    alpha *= draggingNode ? 0.98 : 0.94;
+    if (alpha > 0.015 || draggingNode) {
+      raf = requestAnimationFrame(frame);
+    }
+  }
+
+  window.addEventListener('resize', () => {
+    wake(0.6);
+  });
   fitToView();
-  render();
+  selectNode(startNode, false);
+  wake(1);
 })();`;
 }
 

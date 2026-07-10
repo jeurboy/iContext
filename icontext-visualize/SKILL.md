@@ -1,13 +1,14 @@
 ---
 name: icontext-visualize
-description: Export an existing iContext project as a dependency graph in static HTML and
+description: Export an existing iContext project as an interactive dependency graph in static HTML and
              JavaScript. Use whenever the user asks to visualize context, export context
              dependencies, inspect how CONTEXT.md connects to plans/services/docs/styles/API
              artifacts, create a graph from iContext files, or produce an HTML/JS context map.
              It reads CONTEXT.md, L1 agent files, ROLE.md, PLAN.md, plans, docs, styles, service
              STRUCTURE files, manifests, and Markdown references; writes context-graph.html and
-             context-graph.js; verifies the files were generated; and does not modify source
-             context unless the user separately asks.
+             context-graph.js with zoom, pan, start-node focus, animated dragging, plan-status badges,
+             and a click-to-view Markdown panel; verifies the files were generated; and does not
+             modify source context unless the user separately asks.
 allowed-tools:
   - Read
   - Write
