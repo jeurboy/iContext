@@ -29,9 +29,11 @@ The expected outputs are:
 - `<output-dir>/context-graph.html`
 - `<output-dir>/context-graph.js`
 
-The graph should support zoom in/out, wheel zoom, panning by dragging empty space, animated node
-dragging, a visible start node with a control that focuses it, plan-status badges when plan files
-declare status, and a `View MD` action on selected Markdown-backed nodes.
+The graph should open in a readable layout for dense projects. It should support zoom in/out, wheel
+zoom, panning by dragging empty space, label-density controls, click-to-focus behavior that fades
+nodes outside the selected dependency neighborhood, animated node dragging, a visible start node
+with a control that focuses it, plan-status badges when plan files declare status, and a `View MD`
+action on selected Markdown-backed nodes.
 
 ## Step 2 - Run the exporter
 Run:

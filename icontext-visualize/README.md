@@ -6,9 +6,10 @@ without a server or package install.
 
 The exporter reads `CONTEXT.md`, agent files, role/status files, plans, docs, style artifacts,
 service `STRUCTURE.md` files, manifests, and useful Markdown references. It then builds a graph of
-how the project context depends on plans, services, API docs, styles, and supporting files, with
-zoom controls, panning, start-node focus, animated node dragging, plan-status badges, and a `View MD`
-panel for Markdown-backed nodes.
+how the project context depends on plans, services, API docs, styles, and supporting files, with a
+readable lane layout, label-density controls, click focus with dependency fade, zoom controls,
+panning, start-node focus, animated node dragging, plan-status badges, and a `View MD` panel for
+Markdown-backed nodes.
 
 ## One procedure, many agents
 Workflow defined once in **[PROCEDURE.md](./PROCEDURE.md)**. Thin entry points per agent:

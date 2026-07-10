@@ -1,6 +1,6 @@
 # iContext
 
-**Version 1.10.1** · five portable agent-skills that bootstrap, audit, visualize, and maintain a **layered project
+**Version 1.10.2** · five portable agent-skills that bootstrap, audit, visualize, and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
@@ -9,7 +9,7 @@ session already knowing your architecture, conventions, and plan status.
 | **icontext-init** | `/icontext-init` | Scaffold the context backbone (L1 agent files · L2 `CONTEXT.md` · L3 `plans/`) + service skeletons. **Greenfield** (new), **brownfield** (read & summarize an existing codebase), or **update/sync** (fill only the missing pieces of an existing backbone). Confirms every `CONTEXT.md` section with you first; **idempotent & non-destructive** — re-running never deletes or overwrites your context. |
 | **icontext-update** | `/icontext-update` | Update an existing iContext project that already has `CONTEXT.md` to the latest template shape. Adds missing sections/artifacts such as `AGENTS.md`, `CONTEXT.md §11.0`, selectable requirement discovery, `ROLE.md` requirement-review protocol, refreshed plan templates, docs/styles/launch scaffolding, and service `STRUCTURE.md` files. Confirmation-first and additive only — reports every proposed change, waits for approval, and preserves owner-authored content. |
 | **icontext-audit** | `/icontext-audit` | Audit an existing iContext project for latest-template completeness, context/repo drift, plan-status sync, stale placeholders, and unnecessary Markdown cleanup candidates. It asks for an explicit decision on every missing, stale, unclear, or cleanup item before updating, archiving, or deleting anything, then re-audits and reports the final gap table. |
-| **icontext-visualize** | `/icontext-visualize` | Export an existing iContext project as an interactive static dependency graph: `context-graph.html` + `context-graph.js`. It reads `CONTEXT.md`, agent files, `ROLE.md`, `PLAN.md`, plans, docs, styles, service `STRUCTURE.md` files, manifests, and Markdown references, then adds zoom/pan controls, start-node focus, animated node dragging, plan-status badges, and click-to-view Markdown without editing source context. |
+| **icontext-visualize** | `/icontext-visualize` | Export an existing iContext project as an interactive static dependency graph: `context-graph.html` + `context-graph.js`. It reads `CONTEXT.md`, agent files, `ROLE.md`, `PLAN.md`, plans, docs, styles, service `STRUCTURE.md` files, manifests, and Markdown references, then adds readable lane layout, label-density controls, click focus with dependency fade, zoom/pan controls, start-node focus, animated node dragging, plan-status badges, and click-to-view Markdown without editing source context. |
 | **icontext-feature** | `/icontext-feature` | Add one feature plan — a **folder** `plans/NNN-name/` split into role files — with the standard §0–11 structure, role owners, task-status lifecycle, selectable requirement discovery (`/grill-with-docs` or `/wayfinder`), `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pre-checks required scaffolding (style guide · `docs/openapi.yaml` · `.vscode/launch.json`) and offers to create what's missing. |
 
 ## The 3-layer context model
@@ -158,6 +158,11 @@ python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validat
 ```
 
 ## Changelog
+
+### 1.10.2
+- **Readable graph focus** — `icontext-visualize` now lays dense context graphs out in lanes,
+  keeps labels readable while zooming, adds label-density controls, and fades unrelated nodes when
+  a node is clicked so the selected dependency neighborhood is easier to inspect.
 
 ### 1.10.1
 - **Interactive graph controls** — `icontext-visualize` exports graphs with zoom in/out, mouse wheel

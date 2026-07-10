@@ -503,6 +503,10 @@ function htmlTemplate(title) {
     input { width: min(360px, 45vw); }
     button { cursor: pointer; }
     button:hover { border-color: var(--accent); }
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .46;
+    }
     .icon-button {
       width: 36px;
       padding: 0;
@@ -644,6 +648,7 @@ function htmlTemplate(title) {
     .link-label {
       fill: #667085;
       font-size: 10px;
+      opacity: .85;
       paint-order: stroke;
       stroke: rgba(246,247,249,.9);
       stroke-width: 3px;
@@ -670,6 +675,7 @@ function htmlTemplate(title) {
       <div class="toolbar">
         <input data-search type="search" placeholder="Search nodes or paths">
         <select data-type-filter aria-label="Filter by type"></select>
+        <select data-label-mode aria-label="Label mode"></select>
         <button class="icon-button" data-zoom-out type="button" title="Zoom out" aria-label="Zoom out">−</button>
         <span class="zoom-readout" data-zoom-readout>100%</span>
         <button class="icon-button" data-zoom-in type="button" title="Zoom in" aria-label="Zoom in">+</button>
@@ -714,6 +720,7 @@ function jsTemplate(graph) {
   const graphWrap = document.querySelector('.graph-wrap');
   const search = document.querySelector('[data-search]');
   const typeFilter = document.querySelector('[data-type-filter]');
+  const labelMode = document.querySelector('[data-label-mode]');
   const detail = document.querySelector('[data-detail]');
   const legend = document.querySelector('[data-legend]');
   const generated = document.querySelector('[data-generated]');
@@ -753,12 +760,16 @@ function jsTemplate(graph) {
 
   const state = {
     type: 'all',
+    labelMode: 'key',
     query: '',
     selected: null,
+    hovered: null,
     nodes: graph.nodes.map((node, index) => ({
       ...node,
       x: 180 + (index % 8) * 90,
       y: 160 + Math.floor(index / 8) * 70,
+      anchorX: 180 + (index % 8) * 90,
+      anchorY: 160 + Math.floor(index / 8) * 70,
       vx: 0,
       vy: 0
     })),
@@ -770,6 +781,13 @@ function jsTemplate(graph) {
     .map((edge) => ({ ...edge, sourceNode: byId.get(edge.source), targetNode: byId.get(edge.target) }))
     .filter((edge) => edge.sourceNode && edge.targetNode);
 
+  const neighborsById = new Map();
+  for (const node of state.nodes) neighborsById.set(node.id, new Set());
+  for (const edge of state.edges) {
+    neighborsById.get(edge.source)?.add(edge.target);
+    neighborsById.get(edge.target)?.add(edge.source);
+  }
+
   const startNode = byId.get(graph.meta.startNodeId) || state.nodes.find((node) => node.start) || state.nodes[0];
 
   generated.textContent = 'Generated ' + new Date(graph.meta.generatedAt).toLocaleString();
@@ -778,6 +796,15 @@ function jsTemplate(graph) {
 
   const types = ['all', ...Array.from(new Set(graph.nodes.map((node) => node.type))).sort()];
   typeFilter.innerHTML = types.map((type) => '<option value="' + type + '">' + type + '</option>').join('');
+  const labelModes = [
+    ['key', 'Key labels'],
+    ['focus', 'Selected'],
+    ['all', 'All labels'],
+    ['none', 'Hide labels']
+  ];
+  labelMode.innerHTML = labelModes
+    .map(([value, label]) => '<option value="' + value + '">' + label + '</option>')
+    .join('');
   legend.innerHTML = types.filter((type) => type !== 'all').map((type) => {
     return '<span class="chip"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:' +
       (colors[type] || '#667085') + ';margin-right:6px"></span>' + type + '</span>';
@@ -786,6 +813,7 @@ function jsTemplate(graph) {
   let width = 900;
   let height = 620;
   let draggingNode = null;
+  let pointerNode = null;
   let panStart = null;
   let pointerStart = null;
   let pointerMoved = false;
@@ -801,12 +829,19 @@ function jsTemplate(graph) {
     state.type = typeFilter.value;
     wake(0.7);
   });
+  labelMode.addEventListener('change', () => {
+    state.labelMode = labelMode.value;
+    draw();
+  });
   reset.addEventListener('click', () => {
     state.type = 'all';
+    state.labelMode = 'key';
     state.query = '';
     state.selected = null;
+    state.hovered = null;
     search.value = '';
     typeFilter.value = 'all';
+    labelMode.value = 'key';
     fitToView();
     wake(0.9);
   });
@@ -832,11 +867,12 @@ function jsTemplate(graph) {
     const group = event.target.closest ? event.target.closest('.node') : null;
     pointerStart = svgClientPoint(event);
     pointerMoved = false;
+    pointerNode = group && group.dataset.nodeId ? byId.get(group.dataset.nodeId) : null;
     svg.setPointerCapture(event.pointerId);
 
-    if (group && group.dataset.nodeId) {
-      draggingNode = byId.get(group.dataset.nodeId);
-      selectNode(draggingNode, false);
+    if (pointerNode) {
+      draggingNode = pointerNode;
+      selectNode(draggingNode, { draw: false });
       wake(0.9);
       return;
     }
@@ -849,7 +885,12 @@ function jsTemplate(graph) {
     graphWrap.classList.add('is-panning');
   });
   svg.addEventListener('pointermove', (event) => {
-    if (!draggingNode && !panStart) return;
+    const group = event.target.closest ? event.target.closest('.node') : null;
+    const hovered = group && group.dataset.nodeId ? byId.get(group.dataset.nodeId) : null;
+    if (!draggingNode && !panStart) {
+      setHovered(hovered);
+      return;
+    }
     const point = svgClientPoint(event);
     pointerMoved = pointerMoved || Math.hypot(point.x - pointerStart.x, point.y - pointerStart.y) > 4;
 
@@ -857,6 +898,8 @@ function jsTemplate(graph) {
       const graphPoint = screenToGraph(point);
       draggingNode.x = graphPoint.x;
       draggingNode.y = graphPoint.y;
+      draggingNode.anchorX = graphPoint.x;
+      draggingNode.anchorY = graphPoint.y;
       draggingNode.vx = 0;
       draggingNode.vy = 0;
       wake(0.45);
@@ -871,18 +914,33 @@ function jsTemplate(graph) {
   });
   svg.addEventListener('pointerup', (event) => {
     const group = event.target.closest ? event.target.closest('.node') : null;
-    if (!pointerMoved && group && group.dataset.nodeId) {
-      selectNode(byId.get(group.dataset.nodeId));
+    const clickedNode = group && group.dataset.nodeId ? byId.get(group.dataset.nodeId) : pointerNode;
+    if (draggingNode) {
+      draggingNode.anchorX = draggingNode.x;
+      draggingNode.anchorY = draggingNode.y;
+    }
+    if (!pointerMoved && clickedNode) {
+      selectNode(clickedNode, { focus: true });
+    } else if (!pointerMoved && !clickedNode) {
+      state.selected = null;
+      mdOpen = false;
+      updateMarkdownViewer();
+      detail.textContent = 'Select a node to inspect its context dependency.';
     }
     draggingNode = null;
+    pointerNode = null;
     panStart = null;
     graphWrap.classList.remove('is-panning');
     wake(0.35);
   });
   svg.addEventListener('pointercancel', () => {
     draggingNode = null;
+    pointerNode = null;
     panStart = null;
     graphWrap.classList.remove('is-panning');
+  });
+  svg.addEventListener('pointerleave', () => {
+    setHovered(null);
   });
 
   function visibleNode(node) {
@@ -903,7 +961,6 @@ function jsTemplate(graph) {
     const visible = state.nodes.filter(visibleNode);
     const visibleIds = new Set(visible.map((node) => node.id));
     const links = state.edges.filter((edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target));
-    const center = screenToGraph({ x: width / 2, y: height / 2 });
 
     for (const edge of links) {
       const a = edge.sourceNode;
@@ -911,8 +968,8 @@ function jsTemplate(graph) {
       const dx = b.x - a.x;
       const dy = b.y - a.y;
       const distance = Math.sqrt(dx * dx + dy * dy) || 1;
-      const desired = edge.type === 'contains' ? 95 : 145;
-      const force = (distance - desired) * 0.014 * alpha;
+      const desired = edge.type === 'contains' ? 170 : edge.type === 'role-split' ? 130 : 230;
+      const force = (distance - desired) * 0.0045 * alpha;
       const fx = (dx / distance) * force;
       const fy = (dy / distance) * force;
       if (a !== draggingNode) { a.vx += fx; a.vy += fy; }
@@ -925,8 +982,9 @@ function jsTemplate(graph) {
         const b = visible[j];
         const dx = b.x - a.x;
         const dy = b.y - a.y;
-        const distanceSq = Math.max(dx * dx + dy * dy, 80);
-        const force = (680 / distanceSq) * alpha;
+        const distanceSq = Math.max(dx * dx + dy * dy, 160);
+        if (distanceSq > 90000) continue;
+        const force = (2600 / distanceSq) * alpha;
         const distance = Math.sqrt(distanceSq);
         const fx = (dx / distance) * force;
         const fy = (dy / distance) * force;
@@ -936,12 +994,12 @@ function jsTemplate(graph) {
     }
 
     for (const node of visible) {
-      const anchorBias = node.start ? 0.05 : node.type === 'context' ? 0.025 : 0.007;
+      const anchorBias = node.start ? 0.075 : node.type === 'context' ? 0.06 : 0.04;
       if (node !== draggingNode) {
-        node.vx += (center.x - node.x) * anchorBias * alpha;
-        node.vy += (center.y - node.y) * anchorBias * alpha;
-        node.vx *= 0.82;
-        node.vy *= 0.82;
+        node.vx += (node.anchorX - node.x) * anchorBias * alpha;
+        node.vy += (node.anchorY - node.y) * anchorBias * alpha;
+        node.vx *= 0.76;
+        node.vy *= 0.76;
         node.x += node.vx;
         node.y += node.vy;
       }
@@ -954,6 +1012,7 @@ function jsTemplate(graph) {
     const visible = state.nodes.filter(visibleNode);
     const visibleIds = new Set(visible.map((node) => node.id));
     const links = state.edges.filter((edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target));
+    const focusIds = focusSet();
     svg.innerHTML = '';
 
     const viewportLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -965,27 +1024,35 @@ function jsTemplate(graph) {
     svg.appendChild(viewportLayer);
 
     for (const edge of links) {
+      const dimEdge = isDimEdge(edge, focusIds);
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       line.setAttribute('class', 'link');
       line.setAttribute('x1', edge.sourceNode.x);
       line.setAttribute('y1', edge.sourceNode.y);
       line.setAttribute('x2', edge.targetNode.x);
       line.setAttribute('y2', edge.targetNode.y);
+      line.setAttribute('stroke-opacity', dimEdge ? '.08' : focusIds ? '.72' : '.32');
+      line.setAttribute('stroke-width', dimEdge ? '1' : focusIds ? '2.1' : '1.2');
       linkLayer.appendChild(line);
 
-      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      label.setAttribute('class', 'link-label');
-      label.setAttribute('x', (edge.sourceNode.x + edge.targetNode.x) / 2);
-      label.setAttribute('y', (edge.sourceNode.y + edge.targetNode.y) / 2);
-      label.textContent = edge.label;
-      labelLayer.appendChild(label);
+      if (shouldShowLinkLabel(edge, focusIds)) {
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('class', 'link-label');
+        label.setAttribute('x', (edge.sourceNode.x + edge.targetNode.x) / 2);
+        label.setAttribute('y', (edge.sourceNode.y + edge.targetNode.y) / 2);
+        applyTextScale(label, 10, 3);
+        label.textContent = edge.label;
+        labelLayer.appendChild(label);
+      }
     }
 
     for (const node of visible) {
+      const dimNode = isDimNode(node, focusIds);
       const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       group.setAttribute('class', 'node');
       group.dataset.nodeId = node.id;
       group.setAttribute('transform', 'translate(' + node.x + ',' + node.y + ')');
+      group.setAttribute('opacity', dimNode ? '.14' : '1');
 
       const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       const degree = links.filter((edge) => edge.source === node.id || edge.target === node.id).length;
@@ -999,7 +1066,8 @@ function jsTemplate(graph) {
         const startLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         startLabel.setAttribute('class', 'start-label');
         startLabel.setAttribute('text-anchor', 'middle');
-        startLabel.setAttribute('dy', -radius - 12);
+        startLabel.setAttribute('dy', -radius - 14 / viewport.k);
+        applyTextScale(startLabel, 10, 3);
         startLabel.textContent = 'START';
         group.appendChild(startLabel);
       }
@@ -1010,27 +1078,32 @@ function jsTemplate(graph) {
         circle.setAttribute('stroke-width', '3');
       }
 
-      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      text.setAttribute('text-anchor', 'middle');
-      text.setAttribute('dy', 28);
-      text.textContent = compactLabel(node.label);
+      group.appendChild(circle);
+      if (shouldShowNodeLabel(node, degree, focusIds)) {
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dy', radius + 15 / viewport.k);
+        applyTextScale(text, 11, 4);
+        text.textContent = compactLabel(node.label);
+        group.appendChild(text);
+      }
 
-      group.append(circle, text);
-      if (node.status && node.status !== 'unknown') {
+      if (!dimNode && node.status && node.status !== 'unknown' && shouldShowNodeLabel(node, degree, focusIds)) {
         const statusText = compactStatus(node.status);
-        const pillWidth = Math.max(42, statusText.length * 5.8 + 14);
+        const pillWidth = Math.max(42, statusText.length * 5.8 + 14) / viewport.k;
         const pill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         pill.setAttribute('class', 'status-pill');
         pill.setAttribute('x', -pillWidth / 2);
-        pill.setAttribute('y', 36);
+        pill.setAttribute('y', radius + 26 / viewport.k);
         pill.setAttribute('width', pillWidth);
-        pill.setAttribute('height', 16);
-        pill.setAttribute('rx', 8);
+        pill.setAttribute('height', 16 / viewport.k);
+        pill.setAttribute('rx', 8 / viewport.k);
 
         const pillText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         pillText.setAttribute('class', 'status-text');
         pillText.setAttribute('text-anchor', 'middle');
-        pillText.setAttribute('dy', 47);
+        pillText.setAttribute('dy', radius + 38 / viewport.k);
+        applyTextScale(pillText, 9, 2);
         pillText.textContent = statusText;
         group.append(pill, pillText);
       }
@@ -1039,8 +1112,9 @@ function jsTemplate(graph) {
     updateZoomReadout();
   }
 
-  function selectNode(node, shouldDraw = true) {
+  function selectNode(node, options = {}) {
     if (!node) return;
+    const shouldDraw = options.draw !== false;
     state.selected = node;
     mdOpen = false;
     const related = state.edges
@@ -1062,7 +1136,71 @@ function jsTemplate(graph) {
       related ? '\\nDependencies:\\n' + related : ''
     ].filter(Boolean).join('\\n');
     updateMarkdownViewer();
+    if (options.focus) focusViewportOn(node);
     if (shouldDraw) draw();
+  }
+
+  function setHovered(node) {
+    if ((state.hovered && node && state.hovered.id === node.id) || (!state.hovered && !node)) return;
+    state.hovered = node;
+    if (state.labelMode !== 'none') draw();
+  }
+
+  function focusSet() {
+    if (!state.selected) return null;
+    const ids = new Set([state.selected.id]);
+    for (const id of neighborsById.get(state.selected.id) || []) ids.add(id);
+
+    const selectedPlan = planGroupKey(state.selected);
+    if (selectedPlan) {
+      for (const node of state.nodes) {
+        if (planGroupKey(node) === selectedPlan) ids.add(node.id);
+      }
+    }
+
+    return ids;
+  }
+
+  function isDimNode(node, focusIds) {
+    return Boolean(focusIds && !focusIds.has(node.id));
+  }
+
+  function isDimEdge(edge, focusIds) {
+    if (!focusIds) return false;
+    return !focusIds.has(edge.source) || !focusIds.has(edge.target);
+  }
+
+  function shouldShowNodeLabel(node, degree, focusIds) {
+    if (state.selected && node.id === state.selected.id) return true;
+    if (state.hovered && node.id === state.hovered.id) return true;
+    if (state.query) return true;
+    if (state.labelMode === 'all') return !isDimNode(node, focusIds);
+    if (state.labelMode === 'none') return false;
+    if (state.labelMode === 'focus') return Boolean(focusIds && focusIds.has(node.id));
+    if (focusIds) return focusIds.has(node.id);
+
+    return node.start ||
+      node.type === 'project' ||
+      node.type === 'context' ||
+      node.type === 'service' ||
+      node.type === 'api' ||
+      node.type === 'style' ||
+      node.type === 'plan' ||
+      degree >= 8;
+  }
+
+  function shouldShowLinkLabel(edge, focusIds) {
+    if (state.labelMode === 'none') return false;
+    if (state.labelMode === 'all') return !isDimEdge(edge, focusIds);
+    const focusNode = state.hovered || state.selected;
+    if (!focusNode) return false;
+    return edge.source === focusNode.id || edge.target === focusNode.id;
+  }
+
+  function applyTextScale(text, size, strokeWidth) {
+    const scale = 1 / viewport.k;
+    text.setAttribute('font-size', Math.max(4, size * scale));
+    text.setAttribute('stroke-width', Math.max(1, strokeWidth * scale));
   }
 
   function compactLabel(label) {
@@ -1110,31 +1248,205 @@ function jsTemplate(graph) {
   function fitToView() {
     width = svg.clientWidth || 900;
     height = svg.clientHeight || 620;
-    viewport.x = 0;
-    viewport.y = 0;
-    viewport.k = 1;
-    const cx = width / 2;
-    const cy = height / 2;
-    state.nodes.forEach((node, index) => {
-      const ring = 90 + (index % 5) * 42;
-      const angle = (index / Math.max(1, state.nodes.length)) * Math.PI * 2;
-      node.x = cx + Math.cos(angle) * ring;
-      node.y = cy + Math.sin(angle) * ring;
+    assignAnchors();
+    fitViewportToNodes(state.nodes.filter(visibleNode), 90, 0.16, 1.05);
+  }
+
+  function assignAnchors() {
+    const assigned = new Set();
+    const coreNodes = sortNodes(state.nodes.filter((node) => (
+      node.type === 'project' ||
+      node.type === 'context' ||
+      node.type === 'section'
+    )));
+
+    for (const [index, node] of coreNodes.entries()) {
+      let x = 180;
+      let y = 140;
+      if (node.type === 'context') {
+        x = 460;
+      } else if (node.type === 'section') {
+        const sectionIndex = coreNodes.slice(0, index).filter((item) => item.type === 'section').length;
+        x = 120 + (sectionIndex % 3) * 250;
+        y = 300 + Math.floor(sectionIndex / 3) * 82;
+      }
+      setAnchor(node, x, y);
+      assigned.add(node.id);
+    }
+
+    const planGroups = new Map();
+    for (const node of state.nodes) {
+      const key = planGroupKey(node);
+      if (!key) continue;
+      const group = planGroups.get(key) || { key, plan: null, readme: null, roles: [], extra: [] };
+      if (node.type === 'plan') group.plan = node;
+      else if (node.type === 'plan-file') group.readme = node;
+      else if (node.type === 'plan-role') group.roles.push(node);
+      else group.extra.push(node);
+      planGroups.set(key, group);
+    }
+
+    const groups = [...planGroups.values()].sort((a, b) => a.key.localeCompare(b.key));
+    const planCols = Math.max(2, Math.ceil(Math.sqrt(Math.max(groups.length, 1))));
+    const groupW = 390;
+    const groupH = 185;
+    const plansTop = 560;
+    const roleOffsets = [
+      [-135, -8],
+      [-88, 74],
+      [-18, 100],
+      [58, 100],
+      [128, 74],
+      [145, -8]
+    ];
+
+    for (const [groupIndex, group] of groups.entries()) {
+      const col = groupIndex % planCols;
+      const row = Math.floor(groupIndex / planCols);
+      const cx = 160 + col * groupW;
+      const cy = plansTop + row * groupH;
+
+      if (group.plan) {
+        setAnchor(group.plan, cx, cy);
+        assigned.add(group.plan.id);
+      }
+      if (group.readme) {
+        setAnchor(group.readme, cx, cy + 54);
+        assigned.add(group.readme.id);
+      }
+
+      group.roles.sort((a, b) => roleRank(a) - roleRank(b) || nodeLabel(a).localeCompare(nodeLabel(b)));
+      for (const [roleIndex, role] of group.roles.entries()) {
+        const offset = roleOffsets[roleIndex % roleOffsets.length];
+        const ring = Math.floor(roleIndex / roleOffsets.length);
+        setAnchor(role, cx + offset[0] + ring * 34, cy + offset[1] + ring * 34);
+        assigned.add(role.id);
+      }
+
+      for (const [extraIndex, extra] of group.extra.entries()) {
+        setAnchor(extra, cx + 170, cy + extraIndex * 48);
+        assigned.add(extra.id);
+      }
+    }
+
+    const planRows = Math.ceil(groups.length / planCols);
+    const docStartX = 180 + planCols * groupW + 260;
+    const docStartY = 140;
+    const docW = 270;
+    const docH = 84;
+    const remaining = sortNodes(state.nodes.filter((node) => !assigned.has(node.id)));
+
+    for (const [index, node] of remaining.entries()) {
+      const col = index % 3;
+      const row = Math.floor(index / 3);
+      setAnchor(node, docStartX + col * docW, docStartY + row * docH);
+      assigned.add(node.id);
+    }
+
+    const lowerBound = plansTop + Math.max(1, planRows) * groupH + 120;
+    for (const node of state.nodes) {
+      if (Number.isFinite(node.anchorY)) node.anchorY = Math.max(80, Math.min(node.anchorY, lowerBound));
+      node.x = node.anchorX;
+      node.y = node.anchorY;
       node.vx = 0;
       node.vy = 0;
+    }
+  }
+
+  function setAnchor(node, x, y) {
+    node.anchorX = x;
+    node.anchorY = y;
+  }
+
+  function sortNodes(nodes) {
+    return nodes.slice().sort((a, b) => {
+      const rank = typeRank(a) - typeRank(b);
+      if (rank !== 0) return rank;
+      return nodeLabel(a).localeCompare(nodeLabel(b));
     });
+  }
+
+  function typeRank(node) {
+    const ranks = {
+      project: 0,
+      context: 1,
+      section: 2,
+      service: 3,
+      api: 4,
+      style: 5,
+      agent: 6,
+      role: 7,
+      status: 8,
+      manifest: 9,
+      doc: 10,
+      file: 11
+    };
+    return ranks[node.type] ?? 99;
+  }
+
+  function roleRank(node) {
+    const name = (node.path || node.id || '').split('/').pop().toLowerCase();
+    const index = ['README.md', 'bu.md', 'po.md', 'dev.md', 'qa.md', 'ops.md', 'stk.md']
+      .map((item) => item.toLowerCase())
+      .indexOf(name);
+    return index === -1 ? 99 : index;
+  }
+
+  function nodeLabel(node) {
+    return String(node.label || node.path || node.id || '');
+  }
+
+  function planGroupKey(node) {
+    if (node.type === 'plan') return node.path || node.id.replace(/^plan:/, 'plans/');
+    const source = String(node.path || node.id || '');
+    const match = source.match(/plans\\/([^/]+)/);
+    return match ? 'plans/' + match[1] : '';
+  }
+
+  function fitViewportToNodes(nodes, padding, minScale, maxScale) {
+    const visible = nodes.length ? nodes : state.nodes;
+    const bounds = nodeBounds(visible);
+    const graphWidth = Math.max(1, bounds.maxX - bounds.minX);
+    const graphHeight = Math.max(1, bounds.maxY - bounds.minY);
+    const scale = Math.max(
+      minScale,
+      Math.min(maxScale, (width - padding * 2) / graphWidth, (height - padding * 2) / graphHeight)
+    );
+
+    viewport.k = Number.isFinite(scale) ? scale : 1;
+    viewport.x = (width - (bounds.minX + bounds.maxX) * viewport.k) / 2;
+    viewport.y = (height - (bounds.minY + bounds.maxY) * viewport.k) / 2;
+    updateZoomReadout();
+  }
+
+  function nodeBounds(nodes) {
+    const xs = nodes.map((node) => node.x);
+    const ys = nodes.map((node) => node.y);
+    return {
+      minX: Math.min(...xs) - 120,
+      maxX: Math.max(...xs) + 120,
+      minY: Math.min(...ys) - 120,
+      maxY: Math.max(...ys) + 120
+    };
+  }
+
+  function focusViewportOn(node) {
+    const ids = focusSet() || new Set([node.id]);
+    const focusedNodes = [...ids]
+      .map((id) => byId.get(id))
+      .filter((item) => item && visibleNode(item));
+    fitViewportToNodes(focusedNodes.length ? focusedNodes : [node], 150, 0.65, 1.35);
   }
 
   function focusStart() {
     if (!startNode) return;
     state.type = 'all';
+    state.labelMode = 'key';
     state.query = '';
     search.value = '';
     typeFilter.value = 'all';
-    selectNode(startNode, false);
-    viewport.k = Math.max(viewport.k, 1.05);
-    viewport.x = width / 2 - startNode.x * viewport.k;
-    viewport.y = height / 2 - startNode.y * viewport.k;
+    labelMode.value = 'key';
+    selectNode(startNode, { draw: false, focus: true });
     wake(0.65);
   }
 
@@ -1161,7 +1473,6 @@ function jsTemplate(graph) {
     wake(0.6);
   });
   fitToView();
-  selectNode(startNode, false);
   wake(1);
 })();`;
 }
