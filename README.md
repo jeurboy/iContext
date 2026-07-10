@@ -1,6 +1,6 @@
 # iContext
 
-**Version 1.8.0** · three portable agent-skills that bootstrap and maintain a **layered project
+**Version 1.10.0** · five portable agent-skills that bootstrap, audit, visualize, and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
@@ -8,6 +8,8 @@ session already knowing your architecture, conventions, and plan status.
 |-------|---------|------|
 | **icontext-init** | `/icontext-init` | Scaffold the context backbone (L1 agent files · L2 `CONTEXT.md` · L3 `plans/`) + service skeletons. **Greenfield** (new), **brownfield** (read & summarize an existing codebase), or **update/sync** (fill only the missing pieces of an existing backbone). Confirms every `CONTEXT.md` section with you first; **idempotent & non-destructive** — re-running never deletes or overwrites your context. |
 | **icontext-update** | `/icontext-update` | Update an existing iContext project that already has `CONTEXT.md` to the latest template shape. Adds missing sections/artifacts such as `AGENTS.md`, `CONTEXT.md §11.0`, selectable requirement discovery, `ROLE.md` requirement-review protocol, refreshed plan templates, docs/styles/launch scaffolding, and service `STRUCTURE.md` files. Confirmation-first and additive only — reports every proposed change, waits for approval, and preserves owner-authored content. |
+| **icontext-audit** | `/icontext-audit` | Audit an existing iContext project for latest-template completeness, context/repo drift, plan-status sync, stale placeholders, and unnecessary Markdown cleanup candidates. It asks for an explicit decision on every missing, stale, unclear, or cleanup item before updating, archiving, or deleting anything, then re-audits and reports the final gap table. |
+| **icontext-visualize** | `/icontext-visualize` | Export an existing iContext project as a static dependency graph: `context-graph.html` + `context-graph.js`. It reads `CONTEXT.md`, agent files, `ROLE.md`, `PLAN.md`, plans, docs, styles, service `STRUCTURE.md` files, manifests, and Markdown references, then verifies the generated JS without editing source context. |
 | **icontext-feature** | `/icontext-feature` | Add one feature plan — a **folder** `plans/NNN-name/` split into role files — with the standard §0–11 structure, role owners, task-status lifecycle, selectable requirement discovery (`/grill-with-docs` or `/wayfinder`), `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pre-checks required scaffolding (style guide · `docs/openapi.yaml` · `.vscode/launch.json`) and offers to create what's missing. |
 
 ## The 3-layer context model
@@ -38,6 +40,12 @@ Main feature workflow:
 choose `/grill-with-docs` or `/wayfinder` for requirement discovery → `ROLE.md` multi-agent
 requirement review → write the role-split plan → gstack `/autoplan` plan preparation → iterative
 implementation → QA gates.
+
+Context maintenance workflow:
+run `/icontext-update` when the template itself changed or a known artifact is missing; run
+`/icontext-audit` when you want a full health check against the latest template, real repo state,
+plan status, and Markdown cleanup candidates; run `/icontext-visualize` when you want an HTML/JS
+dependency graph of the current context.
 
 Task status flows `to do → plan → ready to implement → implement → ready to test → done`
 (reach `ready to implement` only after `/autoplan` or the review chain). Before implementing any
@@ -117,6 +125,8 @@ iContext/
 ├── scripts/            validation helpers
 ├── icontext-init/      SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/ · adapters/ · reference/
 ├── icontext-update/    SKILL.md · PROCEDURE.md · VERSION · check-update.sh · adapters/
+├── icontext-audit/     SKILL.md · PROCEDURE.md · VERSION · check-update.sh · adapters/
+├── icontext-visualize/ SKILL.md · PROCEDURE.md · VERSION · check-update.sh · scripts/ · adapters/
 └── icontext-feature/   SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/ · adapters/
 ```
 
@@ -128,6 +138,8 @@ iContext/
   review the requirement with the multi-agent role panel in `ROLE.md`.
 - **Before implementing any plan, run the review chain** (`/autoplan`): ceo · eng · design (if UI) · devex (if dev-facing).
 - **Confirm every `CONTEXT.md` section** with the owner before writing; **non-destructive** — never delete/overwrite existing context, only add what's missing.
+- **Audit before cleanup** — `/icontext-audit` must ask about every missing, stale, unclear, or extra Markdown item before updating, archiving, or deleting it.
+- **Visualize read-only** — `/icontext-visualize` exports static HTML/JS graphs without changing context or app source files.
 - **On architecture-impacting change, update context · plan · doc · style · data model together** (no drift).
 - Tests: unit (API) + Playwright (UI), coverage > 80% (gate before `done`).
 - `styles/`: central design tokens only — no inline colors / look-and-feel.
@@ -140,10 +152,29 @@ iContext/
 ./scripts/validate.sh
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-init
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-update
+python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-audit
+python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-visualize
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-feature
 ```
 
 ## Changelog
+
+### 1.10.0
+- **New `icontext-visualize` skill** — exports an existing iContext project to a static
+  dependency graph (`context-graph.html` + `context-graph.js`) using a bundled dependency-free
+  Node script. It links `CONTEXT.md` to agent files, role/status files, plans, services, manifests,
+  docs, API contracts, styles, and referenced Markdown without editing source context.
+- Installer, pointers, README, and validation now include all five skills:
+  `icontext-init`, `icontext-update`, `icontext-audit`, `icontext-visualize`, and
+  `icontext-feature`.
+
+### 1.9.0
+- **New `icontext-audit` skill** — audits an existing iContext project against latest templates,
+  current repo evidence, plan-status sync, stale placeholders, and Markdown cleanup candidates.
+  It asks for an explicit owner decision on every missing, stale, unclear, or cleanup item before
+  applying updates, archiving, or deleting anything.
+- Installer, pointers, README, and validation now include all four skills:
+  `icontext-init`, `icontext-update`, `icontext-audit`, and `icontext-feature`.
 
 ### 1.8.0
 - **Wayfinder discovery route** — feature planning now asks the user to choose `/grill-with-docs`

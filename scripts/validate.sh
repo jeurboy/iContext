@@ -18,12 +18,18 @@ require_executable() {
   test -x "$1" || fail "not executable: $1"
 }
 
-for skill in icontext-init icontext-update icontext-feature; do
+for skill in icontext-init icontext-update icontext-audit icontext-visualize icontext-feature; do
   require_file "$skill/SKILL.md"
   require_file "$skill/PROCEDURE.md"
   require_file "$skill/VERSION"
   require_executable "$skill/check-update.sh"
+  require_file "$skill/adapters/claude.md"
+  require_file "$skill/adapters/codex.md"
+  require_file "$skill/adapters/cursor.md"
+  require_file "$skill/adapters/gemini.md"
 done
+
+require_executable "icontext-visualize/scripts/export-context-graph.js"
 
 for file in \
   icontext-init/templates/CLAUDE.md \
@@ -60,17 +66,23 @@ if rg -n "ux-ui-pro-max" --glob '!scripts/validate.sh' . >/dev/null; then
   fail "found old companion skill spelling: ux-ui-pro-max"
 fi
 
-if rg -n "^version:" icontext-init/SKILL.md icontext-update/SKILL.md icontext-feature/SKILL.md >/dev/null; then
+if rg -n "^version:" icontext-init/SKILL.md icontext-update/SKILL.md icontext-audit/SKILL.md icontext-visualize/SKILL.md icontext-feature/SKILL.md >/dev/null; then
   fail "SKILL.md frontmatter must not contain version; use VERSION files"
 fi
 
 validator="$HOME/.codex/skills/.system/skill-creator/scripts/quick_validate.py"
 if command -v python3 >/dev/null && test -f "$validator"; then
-  python3 "$validator" icontext-init
-  python3 "$validator" icontext-update
-  python3 "$validator" icontext-feature
+  for skill in icontext-init icontext-update icontext-audit icontext-visualize icontext-feature; do
+    python3 "$validator" "$skill"
+  done
 else
   echo "WARN: skipped Codex quick_validate.py (python3 or validator not found)"
+fi
+
+if command -v node >/dev/null; then
+  node --check icontext-visualize/scripts/export-context-graph.js
+else
+  echo "WARN: skipped exporter syntax check (node not found)"
 fi
 
 echo "OK: iContext validation passed"
