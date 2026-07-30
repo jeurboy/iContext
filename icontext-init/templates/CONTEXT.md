@@ -85,6 +85,11 @@
 
 ### 11. Workflow + Plan Standard
 - Build context first → then features one at a time via `/icontext-feature`. Never commit/push unless told.
+- **Second brain principle:** every `.md` file — this `CONTEXT.md`, `PLAN.md`, everything under
+  `plans/` and `docs/` — is the project's persistent memory, not throwaway paperwork. Whenever a
+  plan or approach is adjusted, follow up in the affected plan: record the work done **and the
+  reasoning / thought process** behind the change (what changed, why, what was rejected), so any
+  human or agent can reconstruct the thinking later. Never change direction silently.
 
 #### 11.0 Main development workflow
 Use this workflow for every non-trivial feature so requirements, plan, context, and tests stay in

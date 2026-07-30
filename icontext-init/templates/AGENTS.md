@@ -31,6 +31,10 @@ Agent boilerplate for OpenAI Codex. Single source of truth: **CONTEXT.md**.
 - New feature ⇒ add a plan (`/icontext-feature`), ref CONTEXT.md, set status.
 - A plan reaches `done` only when: API spec synced · User Stories complete · tests > 80%.
 - On status change, update **3 places**: plan file · `plans/README.md` · `PLAN.md`.
+- **Second brain:** treat every `.md` file — `CONTEXT.md`, `PLAN.md`, `plans/`, `docs/` — as the
+  project's persistent memory. Whenever a plan or approach changes, update the affected plan with
+  what was done AND the reasoning/thought process behind the change, so anyone (human or agent)
+  can reconstruct the thinking later. Never change direction silently.
 - **Any change that impacts the core architecture ⇒ update in sync, in the same change:**
   `CONTEXT.md` (incl. **§7 Data Model**) · the affected `plans/` plan · `docs/openapi.yaml` (API
   doc) · `styles/` tokens. Never let context, plan, doc, data model, and style drift apart.
