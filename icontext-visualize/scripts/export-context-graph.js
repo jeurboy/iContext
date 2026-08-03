@@ -248,6 +248,18 @@ function detectReferencedFiles(root, markdown, allFiles) {
   return [...refs].sort();
 }
 
+const L2_FILES = [
+  { name: 'PRODUCT.md', concern: 'product & direction', sections: 'sections 1, 2, 13', roles: ['bu', 'po'] },
+  { name: 'QA.md', concern: 'testing standard', sections: 'section 9', roles: ['qa'] },
+  { name: 'SECURITY.md', concern: 'security model', sections: 'sections 8, 11.6', roles: ['ops'] },
+  { name: 'DESIGN.md', concern: 'design system', sections: 'section 12', roles: ['dev'] }
+];
+
+// A section left in CONTEXT.md after the split is a pointer stub, not real content.
+function isPointerStub(body) {
+  return /(?:\u279c|=>|->)\s*\*\*Moved to/i.test(body) || /^\s*\u279c\s/m.test(body);
+}
+
 function makeGraph(root, title) {
   const contextFile = path.join(root, 'CONTEXT.md');
   if (!exists(contextFile)) {
@@ -282,14 +294,40 @@ function makeGraph(root, title) {
   addNode('context:CONTEXT.md', 'CONTEXT.md', 'context', { path: 'CONTEXT.md', markdown: contextText });
   addEdge('project', 'context:CONTEXT.md', 'source of truth', 'owns');
 
-  for (const section of headingSections(contextText).filter((h) => h.depth <= 3)) {
-    const id = `section:${slug(section.title)}`;
-    addNode(id, section.title.replace(/^#+\s*/, ''), 'section', {
-      path: 'CONTEXT.md',
-      summary: section.body.split('\n').slice(0, 8).join('\n'),
-      markdown: section.body,
+  // Layer 2 is split by concern. Each file owns a fixed set of CONTEXT.md sections; section
+  // numbers stay stable across the split, so a project that predates it (everything still in
+  // CONTEXT.md) simply produces no L2 nodes rather than a broken graph.
+  const presentL2 = L2_FILES.filter((entry) => exists(path.join(root, entry.name)));
+  for (const entry of presentL2) {
+    const id = `l2:${entry.name}`;
+    addNode(id, entry.name, 'l2', {
+      path: entry.name,
+      summary: `${entry.concern} — owns ${entry.sections}`,
+      markdown: markdownPayload(root, entry.name),
     });
-    addEdge('context:CONTEXT.md', id, 'contains', 'contains');
+    addEdge('context:CONTEXT.md', id, entry.concern, 'l2-split');
+    addEdge('project', id, 'context', 'owns');
+  }
+
+  // Sections come from every L2 file, attributed to the file that owns them. Pointer stubs left
+  // behind in CONTEXT.md ("Moved to ...") are skipped so a moved section appears exactly once.
+  const sectionSources = [{ name: 'CONTEXT.md', owner: 'context:CONTEXT.md', text: contextText }]
+    .concat(presentL2.map((entry) => ({
+      name: entry.name,
+      owner: `l2:${entry.name}`,
+      text: readText(path.join(root, entry.name)),
+    })));
+  for (const source of sectionSources) {
+    for (const section of headingSections(source.text).filter((h) => h.depth <= 3)) {
+      if (isPointerStub(section.body)) continue;
+      const id = `section:${slug(source.name)}:${slug(section.title)}`;
+      addNode(id, section.title.replace(/^#+\s*/, ''), 'section', {
+        path: source.name,
+        summary: section.body.split('\n').slice(0, 8).join('\n'),
+        markdown: section.body,
+      });
+      addEdge(source.owner, id, 'contains', 'contains');
+    }
   }
 
   const l1Files = ['CLAUDE.md', 'AGENTS.md', 'AGENT.md', 'GEMINI.md'];
@@ -298,6 +336,7 @@ function makeGraph(root, title) {
     if (!exists(file)) continue;
     addNode(`file:${name}`, name, 'agent', { path: name, markdown: markdownPayload(root, name) });
     addEdge(`file:${name}`, 'context:CONTEXT.md', 'reads', 'reads');
+    for (const entry of presentL2) addEdge(`file:${name}`, `l2:${entry.name}`, 'reads', 'reads');
     addEdge('project', `file:${name}`, 'agent entry', 'contains');
   }
 
@@ -377,11 +416,21 @@ function makeGraph(root, title) {
         markdown: roleMarkdown,
       });
       addEdge(plan.id, `file:${rolePath}`, roleName, 'role-split');
+
+      // Each role file follows one L2 concern file (bu/po -> PRODUCT, qa -> QA,
+      // ops -> SECURITY, dev -> DESIGN). This is the wiring the split introduced.
+      const roleKey = path.basename(rolePath, '.md').toLowerCase();
+      for (const entry of presentL2) {
+        if (entry.roles.includes(roleKey)) {
+          addEdge(`file:${rolePath}`, `l2:${entry.name}`, 'follows', 'reads');
+        }
+      }
     }
   }
 
   for (const file of referencedFiles) {
     if (file === 'CONTEXT.md') continue;
+    if (L2_FILES.some((entry) => entry.name === file)) continue;
     const id = `file:${file}`;
     const type = file.endsWith('.md') ? 'doc' : 'file';
     const markdown = markdownPayload(root, file);
@@ -397,7 +446,7 @@ function makeGraph(root, title) {
     .map((file) => rel(root, file))
     .filter((file) => file.endsWith('.md'))
     .filter((file) => !file.startsWith('plans/') || file === 'plans/README.md')
-    .filter((file) => !['CONTEXT.md', ...l1Files, 'ROLE.md', 'PLAN.md'].includes(file))
+    .filter((file) => !['CONTEXT.md', ...l1Files, ...L2_FILES.map((entry) => entry.name), 'ROLE.md', 'PLAN.md'].includes(file))
     .slice(0, 80);
   for (const file of markdownDocs) {
     const id = `file:${file}`;
@@ -737,6 +786,7 @@ function jsTemplate(graph) {
   const colors = {
     project: '#0f766e',
     context: '#2563eb',
+    l2: '#0284c7',
     section: '#7c3aed',
     agent: '#475467',
     role: '#b45309',
@@ -994,7 +1044,7 @@ function jsTemplate(graph) {
     }
 
     for (const node of visible) {
-      const anchorBias = node.start ? 0.075 : node.type === 'context' ? 0.06 : 0.04;
+      const anchorBias = node.start ? 0.075 : (node.type === 'context' || node.type === 'l2') ? 0.06 : 0.04;
       if (node !== draggingNode) {
         node.vx += (node.anchorX - node.x) * anchorBias * alpha;
         node.vy += (node.anchorY - node.y) * anchorBias * alpha;
@@ -1182,6 +1232,7 @@ function jsTemplate(graph) {
     return node.start ||
       node.type === 'project' ||
       node.type === 'context' ||
+      node.type === 'l2' ||
       node.type === 'service' ||
       node.type === 'api' ||
       node.type === 'style' ||
@@ -1257,18 +1308,30 @@ function jsTemplate(graph) {
     const coreNodes = sortNodes(state.nodes.filter((node) => (
       node.type === 'project' ||
       node.type === 'context' ||
+      node.type === 'l2' ||
       node.type === 'section'
     )));
+
+    // Layer 2 gets its own lane between CONTEXT.md and the section band, so the split reads as
+    // one row of concern files rather than as loose documents.
+    const l2Nodes = coreNodes.filter((item) => item.type === 'l2');
+    const l2Lane = l2Nodes.length ? 236 : 0;
+    const sectionTop = 300 + l2Lane;
 
     for (const [index, node] of coreNodes.entries()) {
       let x = 180;
       let y = 140;
       if (node.type === 'context') {
         x = 460;
+      } else if (node.type === 'l2') {
+        const l2Index = l2Nodes.indexOf(node);
+        const span = Math.max(l2Nodes.length - 1, 1);
+        x = 200 + l2Index * (620 / span);
+        y = 250;
       } else if (node.type === 'section') {
         const sectionIndex = coreNodes.slice(0, index).filter((item) => item.type === 'section').length;
         x = 120 + (sectionIndex % 3) * 250;
-        y = 300 + Math.floor(sectionIndex / 3) * 82;
+        y = sectionTop + Math.floor(sectionIndex / 3) * 82;
       }
       setAnchor(node, x, y);
       assigned.add(node.id);
@@ -1290,7 +1353,7 @@ function jsTemplate(graph) {
     const planCols = Math.max(2, Math.ceil(Math.sqrt(Math.max(groups.length, 1))));
     const groupW = 390;
     const groupH = 185;
-    const plansTop = 560;
+    const plansTop = 560 + l2Lane;
     const roleOffsets = [
       [-135, -8],
       [-88, 74],
@@ -1370,16 +1433,17 @@ function jsTemplate(graph) {
     const ranks = {
       project: 0,
       context: 1,
-      section: 2,
-      service: 3,
-      api: 4,
-      style: 5,
-      agent: 6,
-      role: 7,
-      status: 8,
-      manifest: 9,
-      doc: 10,
-      file: 11
+      l2: 2,
+      section: 3,
+      service: 4,
+      api: 5,
+      style: 6,
+      agent: 7,
+      role: 8,
+      status: 9,
+      manifest: 10,
+      doc: 11,
+      file: 12
     };
     return ranks[node.type] ?? 99;
   }

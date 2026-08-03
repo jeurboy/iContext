@@ -43,10 +43,17 @@ node <skill-dir>/scripts/export-context-graph.js --root <project-root> --out <ou
 ```
 
 The exporter should read:
-- `CONTEXT.md`
-- L1 files: `CLAUDE.md`, `AGENTS.md`, `AGENT.md`, `GEMINI.md`
-- L2/status files: `ROLE.md`, `PLAN.md`, `plans/README.md`
-- Feature plans under `plans/NNN-name/`
+- L2 context: `CONTEXT.md` plus its concern siblings `PRODUCT.md`, `QA.md`, `SECURITY.md`,
+  `DESIGN.md` when they exist. Each becomes its own `l2` node in a dedicated lane under
+  `CONTEXT.md`, with section nodes attributed to the file that owns them. Pointer stubs left in
+  `CONTEXT.md` (`➜ Moved to …`) are skipped so a moved section appears exactly once.
+  A project that predates the split (everything still inside `CONTEXT.md`) exports normally with
+  no `l2` nodes — the graph is not an audit and never reports that as a defect.
+- L1 files: `CLAUDE.md`, `AGENTS.md`, `AGENT.md`, `GEMINI.md` — each reads `CONTEXT.md` and every
+  L2 sibling
+- Status/role files: `ROLE.md`, `PLAN.md`, `plans/README.md`
+- Feature plans under `plans/NNN-name/`; each role file also links to the L2 concern file it
+  follows (`bu`/`po` → `PRODUCT.md` · `qa` → `QA.md` · `ops` → `SECURITY.md` · `dev` → `DESIGN.md`)
 - `docs/openapi.yaml` or `docs/openapi.yml`
 - `styles/css/tokens.css` and `styles/components/`
 - Service `STRUCTURE.md` files and common manifests
@@ -57,6 +64,8 @@ After export:
 - Confirm both files exist and are non-empty.
 - Run `node --check <output-dir>/context-graph.js`.
 - If possible, report the graph counts from the exporter output: nodes and edges.
+- On a split project, confirm the `l2` nodes appear (one per existing concern file) and that none
+  of them also shows up as a generic `doc` node.
 
 If verification fails, fix the exporter or rerun with a safer output path before reporting success.
 
