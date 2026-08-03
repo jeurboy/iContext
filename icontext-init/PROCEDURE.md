@@ -10,9 +10,14 @@ feature plans are made later by the separate `icontext-feature` procedure.
 ## Operating rules (always)
 - **Never run `git commit` / `git push` unless the user explicitly asks.** `git init` and
   staging are fine; committing is not.
-- **Section-by-section confirmation:** confirm every CONTEXT.md section (§1–13) with the project
-  owner before writing it (Step 2D). Never silently auto-fill or leave a bare placeholder
+- **Section-by-section confirmation:** confirm every L2 section (§1–13, wherever it lives) with the
+  project owner before writing it (Step 2D). Never silently auto-fill or leave a bare placeholder
   without surfacing the section for confirm / edit / skip.
+- **L2 is five files, split by concern.** `CONTEXT.md` (context map + architecture §3–7 · skills
+  §10 · workflow §11) · `PRODUCT.md` (§1 · §2 · §13) · `QA.md` (§9) · `SECURITY.md` (§8 · §11.6) ·
+  `DESIGN.md` (§12). **Section numbers stay stable** wherever a section lives, so `§N` references
+  in plans and docs keep resolving. A concern lives in exactly one file — never duplicate a section
+  across files; `CONTEXT.md` keeps a pointer stub (`➜ Moved to …`) where a section moved out.
 - **Non-destructive — only add what's missing.** Don't delete or rewrite existing context: the
   owner's wording is the source of truth, and silently overwriting it destroys intent that the
   files were meant to capture. Existing files and CONTEXT.md sections stay verbatim; the owner
@@ -37,6 +42,10 @@ feature plans are made later by the separate `icontext-feature` procedure.
 **First, detect an existing iContext backbone** at the target root: `CONTEXT.md` plus any of
 `CLAUDE.md`/`AGENTS.md`/`AGENT.md`/`GEMINI.md`, `ROLE.md`, `PLAN.md`, `plans/`.
 - Backbone present → **UPDATE/SYNC** → Step 2C. *Do not re-scaffold.*
+- Backbone present **but L2 is still one monolithic `CONTEXT.md`** (no `PRODUCT.md` / `QA.md` /
+  `SECURITY.md` / `DESIGN.md`) → this is a **split candidate**. Offer the L2 split as part of
+  Step 2C, or point the user at `icontext-update`, which owns the refactor. Never split without
+  the owner's explicit approval.
 
 If no backbone, detect whether the target dir already has code (look for `package.json`, `go.mod`,
 `pubspec.yaml`, `pom.xml`, `requirements.txt`, `Cargo.toml`, `composer.json`, `*.csproj`).
@@ -70,7 +79,11 @@ matching `templates/stacks/<layer>-<choice>/STRUCTURE.md` into each service dir.
 <root>/
 ├── CLAUDE.md  AGENTS.md  AGENT.md  GEMINI.md
 │                                          L1 — agent boilerplate (all point to CONTEXT.md)
-├── CONTEXT.md                           L2 — architecture §1–13 (single source of truth)
+├── CONTEXT.md                           L2 — context map + architecture §3–7 · skills §10 · workflow §11
+├── PRODUCT.md                           L2 — §1 product overview · §2 key decisions · §13 open questions
+├── QA.md                                L2 — §9 testing standard + quality gates
+├── SECURITY.md                          L2 — §8 security model · §11.6 security-review wiring
+├── DESIGN.md                            L2 — §12 design tokens + design system
 ├── ROLE.md                              persona panel (BU/PO/DEV/QA/OPS/STK)
 ├── PLAN.md                              status dashboard of all plans
 ├── docker-compose.yml                   pg:{{DB_PORT}} web:{{WEB_PORT}} api:{{API_PORT}}
@@ -122,21 +135,28 @@ never overwrite source).
 The project already has an iContext backbone, so treat it as the source of truth: leave any file
 that exists and has real content untouched, and patch only the gaps. Audit first, then add.
 1. **Inventory** every expected artifact and mark present/absent: L1 `CLAUDE.md`/`AGENTS.md`/
-   `AGENT.md`/`GEMINI.md`; `CONTEXT.md` §1–13 (per-section); `ROLE.md`; `PLAN.md`; `plans/_TEMPLATE/` +
+   `AGENT.md`/`GEMINI.md`; the L2 set `CONTEXT.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` +
+   `DESIGN.md` and §1–13 per-section (a section counts as present wherever it lives); `ROLE.md`; `PLAN.md`; `plans/_TEMPLATE/` +
    `plans/README.md`; `docker-compose.yml`; `docs/openapi.yaml`; `styles/css/tokens.css`;
    `styles/components/*.html`; each service's `STRUCTURE.md`.
 2. **Missing files** → create from `templates/`, substituting `{{VARS}}` read from the existing
    `CONTEXT.md` where possible.
-3. **Existing files** → do not overwrite. For `CONTEXT.md`, only **add** sections that are absent
+3. **Existing files** → do not overwrite. For the L2 files, only **add** sections that are absent
    and append `<!-- TODO -->` to empty ones; keep all author content verbatim.
+3b. **Monolithic `CONTEXT.md`** (all of §1–13 in one file, no L2 siblings) → propose the split and
+   run it only with explicit approval, per `icontext-update` PROCEDURE Step 5.5. **Move** sections,
+   never copy: the section text lands in the new file verbatim and `CONTEXT.md` keeps a
+   `➜ Moved to …` pointer stub. If the owner declines, leave the monolith alone and note it.
 4. **Version / format drift** → report it and propose a patch; apply only with the owner's OK.
 5. Confirm each added/changed section via **Step 2D**, then output a **gap table**
    (artifact · status · action) and go to Step 3.
 
 ## Step 2D — Section-by-section confirmation (every mode)
-Walk `CONTEXT.md` §1–13 in order. For each section, show the proposed/detected value (or
+Walk §1–13 in order **across the L2 files** (`PRODUCT.md` §1–2, `CONTEXT.md` §3–7, `SECURITY.md`
+§8, `QA.md` §9, `CONTEXT.md` §10–11, `SECURITY.md` §11.6, `DESIGN.md` §12, `PRODUCT.md` §13).
+For each section, show the proposed/detected value (or
 "empty") and ask the project owner via `AskUserQuestion` to **confirm as-is / edit / skip**
-(skip → `<!-- TODO -->`). Write a section only after its confirmation.
+(skip → `<!-- TODO -->`). Write a section only after its confirmation, into its owning file.
 
 **Depth depends on the mode:**
 - **First-time init (GREENFIELD, no existing context)** → go DEEP. Treat this as a structured

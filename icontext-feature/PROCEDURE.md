@@ -21,6 +21,11 @@ update is available, mention it, then continue.
 
 ## Step 1 — Preconditions + required scaffolding
 1. Confirm `CONTEXT.md`, `plans/`, `PLAN.md` exist. If not, tell the user to run `icontext-init` first.
+1b. **Read the L2 context the feature touches**, not just `CONTEXT.md`: `PRODUCT.md` (§1–2) always;
+   `QA.md` (§9) before writing the test plan; `SECURITY.md` (§8) if the feature adds a route, page,
+   role, or dependency; `DESIGN.md` (§12) if it has UI. On an older project these sections may all
+   still be inside `CONTEXT.md` — that's fine, read them there and mention that `icontext-update`
+   can split them.
 2. **Check the required scaffolding before planning.** For each artifact below, if it is missing,
    **ASK the user whether to create it now** (one prompt, multi-select is fine). Do not create
    silently and do not block — if the user declines, note it and continue.
@@ -86,14 +91,17 @@ contains role files; each of sections 0–11 lives in exactly one (map = CONTEXT
 - `bu.md` — 0 Decisions · 1 Goal · Use Cases · User Stories · Acceptance Criteria · Definition of Done
 - `po.md` — 2 Scope · 3 User Stories (mandatory) · 10 Tasks/Checklist · 11 Open Questions
 - `dev.md` — 5 Tech & Architecture · 6 Data Model/Schema · Migration scripts · 7 API Contract · API changes · Pages/routes
-- `qa.md` — 9 Test Plan (>80%) · acceptance criteria · Test Scenarios · Test Cases · Test Status · Test Coverage
-- `ops.md` — 8 Security & Privacy · Deploy/Migrations
+- `qa.md` — 9 Test Plan (>80%) · acceptance criteria (every case traces to an AC id) · Test Scenarios · Test Cases · Scenario checklist · Test Status · Test Coverage (standard: `QA.md` §9)
+- `ops.md` — 8 Security & Privacy · Deploy/Migrations (model + review wiring: `SECURITY.md` §8, §11.6)
 - `stk.md` — 4 Requirement Discovery / Requirement Review / Persona Panel
 - `README.md` — folder index + **canonical Task status** + owner/created
 
 Fill what you know; leave unknowns as `<!-- TODO -->`. In `README.md` set `Task status: plan`
 (the plan now exists; → `ready to implement` after the review chain); every file refs
-`../../CONTEXT.md`. Put the §4 discovery route + requirement review / persona output (Steps 3.5–4)
+`../../CONTEXT.md` plus the L2 concern file for its role (`bu.md`/`po.md` → `PRODUCT.md` ·
+`qa.md` → `QA.md` · `ops.md` → `SECURITY.md` · `dev.md` → `DESIGN.md` when there's UI); the
+template ref lines already carry these. **Never copy an L2 section into the plan — link to it.**
+Put the §4 discovery route + requirement review / persona output (Steps 3.5–4)
 into `stk.md`, and apply accepted changes from the role review into `bu.md`, `po.md`, `dev.md`,
 `qa.md`, and `ops.md`.
 
@@ -102,10 +110,19 @@ Add the new plan (task status `plan`) to **both** `plans/README.md` (the index) 
 The rule "update status in 3 places" applies on every later status change too:
 the plan folder's `README.md` · `plans/README.md` · `PLAN.md`.
 
-## Step 7 — Prepare the plan with `/autoplan`
+## Step 7 — Prepare the plan with `/autoplan` + plan-phase security review
 Run gstack `/autoplan` to review scope, architecture, design (if UI), and developer experience (if
 developer-facing). If `/autoplan` is unavailable, run the individual plan review skills listed in
-`CONTEXT.md §11.4`. Apply accepted review changes before implementation. The plan remains
+`CONTEXT.md §11.4`. Apply accepted review changes before implementation.
+
+Then run the **plan-phase security review** (`SECURITY.md §11.6`): the `security-review` skill's
+**supply-chain** sub-skill, against the dependencies / build / release surface this plan proposes.
+Record the real detector output in `ops.md` §8.1 — findings, and for each high/critical one either
+the fix or an explicit accepted-risk decision with its reason. If `security-review` isn't installed
+(https://github.com/ice-limited/security-skill), say so and note that in `ops.md` §8.1 rather than
+reviewing the supply chain by eye and calling it done.
+
+The plan remains
 `Task status: plan` until those changes are applied; then move it to `ready to implement` only when
 the user asks to proceed toward implementation or confirms the review outcomes. On any status
 change, update all three status locations from Step 6.
@@ -115,4 +132,4 @@ Report the new plan path + status and whether `/autoplan` has already been appli
 stopped at an unresolved `/wayfinder` map, report the map path/link, next frontier ticket, and that
 no iContext plan was created yet. Do not implement.
 (Reminder of `done` gates: API spec synced,
-User Stories complete, tests > 80%.)
+User Stories complete, tests > 80%, security review clean — no unresolved high/critical finding.)

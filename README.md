@@ -1,13 +1,13 @@
 # iContext
 
-**Version 1.10.2** · five portable agent-skills that bootstrap, audit, visualize, and maintain a **layered project
+**Version 1.12.0** · five portable agent-skills that bootstrap, audit, visualize, and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
 | Skill | Command | Does |
 |-------|---------|------|
-| **icontext-init** | `/icontext-init` | Scaffold the context backbone (L1 agent files · L2 `CONTEXT.md` · L3 `plans/`) + service skeletons. **Greenfield** (new), **brownfield** (read & summarize an existing codebase), or **update/sync** (fill only the missing pieces of an existing backbone). Confirms every `CONTEXT.md` section with you first; **idempotent & non-destructive** — re-running never deletes or overwrites your context. |
-| **icontext-update** | `/icontext-update` | Update an existing iContext project that already has `CONTEXT.md` to the latest template shape. Adds missing sections/artifacts such as `AGENTS.md`, `CONTEXT.md §11.0`, selectable requirement discovery, `ROLE.md` requirement-review protocol, refreshed plan templates, docs/styles/launch scaffolding, and service `STRUCTURE.md` files. Confirmation-first and additive only — reports every proposed change, waits for approval, and preserves owner-authored content. |
+| **icontext-init** | `/icontext-init` | Scaffold the context backbone (L1 agent files · L2 `CONTEXT.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` + `DESIGN.md` · L3 `plans/`) + service skeletons. **Greenfield** (new), **brownfield** (read & summarize an existing codebase), or **update/sync** (fill only the missing pieces of an existing backbone). Confirms every `CONTEXT.md` section with you first; **idempotent & non-destructive** — re-running never deletes or overwrites your context. |
+| **icontext-update** | `/icontext-update` | Update an existing iContext project that already has `CONTEXT.md` to the latest template shape. **Refactors a monolithic `CONTEXT.md` into the L2 split** (`PRODUCT.md` · `QA.md` · `SECURITY.md` · `DESIGN.md`) with per-file approval, moving your text verbatim and leaving pointer stubs. Also adds missing sections/artifacts such as `AGENTS.md`, `CONTEXT.md §11.0`, selectable requirement discovery, `ROLE.md` requirement-review protocol, refreshed plan templates, docs/styles/launch scaffolding, and service `STRUCTURE.md` files. Confirmation-first and additive only — reports every proposed change, waits for approval, and preserves owner-authored content. |
 | **icontext-audit** | `/icontext-audit` | Audit an existing iContext project for latest-template completeness, context/repo drift, plan-status sync, stale placeholders, and unnecessary Markdown cleanup candidates. It asks for an explicit decision on every missing, stale, unclear, or cleanup item before updating, archiving, or deleting anything, then re-audits and reports the final gap table. |
 | **icontext-visualize** | `/icontext-visualize` | Export an existing iContext project as an interactive static dependency graph: `context-graph.html` + `context-graph.js`. It reads `CONTEXT.md`, agent files, `ROLE.md`, `PLAN.md`, plans, docs, styles, service `STRUCTURE.md` files, manifests, and Markdown references, then adds readable lane layout, label-density controls, click focus with dependency fade, zoom/pan controls, start-node focus, animated node dragging, plan-status badges, and click-to-view Markdown without editing source context. |
 | **icontext-feature** | `/icontext-feature` | Add one feature plan — a **folder** `plans/NNN-name/` split into role files — with the standard §0–11 structure, role owners, task-status lifecycle, selectable requirement discovery (`/grill-with-docs` or `/wayfinder`), `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pre-checks required scaffolding (style guide · `docs/openapi.yaml` · `.vscode/launch.json`) and offers to create what's missing. |
@@ -17,10 +17,20 @@ session already knowing your architecture, conventions, and plan status.
 ```
 Layer 1  CLAUDE.md · AGENTS.md · AGENT.md · GEMINI.md
                                                 agent boilerplate (hard rules, vendor-neutral)
-Layer 2  CONTEXT.md                          architecture §1–13 — single source of truth
-Layer 3  plans/NNN-name/                     one folder per feature, each refs CONTEXT.md
+Layer 2  CONTEXT.md                          context map · architecture §3–7 · skills §10 · workflow §11
+         PRODUCT.md                          §1 product overview · §2 key decisions · §13 open questions
+         QA.md                               §9 testing standard + quality gates
+         SECURITY.md                         §8 security model · §11.6 security-review wiring
+         DESIGN.md                           §12 design tokens + design system
+Layer 3  plans/NNN-name/                     one folder per feature, each refs the L2 files
          PLAN.md · plans/README.md           status dashboards (kept in sync, 3 places)
 ```
+
+**L2 is split by concern, and section numbers are stable.** A section keeps its `§N` wherever it
+lives, so existing `§8` / `§9` / `§12` references keep resolving after the split. `CONTEXT.md`
+opens with a **context map** (§ → file → owners) and leaves a `➜ Moved to …` stub where a
+section moved out. One concern lives in exactly one file — link to it, never copy it.
+Projects created before the split still work; `/icontext-update` offers the refactor.
 
 Each plan is a **folder split by role** — sections **0–11** distributed across files by their
 primary owner (BU/PO/DEV/QA/OPS/STK):
@@ -31,21 +41,38 @@ plans/NNN-name/
 ├── bu.md       0 Decisions · 1 Goal · Use Cases · User Stories · Acceptance Criteria · Definition of Done
 ├── po.md       2 Scope · 3 User Stories · 10 Tasks · 11 Open Questions
 ├── dev.md      5 Tech & Architecture · 6 Data Model · Migration scripts · 7 API Contract · API changes · Pages/routes
-├── qa.md       9 Test Plan (>80%) · Test Scenarios · Test Cases · Test Status · Test Coverage
-├── ops.md      8 Security & Privacy · Deploy/Migrations
+├── qa.md       9 Test Plan (>80%) · AC trace · Test Scenarios · Test Cases · Scenario checklist · Test Status · Test Coverage
+├── ops.md      8 Security & Privacy · Deploy/Migrations · 8.1 security-review results
 └── stk.md      4 Requirement Discovery / Requirement Review / Persona Panel
 ```
 
 Main feature workflow:
 choose `/grill-with-docs` or `/wayfinder` for requirement discovery → `ROLE.md` multi-agent
-requirement review → write the role-split plan → gstack `/autoplan` plan preparation → iterative
-implementation → QA gates.
+requirement review → write the role-split plan → gstack `/autoplan` plan preparation →
+`security-review` **supply-chain** (plan phase) → iterative implementation, each slice closed by
+`security-review` **secret · code-review · auth · dependency · docker** → QA gates.
 
 Context maintenance workflow:
 run `/icontext-update` when the template itself changed or a known artifact is missing; run
 `/icontext-audit` when you want a full health check against the latest template, real repo state,
 plan status, and Markdown cleanup candidates; run `/icontext-visualize` when you want an HTML/JS
 dependency graph of the current context.
+
+## Wired-in skills (dependencies)
+
+| Skill | Source | Phase | What runs |
+|-------|--------|-------|-----------|
+| `/grill-with-docs` | mattpocock/skills | requirement | discovery for clear-ish requirements |
+| `/wayfinder` | aihero.dev | requirement | discovery for large/foggy requirements |
+| `ROLE.md` panel | iContext template | requirement | BU·PO·DEV·QA·OPS·STK requirement review |
+| `/autoplan` + `/plan-*-review` | gstack | plan | ceo · eng · design (if UI) · devex (if dev-facing) |
+| **`security-review`** | [ice-limited/security-skill](https://github.com/ice-limited/security-skill) | **plan** | **supply-chain** |
+| **`security-review`** | same | **implement** (each slice) | **secret · code-review · auth · dependency · docker** |
+
+`security-review` runs real detectors (Semgrep, Trivy, Checkov, OSV-Scanner, Scorecard) and reports
+their structured findings — it is never a substitute for running them. Findings are recorded in the
+plan's `ops.md` §8.1 and gate `done`. Its remaining detectors (api · iac · kubernetes ·
+cicd-pipeline · race-condition) stay ad hoc. Full wiring: `SECURITY.md` §11.6.
 
 Task status flows `to do → plan → ready to implement → implement → ready to test → done`
 (reach `ready to implement` only after `/autoplan` or the review chain). Before implementing any
@@ -137,6 +164,7 @@ iContext/
   requirements or `/wayfinder` for large/foggy requirements without a clear solution path, then
   review the requirement with the multi-agent role panel in `ROLE.md`.
 - **Before implementing any plan, run the review chain** (`/autoplan`): ceo · eng · design (if UI) · devex (if dev-facing).
+- **Install `security-review`** (https://github.com/ice-limited/security-skill) — the security dependency skill, wired into two phases (`CONTEXT.md` §11.6): **plan** → `supply-chain`; **implement** (each slice) → `secret` · `code-review` · `auth` · `dependency` · `docker`. Findings land in the plan's `ops.md` §8.1 and gate `done`.
 - **Confirm every `CONTEXT.md` section** with the owner before writing; **non-destructive** — never delete/overwrite existing context, only add what's missing.
 - **Audit before cleanup** — `/icontext-audit` must ask about every missing, stale, unclear, or extra Markdown item before updating, archiving, or deleting it.
 - **Visualize read-only** — `/icontext-visualize` exports static HTML/JS graphs without changing context or app source files.

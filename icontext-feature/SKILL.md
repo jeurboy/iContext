@@ -48,6 +48,10 @@ Portable across agents - see [adapters/](./adapters/). SKILL.md is the Claude Co
 - **Step 4 ROLE.md review (required)** - read `ROLE.md` and use it as a multi-agent requirement
   review panel. Put Works / Concern / Suggestion / Plan impact into `stk.md` §4 and fold accepted
   changes into the role files before `/autoplan`.
+- **Step 1b L2 context read** - read the Layer-2 files the feature touches, not just
+  `CONTEXT.md`: `PRODUCT.md` (§1-2) always, `QA.md` (§9) before the test plan, `SECURITY.md`
+  (§8) for new routes/pages/roles/deps, `DESIGN.md` (§12) for UI. If the project still keeps
+  all of §1-13 in one `CONTEXT.md`, read them there and mention `icontext-update` can split it.
 - **Step 1 scaffolding check** - use `Bash` to check for `styles/` (style guide),
   `docs/openapi.yaml`, and `.vscode/launch.json`. For any that are missing, ask with
   `AskUserQuestion` (multi-select) whether to create them, then create approved ones from the
@@ -56,6 +60,11 @@ Portable across agents - see [adapters/](./adapters/). SKILL.md is the Claude Co
 - **Feature brief + persona prompt** - gather with `AskUserQuestion`.
 - **Plan preparation** - after writing and registering the plan, run gstack `/autoplan` (or the
   individual review chain) before moving toward `ready to implement`.
+- **Step 7 plan-phase security review** - after `/autoplan`, run the `security-review` skill's
+  **supply-chain** sub-skill (dependency skill: https://github.com/ice-limited/security-skill) over
+  the plan's proposed dependencies / build / release surface, and record the real detector output in
+  `ops.md` §8.1. The **implement-phase** sub-skills (secret · code-review · auth · dependency ·
+  docker) belong to the implementation loop, not to this skill - see `CONTEXT.md` §11.6.
 - **Write plan** - a plan is a **folder** `plans/NNN-<slug>/`. Copy `templates/plan-template/`
   (role files bu/po/dev/qa/ops/stk.md + README.md), fill sections, set `Task status: plan` in the
   folder README, ref `CONTEXT.md`. Then register status in `plans/README.md` + `PLAN.md`.

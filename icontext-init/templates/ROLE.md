@@ -13,7 +13,7 @@ owned by these roles (see CONTEXT.md §11.1).
 | **PO** | เจ้าของงาน / Product Owner | scope, priority, acceptance, user stories |
 | **DEV** | พัฒนา / Development | architecture fit, testability, tech debt, data model, API |
 | **QA** | ทดสอบ / Testing | coverage >80%, edge cases, regressions, test plan |
-| **OPS** | DevOps / Deploy | deploy, env, migrations, secrets, observability |
+| **OPS** | DevOps / Deploy | deploy, env, migrations, secrets, observability, `security-review` findings (SECURITY.md §11.6) |
 | **STK** | Stakeholder / end user | real-world usability, does it actually help |
 
 ## Concrete panel (starter team — edit to fit the org)

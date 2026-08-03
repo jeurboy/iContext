@@ -1,21 +1,40 @@
 # {{PROJECT_NAME}} — CONTEXT.md (Layer 2 · single source of truth)
 
-> Architecture §1–13. **Read this before anything.** Every plan in `plans/` must `ref` this file.
+> **Read this before anything.** Every plan in `plans/` must `ref` this file.
 > Companion indexes: `PLAN.md` (status dashboard) · `plans/README.md` (plan index) · `ROLE.md` (multi-agent role panel).
+
+## Context map — where each section lives
+Layer 2 is **five files at the repo root**, split by concern. Section numbers §1–13 are global and
+**stable**: a section keeps its number wherever it lives, so every `§N` reference in plans, docs,
+and older notes still resolves. Read CONTEXT.md first; follow the link when you need that concern.
+
+| § | Section | File | Owners |
+|---|---------|------|--------|
+| 1 | Product Overview | [PRODUCT.md](./PRODUCT.md) | `STK BU PO` |
+| 2 | Key Decisions | [PRODUCT.md](./PRODUCT.md) | `STK BU PO` |
+| 3–6 | Architecture · Tech Stack · Repo · Services | **CONTEXT.md** (here) | `DEV OPS` |
+| 7 | Data Model | **CONTEXT.md** (here) | `DEV OPS` |
+| 8 | Security Model | [SECURITY.md](./SECURITY.md) | `DEV QA OPS` |
+| 9 | Testing & Quality Gates | [QA.md](./QA.md) | `QA DEV OPS` |
+| 10 | Skills Used | **CONTEXT.md** (here) | all |
+| 11 | Workflow + Plan Standard | **CONTEXT.md** (here) | all |
+| 11.6 | Security review wiring | [SECURITY.md](./SECURITY.md) | `DEV QA OPS` |
+| 12 | Design Tokens & Design System | [DESIGN.md](./DESIGN.md) | `DEV` + design |
+| 13 | Open Questions | [PRODUCT.md](./PRODUCT.md) | `PO BU STK` |
+
+> **Rule:** a concern lives in exactly one file. Never copy a section into another file — link to
+> it. If a change touches more than one of these files, update them **in the same change** (§11.3).
 
 ---
 ## ผลิตภัณฑ์ & ทิศทาง · Product & Direction
 
 ### 1. ภาพรวมผลิตภัณฑ์ · Product Overview
-- **What:** {{PROJECT_DESC}}
-- **Platforms:** {{PLATFORMS}}
-- **Reference:** {{REFERENCE}}
-- **Status:** scaffolded — features not yet implemented
-<!-- TODO: target users, value proposition -->
+➜ **Moved to [PRODUCT.md](./PRODUCT.md) §1** — what the product is, platforms, target users,
+value proposition, success metrics, non-goals.
 
 ### 2. Key Decisions
-<!-- Log decisions: date · decision · why · alternatives rejected. -->
-- {{DATE}} — Stack chosen: web {{WEB_STACK}}, mobile {{MOBILE_STACK}}, api {{API_STACK}}, db {{DB_STACK}}.
+➜ **Moved to [PRODUCT.md](./PRODUCT.md) §2** — decision log (date · decision · why · alternatives
+rejected). Deep technical ADRs live in `docs/adr/` and are linked from that table.
 
 ---
 ## สถาปัตยกรรม · Architecture
@@ -35,8 +54,11 @@
 
 ### 5. โครงสร้าง Repo · Repo Structure
 - Mono-root with each service as its **own git repo wired as a submodule**: `api/`, `web/`, `app/`.
-- Context backbone (this file, `CLAUDE.md`/`AGENTS.md`/`AGENT.md`/`GEMINI.md`, `ROLE.md`, `plans/`, `styles/`,
-  `docs/`, `PLAN.md`) lives at the root.
+- Context backbone lives at the root:
+  - **L1 agent files** — `CLAUDE.md` / `AGENTS.md` / `AGENT.md` / `GEMINI.md`
+  - **L2 context (5 files, split by concern)** — `CONTEXT.md` (this file: architecture + workflow) ·
+    `PRODUCT.md` · `QA.md` · `SECURITY.md` · `DESIGN.md` — see the context map at the top
+  - **L3 + shared** — `ROLE.md`, `PLAN.md`, `plans/`, `styles/`, `docs/`
 
 ### 6. รายการ Service · Services
 | Service | Stack | Port | STRUCTURE |
@@ -65,17 +87,33 @@
 ## คุณภาพ & ความปลอดภัย · Quality & Security
 
 ### 8. Security Model
-<!-- TODO: authn/authz, roles (e.g. admin vs customer), data protection, secrets handling -->
+➜ **Moved to [SECURITY.md](./SECURITY.md) §8** — authn, authz/roles (deny-by-default + permissions
+matrix rule), data protection & PII, secrets handling, threats & accepted risks.
+Automated enforcement: the `security-review` dependency skill runs in the plan and implement
+phases — see **[SECURITY.md](./SECURITY.md) §11.6** for which sub-skill runs when.
 
 ### 9. Testing & Quality Gates
+➜ **Moved to [QA.md](./QA.md) §9** — coverage gate per service, the 🛑 AC-traceability rule,
+scenario naming (Title 1 / Title 2), test types, the four required scenario kinds
+(Success · Alternative · Boundary · Edge incl. permission-denied), priority, effort, reusability,
+and optional tracker export.
+
+Headline gates (detail in QA.md):
 - Unit tests on API + Playwright UI tests. **Coverage > 80%** (hard gate).
-- A plan reaches `done` only when: API spec synced · User Stories complete · tests > 80%.
+- 🛑 Every test case traces back to a PO acceptance criterion; a plan with no acceptance criteria
+  is not accepted.
+- A plan reaches `done` only when: API spec synced · User Stories complete · tests > 80% ·
+  security review clean (no unresolved high/critical finding from SECURITY.md §11.6).
 
 ### 10. Skills ที่ใช้ · Skills Used
 - **Install first (every project):** `gstack` — https://github.com/garrytan/gstack — provides the
   `/gstack-*` commands incl. **`/autoplan`** and the plan-review chain (`/plan-ceo-review`,
   `/plan-eng-review`, `/plan-design-review`, `/plan-devex-review`) used before implementing.
-- `gstack` · `ui-ux-pro-max` · `impeccable` (design/QA companions)
+- **Install first (every project):** `security-review` — https://github.com/ice-limited/security-skill
+  — the security dependency skill. Runs real detectors (secret, code-review, auth, dependency,
+  docker, supply-chain, api, iac, kubernetes, cicd-pipeline) and reports their structured findings.
+  Wired into the plan + implement phases — see **[SECURITY.md](./SECURITY.md) §11.6**.
+- `gstack` · `ui-ux-pro-max` · `impeccable` (design/QA companions — see [DESIGN.md](./DESIGN.md) §12.7)
 - `grill-with-docs` (or equivalent grilling workflow) for clear-ish requirement discovery + ADR/domain updates
 - `wayfinder` for large/foggy requirements where the solution path is not clear yet
 - `icontext-init` (scaffold) · `icontext-feature` (plans)
@@ -85,7 +123,8 @@
 
 ### 11. Workflow + Plan Standard
 - Build context first → then features one at a time via `/icontext-feature`. Never commit/push unless told.
-- **Second brain principle:** every `.md` file — this `CONTEXT.md`, `PLAN.md`, everything under
+- **Second brain principle:** every `.md` file — this `CONTEXT.md`, its L2 siblings (`PRODUCT.md`,
+  `QA.md`, `SECURITY.md`, `DESIGN.md`), `PLAN.md`, everything under
   `plans/` and `docs/` — is the project's persistent memory, not throwaway paperwork. Whenever a
   plan or approach is adjusted, follow up in the affected plan: record the work done **and the
   reasoning / thought process** behind the change (what changed, why, what was rejected), so any
@@ -95,7 +134,10 @@
 Use this workflow for every non-trivial feature so requirements, plan, context, and tests stay in
 sync:
 
-1. **Context check** — read `CONTEXT.md`, `PLAN.md`, `plans/README.md`, and the relevant existing
+1. **Context check** — read `CONTEXT.md` + the L2 files the feature touches
+   ([PRODUCT.md](./PRODUCT.md) always; [DESIGN.md](./DESIGN.md) if it has UI;
+   [SECURITY.md](./SECURITY.md) if it adds a route/page/dependency; [QA.md](./QA.md) before writing
+   any test), then `PLAN.md`, `plans/README.md`, and the relevant existing
    plan(s). Confirm the feature belongs in this project and note affected services from §6.
 2. **Requirement discovery route** — before writing the plan, ask the owner to choose:
    `/grill-with-docs` for requirements that mostly fit in one planning session, or `/wayfinder` for
@@ -103,8 +145,9 @@ sync:
    interview the owner until the requirement, edge cases, decisions, and domain terms are clear.
    With `/wayfinder`, chart/continue the map and do not write the iContext plan until
    planning-critical tickets are resolved enough to produce a useful plan. Capture durable decisions
-   in `docs/adr/` and update `CONTEXT.md` (especially §2, §7, §8, §13) when the feature changes
-   project knowledge. If companion skills are unavailable, run the same discovery process manually
+   in `docs/adr/` and update the L2 context when the feature changes project knowledge — especially
+   `PRODUCT.md` §2 (decisions) + §13 (open questions), `CONTEXT.md` §7 (data model), and
+   `SECURITY.md` §8 (security model). If companion skills are unavailable, run the same discovery process manually
    and document the outcome.
 3. **Requirement review with `ROLE.md` multi-agent panel** — use the roles/personas in `ROLE.md`
    to review the requirement before locking scope. If the agent supports subagents, run one reviewer
@@ -115,11 +158,15 @@ sync:
    files, set `Task status: plan`, and register the plan in `plans/README.md` + `PLAN.md`.
 5. **Plan preparation with gstack `/autoplan`** — run `/autoplan` (or the review chain in §11.4)
    to challenge scope, architecture, design, and developer experience. Apply accepted changes, then
-   move the plan to `ready to implement`.
-6. **Implementation loop** — implement in small slices following §11.5. Keep `CONTEXT.md`, the plan,
-   `docs/openapi.yaml`, styles, and data model in sync when architecture changes.
+   run the **plan-phase security review** (`security-review` → **supply-chain**, SECURITY.md §11.6) and record
+   its findings in the plan's `ops.md` §8. Only then move the plan to `ready to implement`.
+6. **Implementation loop** — implement in small slices following §11.5. Each slice ends with the
+   **implement-phase security review** (`security-review` → secret · code-review · auth ·
+   dependency · docker, SECURITY.md §11.6). Keep `CONTEXT.md`, the plan, `docs/openapi.yaml`, styles, and data
+   model in sync when architecture changes.
 7. **Final QA + done gates** — move to `ready to test`, run the test plan, confirm User Stories are
-   complete, sync the API spec, keep coverage > 80%, then mark `done` in all three status locations.
+   complete, sync the API spec, keep coverage > 80%, confirm no unresolved high/critical
+   `security-review` finding (SECURITY.md §11.6), then mark `done` in all three status locations.
 
 #### 11.1 Plan structure (every plan is a **folder** `plans/NNN-<name>/` split by role; sections 0–11)
 Roles: **BU** ธุรกิจ · **PO** เจ้าของงาน · **DEV** พัฒนา · **QA** ทดสอบ · **OPS** DevOps/Deploy · **STK** Stakeholder.
@@ -150,6 +197,8 @@ Task status lifecycle: `to do → plan → ready to implement → implement → 
 - **sync API spec** (`docs/openapi.yaml`) before `done`.
 - **User Stories complete** before `done`.
 - **test > 80%** before `done`.
+- **security review clean** before `done` — no unresolved high/critical finding from §11.6;
+  accepted risks written down in `ops.md` §8.
 
 #### 11.3 Keep everything in sync on architecture-impacting change
 Whenever a change affects the **core architecture** (§3–6) — services, data model, API contract,
@@ -159,6 +208,18 @@ or shared conventions — update all of these **together, in the same change**, 
 - **Doc** — `docs/openapi.yaml` (API spec) and any other docs the change touches.
 - **Style** — `styles/css/tokens.css` + `styles/components/` when UI / look-and-feel is affected.
 - **Data model** — keep §7 here, the plan's schema section, and DB migrations consistent.
+
+**L2 sibling triggers** — the same change must also update the concern file it touches:
+
+| If the change touches… | Update | In the same change |
+|------------------------|--------|--------------------|
+| product direction, scope, a decision, a new unknown | [PRODUCT.md](./PRODUCT.md) §1 / §2 / §13 | ✔ |
+| authn/authz, a new route or page, roles, secrets, PII | [SECURITY.md](./SECURITY.md) §8 | ✔ |
+| a quality gate, test type, scenario/priority/effort standard | [QA.md](./QA.md) §9 | ✔ |
+| a token, component, breakpoint, or any look-and-feel rule | [DESIGN.md](./DESIGN.md) §12 | ✔ |
+
+A concern lives in exactly one file — extend it there and link, never copy the section into a plan
+or into another L2 file.
 
 #### 11.4 Plan review chain — run `/autoplan` before implementing any plan
 Before moving a plan to **`ready to implement`** (i.e. before any implementation), run gstack
@@ -170,6 +231,10 @@ or run the individual reviews when `/autoplan` is unavailable:
 - **`/plan-devex-review`** — if developer-facing (API, SDK, CLI)
 
 These come from the `gstack` skill (§10). Capture outcomes in the plan before implementation.
+
+After the chain, run the **plan-phase security review** — `security-review` → **supply-chain**
+(SECURITY.md §11.6). A plan does not reach `ready to implement` with an unresolved high/critical supply-chain
+finding; either fix it, or record an explicit accepted-risk decision in `ops.md` §8.
 
 #### 11.5 Implementation loop (loop engineering) — status `implement`
 Once a plan is `ready to implement`, build it as a **tight iterative loop**, not one big pass.
@@ -191,14 +256,24 @@ in the loop instead of reviewing a giant diff at the end. Each cycle:
 5. **Review with the owner** — show what was built (diff · screenshots · the running app),
    **explain how you tested it** (what ran, what you observed, current coverage), and **ask for
    feedback explicitly**. Don't assume silence = approval.
+5.5. **Security review the slice** — run `security-review` over what the slice actually touched:
+   **secret · code-review · auth · dependency · docker** (SECURITY.md §11.6). Fix or explicitly accept every
+   high/critical finding before the slice leaves the loop; log the outcome in `ops.md` §8.
 6. **Fold in feedback** → back to step 1 for the next slice.
 
 Repeat until every User Story passes, acceptance criteria (bu.md / qa.md) are met, and coverage
 is > 80% — then move the plan to **`ready to test`** for a final QA pass before `done`.
 
-### 12. Design Tokens
-- Central tokens in `styles/css/tokens.css`. **Never inline colors / look-and-feel.** Web (Tailwind)
-  and mobile (theme) mirror these tokens.
+#### 11.6 Security review — `security-review` wired into the lifecycle
+➜ **Moved to [SECURITY.md](./SECURITY.md) §11.6** — which sub-skill runs in which phase
+(plan: supply-chain · implement: secret · code-review · auth · dependency · docker), the per-slice
+scope rules, and the `done` gate. Findings are always recorded in the plan's `ops.md` §8.
+
+### 12. Design Tokens & Design System
+➜ **Moved to [DESIGN.md](./DESIGN.md) §12** — token map, theming, component inventory, layout &
+responsive rules, accessibility baseline, design workflow, voice & content.
+Headline rule: central tokens in `styles/css/tokens.css` only — **never inline colors /
+look-and-feel**; web (Tailwind) and mobile (theme) mirror those tokens.
 
 ### 13. Open Questions
-<!-- TODO: collect unknowns here -->
+➜ **Moved to [PRODUCT.md](./PRODUCT.md) §13** — open questions with owner + what unblocks them.

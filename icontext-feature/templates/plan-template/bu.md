@@ -1,6 +1,6 @@
 # NNN · BU (Business) — <Feature Name>
 
-> ref: [CONTEXT.md](../../CONTEXT.md) · index: [README.md](./README.md)
+> ref: [CONTEXT.md](../../CONTEXT.md) · **product:** [PRODUCT.md](../../PRODUCT.md) §1–2 · index: [README.md](./README.md)
 > Owns: business framing + decisions. Collaborators in `(...)`.
 
 ## 0. Decisions · `STK BU PO`

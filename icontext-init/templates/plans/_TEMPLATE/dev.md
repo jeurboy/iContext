@@ -1,6 +1,6 @@
 # NNN · DEV (Development) — <Feature Name>
 
-> ref: [CONTEXT.md](../../CONTEXT.md) · index: [README.md](./README.md)
+> ref: [CONTEXT.md](../../CONTEXT.md) §3–7 · **design:** [DESIGN.md](../../DESIGN.md) §12 (if UI) · index: [README.md](./README.md)
 > Owns: technical design, data model, API. Align with CONTEXT.md §3–7.
 
 ## 5. Tech & Architecture · `DEV OPS`

@@ -8,7 +8,9 @@
 - **Requires an existing project context.** If the target root has no `CONTEXT.md`, stop and tell
   the user to run `icontext-init` first.
 - **Never overwrite owner-authored content.** Existing text is the source of truth. Add only missing
-  files, headings, sections, or clearly missing workflow bullets.
+  files, headings, sections, or clearly missing workflow bullets. The one structural change this
+  skill may make is the **L2 split** (Step 5.5) — and only with explicit per-file approval, moving
+  the owner's text verbatim and leaving a pointer stub behind.
 - **Confirm every change before writing.** Inventory and planning can run without approval, but
   every file creation, section insertion, bullet append, or template patch must be shown to the user
   and explicitly confirmed before it is applied. Batch confirmations are allowed only when the user
@@ -26,7 +28,9 @@ Run `check-update.sh` next to this file and surface its one-line result. Continu
 ## Step 1 — Confirm update mode
 At the target root, confirm `CONTEXT.md` exists. Then inventory the current iContext artifacts:
 - L1 files: `CLAUDE.md`, `AGENTS.md`, `AGENT.md`, `GEMINI.md`
-- L2: `CONTEXT.md`, `ROLE.md`
+- **L2 context (5 files, split by concern)**: `CONTEXT.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`,
+  `DESIGN.md` — plus `ROLE.md`. A project still holding all of §1–13 in one `CONTEXT.md` is a
+  **split candidate** → Step 5.5
 - L3/status: `PLAN.md`, `plans/README.md`, `plans/_TEMPLATE/`
 - Shared scaffolding: `docs/openapi.yaml`, `styles/css/tokens.css`, `styles/components/`,
   `.vscode/launch.json`, `docker-compose.yml`
@@ -42,9 +46,13 @@ Create a gap table before editing. Do not write anything yet:
 | `AGENTS.md` | missing | create from latest template |
 | `CONTEXT.md §11.0` | missing | insert latest workflow subsection |
 
-Track both file-level gaps and section-level gaps. For `CONTEXT.md`, check for the latest section
-set: §1–13, §11.0 main workflow, §11.1 plan structure, §11.2 plan rules, §11.3 sync rule, §11.4
-`/autoplan` review chain, and §11.5 implementation loop.
+Track both file-level gaps and section-level gaps. Check for the latest section set §1–13 **across
+the L2 files** (a section counts as present wherever it lives): §11.0 main workflow, §11.1 plan
+structure, §11.2 plan rules, §11.3 sync rule + L2 sibling triggers, §11.4 `/autoplan` review chain,
+§11.5 implementation loop, and §11.6 `security-review` phase wiring.
+
+If `PRODUCT.md` / `QA.md` / `SECURITY.md` / `DESIGN.md` are missing, add a row per file with the
+action `split out of CONTEXT.md (Step 5.5)` — and treat it as a proposal, not a decision.
 
 ## Step 3 — Confirm the change plan
 Before editing, present the planned changes in a confirmation table:
@@ -72,20 +80,104 @@ Only apply file backfills that the user confirmed in Step 3.
 
 ## Step 5 — Backfill missing sections
 Patch only missing sections/headings:
-- **`CONTEXT.md`** — insert missing §1–13 sections or missing §11 subsections from the latest
-  template. Preserve all existing text. If exact insertion is risky, append a clearly titled
+- **L2 files** — insert missing §1–13 sections or missing §11 subsections from the latest
+  templates, each into its owning file (`PRODUCT.md` §1/§2/§13 · `CONTEXT.md` §3–7/§10/§11 ·
+  `SECURITY.md` §8/§11.6 · `QA.md` §9 · `DESIGN.md` §12). On a not-yet-split project, insert into
+  `CONTEXT.md` and offer the split separately (Step 5.5) — don't force it.
+  Preserve all existing text. If exact insertion is risky, append a clearly titled
   "Backfilled from latest iContext template" block near the relevant parent section.
 - **`ROLE.md`** — ensure the Requirement Review Protocol exists. If absent, append it from the
   latest template so future plans can use multi-agent requirement review.
 - **Plan templates** — ensure `plans/_TEMPLATE/README.md`, `bu.md`, `po.md`, `dev.md`, `qa.md`,
   `ops.md`, and `stk.md` exist and include the latest §4 Requirement Discovery / Requirement Review
-  / Persona Panel shape.
+  / Persona Panel shape, and that `ops.md` carries the latest §8.1 Security review table
+  (`security-review` plan/implement phase wiring).
 - **Indexes** — ensure `PLAN.md` and `plans/README.md` exist. Do not reorder existing plans.
 
 When content is partially present, prefer the smallest additive patch: add the missing subsection,
 bullet, or table row. Never normalize prose just to match the template.
 Only apply section backfills that the user confirmed in Step 3. If a patch becomes materially
 different from what was confirmed, stop and ask again before writing.
+
+## Step 5.5 — Refactor a monolithic `CONTEXT.md` into the L2 split
+Latest iContext splits Layer 2 into **five files at the repo root**, one per concern. Older projects
+have all of §1–13 inside a single `CONTEXT.md`. This step offers that refactor. It is **opt-in and
+never automatic** — a monolithic context is still valid; only split when the owner says so.
+
+### 5.5.1 Target shape
+| File | Sections it owns | Owners |
+|------|------------------|--------|
+| `CONTEXT.md` | context map · §3 Architecture · §4 Tech Stack · §5 Repo · §6 Services · §7 Data Model · §10 Skills · §11 Workflow (minus §11.6) | `DEV OPS` |
+| `PRODUCT.md` | §1 Product Overview · §2 Key Decisions · §13 Open Questions | `STK BU PO` |
+| `QA.md` | §9 Testing & Quality Gates (coverage gate, AC traceability, scenario standard) | `QA DEV OPS` |
+| `SECURITY.md` | §8 Security Model · §11.6 `security-review` wiring | `DEV QA OPS` |
+| `DESIGN.md` | §12 Design Tokens & Design System | `DEV` + design |
+
+**Section numbers do not change.** A section keeps its number wherever it lives, so every `§N`
+reference in existing plans, docs, ADRs, and notes still resolves. This is what makes the refactor
+safe on a project with dozens of plans — **never renumber.**
+
+### 5.5.2 Detect
+Split applies when `CONTEXT.md` exists **and** any of `PRODUCT.md` / `QA.md` / `SECURITY.md` /
+`DESIGN.md` is missing. Report the state per file:
+- **missing** → candidate to create by moving sections out of `CONTEXT.md`
+- **exists** → leave alone; only backfill missing sections inside it (Step 5)
+- **partial** (file exists but the section is still duplicated in `CONTEXT.md`) → flag the
+  duplication explicitly; ask which copy is authoritative. Never silently pick one.
+
+### 5.5.3 Propose, per file
+Present one row per proposed file **before writing anything**, and get an explicit yes/no on each.
+The owner may split some files and not others.
+
+| # | New file | Sections moved out of `CONTEXT.md` | Lines moved | Approve? |
+|---|----------|------------------------------------|-------------|----------|
+| 1 | `PRODUCT.md` | §1, §2, §13 | <!-- n --> | |
+| 2 | `QA.md` | §9 | <!-- n --> | |
+| 3 | `SECURITY.md` | §8, §11.6 | <!-- n --> | |
+| 4 | `DESIGN.md` | §12 | <!-- n --> | |
+
+Also list, in the same confirmation, every reference that will be rewritten (5.5.5) so the owner
+sees the full blast radius up front.
+
+### 5.5.4 Apply — move, never copy
+For each approved file:
+1. **Create** it from `../icontext-init/templates/<FILE>` — this supplies the header, the sibling
+   links, the owners line, and the "keeping this in sync" footer.
+2. **Move the owner's existing section text in verbatim.** The owner's wording is the source of
+   truth. Template scaffolding (extra sub-headings, empty tables, TODO prompts) is **additive
+   only** — append it under the owner's content, or drop it if it would bury real text. Never
+   reword, reorder, or "improve" what the owner wrote.
+3. **Replace the section in `CONTEXT.md` with a pointer stub**, keeping the original heading so
+   anchors and the reading order survive:
+   ```markdown
+   ### 9. Testing & Quality Gates
+   ➜ **Moved to [QA.md](./QA.md) §9** — <one-line summary of what's there now>.
+   ```
+   Keep 2–4 headline bullets in the stub only when a reader genuinely needs them without opening
+   the other file (e.g. the coverage gate). Everything else goes to the new file.
+4. **Insert the context map** at the top of `CONTEXT.md` (§ → file → owners table) if it isn't
+   there yet — it is what makes the split navigable.
+5. **Verify no content was lost**: every heading present before the split must exist either in
+   `CONTEXT.md` or in exactly one new file. Report the before/after heading count.
+
+🛑 **Never delete a section without it landing somewhere.** If a move can't be made cleanly (odd
+nesting, a section that mixes two concerns), stop and ask the owner rather than guessing.
+
+### 5.5.5 Rewrite references
+After moving, update pointers so nothing dangles — additive edits only:
+- **L1 files** (`CLAUDE.md`, `AGENTS.md`, `AGENT.md`, `GEMINI.md`) — add the four new files to
+  "Read first", and add the "one concern, one file" hard rule.
+- **`CONTEXT.md` §11.3** — add the L2 sibling trigger table (which file to update for which change).
+- **Plan role files** (`plans/*/`, `plans/_TEMPLATE/`) — retarget the `> ref:` lines:
+  `bu.md`/`po.md` → `PRODUCT.md` · `qa.md` → `QA.md` · `ops.md` → `SECURITY.md` ·
+  `dev.md` → `CONTEXT.md` (+ `DESIGN.md` when the plan has UI).
+- **Bare `§8` / `§9` / `§11.6` / `§12` mentions** in prose → qualify them with the file name
+  (`SECURITY.md §11.6`), since the number alone no longer says which file.
+- Leave existing plan **content** untouched. Only the ref lines change.
+
+### 5.5.6 If the owner declines
+Leave the monolithic `CONTEXT.md` exactly as it is and mark the row `skipped` in the final gap
+table. Do not partially split, and do not re-ask on the next run beyond a one-line mention.
 
 ## Step 6 — Mandatory owner checks
 Ask the owner only when a missing mandatory field would make the context misleading:

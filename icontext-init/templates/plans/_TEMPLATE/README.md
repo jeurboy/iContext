@@ -18,7 +18,7 @@
 | [bu.md](./bu.md) | BU · Business | 0 Decisions · 1 Goal · Use Cases · User Stories · Acceptance Criteria · Definition of Done |
 | [po.md](./po.md) | PO · Product Owner | 2 Scope · 3 User Stories · 10 Tasks/Checklist · 11 Open Questions |
 | [dev.md](./dev.md) | DEV · Development | 5 Tech & Architecture · 6 Data Model/Schema · Migration scripts · 7 API Contract · API changes · Pages/routes |
-| [qa.md](./qa.md) | QA · Testing | 9 Test Plan (>80%) · How to run · Implementation loop & regression · Test Scenarios · Test Cases · Test Status · Test Coverage |
+| [qa.md](./qa.md) | QA · Testing | 9 Test Plan (>80%) · How to run · Implementation loop & regression · Acceptance criteria (AC trace) · Test Scenarios · Test Cases · Scenario checklist · Export (optional) · Test Status · Test Coverage |
 | [ops.md](./ops.md) | OPS · DevOps/Deploy | 8 Security & Privacy · Deploy/Migrations |
 | [stk.md](./stk.md) | STK · Stakeholder | 4 Requirement Discovery / Requirement Review / Persona Panel |
 
@@ -37,4 +37,11 @@ Run via gstack `/autoplan` (or one by one). Check off + capture outcomes before 
 - [ ] `/plan-devex-review` — if developer-facing (API, SDK, CLI)
 
 ### Gates before `done`
-API spec synced (`docs/openapi.yaml`) · User Stories complete (po.md §3) · test coverage > 80% (qa.md §9).
+API spec synced (`docs/openapi.yaml`) · User Stories complete (po.md §3) · test coverage > 80%
+(qa.md §9 / [QA.md](../../QA.md)) · security review clean ([SECURITY.md](../../SECURITY.md) §11.6)
+· style guide updated if UI changed ([DESIGN.md](../../DESIGN.md) §12).
+
+### L2 context this plan must stay in sync with
+[CONTEXT.md](../../CONTEXT.md) (architecture/workflow) · [PRODUCT.md](../../PRODUCT.md) (direction,
+decisions) · [QA.md](../../QA.md) (test standard) · [SECURITY.md](../../SECURITY.md) (security model) ·
+[DESIGN.md](../../DESIGN.md) (design system). Link to them — never copy a section in here.

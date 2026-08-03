@@ -1,6 +1,6 @@
 # NNN · STK (Stakeholder) — <Feature Name>
 
-> ref: [CONTEXT.md](../../CONTEXT.md) · index: [README.md](./README.md)
+> ref: [CONTEXT.md](../../CONTEXT.md) · **product:** [PRODUCT.md](../../PRODUCT.md) · index: [README.md](./README.md)
 > Owns: requirement review / persona-panel review (see ROLE.md).
 
 ## 4. Requirement Discovery / Requirement Review / Persona Panel · `STK BU PO DEV QA OPS`
