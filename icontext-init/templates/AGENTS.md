@@ -4,7 +4,8 @@ Agent boilerplate for OpenAI Codex. Single source of truth: **CONTEXT.md**.
 (Mirror of `AGENT.md` / `CLAUDE.md` / `GEMINI.md`.)
 
 ## Read first
-- `CONTEXT.md` — L2 architecture + workflow (read before anything); it opens with a **context map**
+- `CONTEXT.md` — L2 context map + workflow (read before anything)
+- `DEV.md` — L2 §3–7 architecture, stack, repo, services, and data model
 - `PRODUCT.md` — L2 §1 product overview · §2 key decisions · §13 open questions
 - `QA.md` — L2 §9 testing standard + quality gates (read before writing any test)
 - `SECURITY.md` — L2 §8 security model · §11.6 `security-review` wiring
@@ -35,7 +36,7 @@ Agent boilerplate for OpenAI Codex. Single source of truth: **CONTEXT.md**.
   Stories pass and coverage > 80%.
 - **Task status:** `to do → plan → ready to implement → implement → ready to test → done`.
 - **Never `git commit` / `git push` unless explicitly told.**
-- Summarize tech stack + architecture (CONTEXT.md §3–6) **before** implementing any service.
+- Summarize tech stack + architecture (`DEV.md` §3–6) **before** implementing any service.
 - Tests: unit (API) + Playwright (UI), **coverage > 80%** — full standard in `QA.md` §9
   (AC traceability, scenario naming, the 4 required scenario kinds, priority, effort).
 - `styles/`: no inline colors / look-and-feel — central tokens in `styles/css/tokens.css` only;
@@ -44,17 +45,18 @@ Agent boilerplate for OpenAI Codex. Single source of truth: **CONTEXT.md**.
 - A plan reaches `done` only when: API spec synced · User Stories complete · tests > 80% ·
   security review clean (no unresolved high/critical finding from `SECURITY.md` §11.6).
 - On status change, update **3 places**: plan file · `plans/README.md` · `PLAN.md`.
-- **Second brain:** treat every `.md` file — the L2 set (`CONTEXT.md`, `PRODUCT.md`, `QA.md`,
+- **Second brain:** treat every `.md` file — the L2 set (`CONTEXT.md`, `DEV.md`, `PRODUCT.md`, `QA.md`,
   `SECURITY.md`, `DESIGN.md`), `PLAN.md`, `plans/`, `docs/` — as the
   project's persistent memory. Whenever a plan or approach changes, update the affected plan with
   what was done AND the reasoning/thought process behind the change, so anyone (human or agent)
   can reconstruct the thinking later. Never change direction silently.
-- **One concern, one file (L2 split).** Product → `PRODUCT.md` · testing → `QA.md` · security →
-  `SECURITY.md` · design → `DESIGN.md` · architecture + workflow → `CONTEXT.md`. Section numbers
+- **One concern, one file (L2 split).** Development + architecture → `DEV.md` · product →
+  `PRODUCT.md` · testing → `QA.md` · security → `SECURITY.md` · design → `DESIGN.md` · workflow →
+  `CONTEXT.md`. Section numbers
   §1–13 are stable across the split. Extend the owning file and link to it — **never copy a section
   into another file or into a plan.** `CONTEXT.md` opens with the context map.
 - **Any change that impacts the core architecture ⇒ update in sync, in the same change:**
-  `CONTEXT.md` (incl. **§7 Data Model**) · the L2 concern file it touches (`PRODUCT.md` /
+  `DEV.md` (incl. **§7 Data Model**) · `CONTEXT.md` workflow · the L2 concern file it touches (`PRODUCT.md` /
   `QA.md` / `SECURITY.md` / `DESIGN.md`) · the affected `plans/` plan · `docs/openapi.yaml` (API
   doc) · `styles/` tokens. Never let context, plan, doc, data model, and style drift apart.
 

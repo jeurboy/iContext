@@ -6,5 +6,5 @@
 
 ## Conventions
 - snake_case tables/columns; `id` PK; `created_at` / `updated_at` timestamps.
-- Use foreign keys + indexes; document relationships in CONTEXT.md §5.
+- Use foreign keys + indexes; document relationships in DEV.md §7.
 - Seed data (optional) under `api/seeds/`.

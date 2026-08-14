@@ -1,16 +1,16 @@
 # NNN · DEV (Development) — <Feature Name>
 
-> ref: [CONTEXT.md](../../CONTEXT.md) §3–7 · **design:** [DESIGN.md](../../DESIGN.md) §12 (if UI) · index: [README.md](./README.md)
-> Owns: technical design, data model, API. Align with CONTEXT.md §3–7.
+> ref: [CONTEXT.md](../../CONTEXT.md) · **development:** [DEV.md](../../DEV.md) §3–7 · **design:** [DESIGN.md](../../DESIGN.md) §12 (if UI) · index: [README.md](./README.md)
+> Owns: technical design, data model, API. Align with DEV.md §3–7.
 
 ## 5. Tech & Architecture · `DEV OPS`
 <!-- Components, services touched (api/web/app), design decisions. -->
 
 ## 6. Data Model / Schema · `DEV OPS`
-<!-- Tables/entities + relationships. Align with CONTEXT.md §7. -->
+<!-- Tables/entities + relationships. Align with DEV.md §7. -->
 
 ### Migration scripts · `DEV OPS`
-<!-- Migrations this feature adds (keep consistent with CONTEXT.md §7 + DB). e.g.:
+<!-- Migrations this feature adds (keep consistent with DEV.md §7 + DB). e.g.:
 | File | Up (change) | Down (rollback) |
 |------|-------------|-----------------|
 | `NNN_create_x.sql` | <!-- ... --> | <!-- ... --> | -->

@@ -4,7 +4,7 @@ Export an existing iContext project as an interactive static dependency graph. T
 of files, `context-graph.html` and `context-graph.js`, that can be opened directly in a browser
 without a server or package install.
 
-The exporter reads the Layer-2 context set — `CONTEXT.md` plus `PRODUCT.md`, `QA.md`,
+The exporter reads the Layer-2 context set — `CONTEXT.md` plus `DEV.md`, `PRODUCT.md`, `QA.md`,
 `SECURITY.md`, and `DESIGN.md` when the project has split them — along with agent files,
 role/status files, plans, docs, style artifacts,
 service `STRUCTURE.md` files, manifests, and useful Markdown references. The concern files get

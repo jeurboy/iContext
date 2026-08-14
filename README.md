@@ -1,15 +1,15 @@
 # iContext
 
-**Version 1.12.1** · five portable agent-skills that bootstrap, audit, visualize, and maintain a **layered project
+**Version 1.13.0** · five portable agent-skills that bootstrap, audit, visualize, and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
 | Skill | Command | Does |
 |-------|---------|------|
-| **icontext-init** | `/icontext-init` | Scaffold the context backbone (L1 agent files · L2 `CONTEXT.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` + `DESIGN.md` · L3 `plans/`) + service skeletons. **Greenfield** (new), **brownfield** (read & summarize an existing codebase), or **update/sync** (fill only the missing pieces of an existing backbone). Confirms every `CONTEXT.md` section with you first; **idempotent & non-destructive** — re-running never deletes or overwrites your context. |
-| **icontext-update** | `/icontext-update` | Update an existing iContext project that already has `CONTEXT.md` to the latest template shape. **Refactors a monolithic `CONTEXT.md` into the L2 split** (`PRODUCT.md` · `QA.md` · `SECURITY.md` · `DESIGN.md`) with per-file approval, moving your text verbatim and leaving pointer stubs. Also adds missing sections/artifacts such as `AGENTS.md`, `CONTEXT.md §11.0`, selectable requirement discovery, `ROLE.md` requirement-review protocol, refreshed plan templates, docs/styles/launch scaffolding, and service `STRUCTURE.md` files. Confirmation-first and additive only — reports every proposed change, waits for approval, and preserves owner-authored content. |
+| **icontext-init** | `/icontext-init` | Scaffold the context backbone (L1 agent files · L2 `CONTEXT.md` + `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` + `DESIGN.md` · L3 `plans/`) + service skeletons. **Greenfield** (new), **brownfield** (read & summarize an existing codebase), or **update/sync** (fill only the missing pieces of an existing backbone). Confirms every L2 section with you first; **idempotent & non-destructive** — re-running never deletes or overwrites your context. |
+| **icontext-update** | `/icontext-update` | Update an existing iContext project that already has `CONTEXT.md` to the latest template shape. **Refactors a monolithic `CONTEXT.md` into the L2 split** (`DEV.md` · `PRODUCT.md` · `QA.md` · `SECURITY.md` · `DESIGN.md`) with per-file approval, moving your text verbatim and leaving pointer stubs. Also adds missing sections/artifacts such as `AGENTS.md`, `CONTEXT.md §11.0`, selectable requirement discovery, `ROLE.md` requirement-review protocol, refreshed plan templates, docs/styles/launch scaffolding, and service `STRUCTURE.md` files. Confirmation-first and additive only — reports every proposed change, waits for approval, and preserves owner-authored content. |
 | **icontext-audit** | `/icontext-audit` | Audit an existing iContext project for latest-template completeness, context/repo drift, plan-status sync, stale placeholders, and unnecessary Markdown cleanup candidates. It asks for an explicit decision on every missing, stale, unclear, or cleanup item before updating, archiving, or deleting anything, then re-audits and reports the final gap table. |
-| **icontext-visualize** | `/icontext-visualize` | Export an existing iContext project as an interactive static dependency graph: `context-graph.html` + `context-graph.js`. It reads the L2 set (`CONTEXT.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` + `DESIGN.md`) into a dedicated **L2 lane**, plus agent files, `ROLE.md`, `PLAN.md`, plans, docs, styles, service `STRUCTURE.md` files, manifests, and Markdown references, then adds readable lane layout, label-density controls, click focus with dependency fade, zoom/pan controls, start-node focus, animated node dragging, plan-status badges, and click-to-view Markdown without editing source context. |
+| **icontext-visualize** | `/icontext-visualize` | Export an existing iContext project as an interactive static dependency graph: `context-graph.html` + `context-graph.js`. It reads the L2 set (`CONTEXT.md` + `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` + `DESIGN.md`) into a dedicated **L2 lane**, plus agent files, `ROLE.md`, `PLAN.md`, plans, docs, styles, service `STRUCTURE.md` files, manifests, and Markdown references, then adds readable lane layout, label-density controls, click focus with dependency fade, zoom/pan controls, start-node focus, animated node dragging, plan-status badges, and click-to-view Markdown without editing source context. |
 | **icontext-feature** | `/icontext-feature` | Add one feature plan — a **folder** `plans/NNN-name/` split into role files — with the standard §0–11 structure, role owners, task-status lifecycle, selectable requirement discovery (`/grill-with-docs` or `/wayfinder`), `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pre-checks required scaffolding (style guide · `docs/openapi.yaml` · `.vscode/launch.json`) and offers to create what's missing. |
 
 ## The 3-layer context model
@@ -17,7 +17,8 @@ session already knowing your architecture, conventions, and plan status.
 ```
 Layer 1  CLAUDE.md · AGENTS.md · AGENT.md · GEMINI.md
                                                 agent boilerplate (hard rules, vendor-neutral)
-Layer 2  CONTEXT.md                          context map · architecture §3–7 · skills §10 · workflow §11
+Layer 2  CONTEXT.md                          context map · skills §10 · workflow §11
+         DEV.md                              §3–7 architecture · stack · repo · services · data model
          PRODUCT.md                          §1 product overview · §2 key decisions · §13 open questions
          QA.md                               §9 testing standard + quality gates
          SECURITY.md                         §8 security model · §11.6 security-review wiring
@@ -26,7 +27,7 @@ Layer 3  plans/NNN-name/                     one folder per feature, each refs t
          PLAN.md · plans/README.md           status dashboards (kept in sync, 3 places)
 ```
 
-**L2 is split by concern, and section numbers are stable.** A section keeps its `§N` wherever it
+**L2 is split across six files by concern, and section numbers are stable.** A section keeps its `§N` wherever it
 lives, so existing `§8` / `§9` / `§12` references keep resolving after the split. `CONTEXT.md`
 opens with a **context map** (§ → file → owners) and leaves a `➜ Moved to …` stub where a
 section moved out. One concern lives in exactly one file — link to it, never copy it.
@@ -187,6 +188,14 @@ python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validat
 
 ## Changelog
 
+### 1.13.0
+- **Dedicated development context** — Layer 2 now includes `DEV.md` as the owner of stable
+  sections §3–7 (architecture, stack, repository, services, and data model); `CONTEXT.md` keeps
+  the context map, pointer stubs, skills, and workflow.
+- **End-to-end migration support** — `icontext-update` can opt-in migrate existing projects to the
+  six-file L2 shape, while init, audit, feature-plan references, visualization, and validation all
+  understand the new `DEV.md` ownership boundary.
+
 ### 1.10.2
 - **Readable graph focus** — `icontext-visualize` now lays dense context graphs out in lanes,
   keeps labels readable while zooming, adds label-density controls, and fades unrelated nodes when
@@ -267,7 +276,7 @@ python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validat
 - **Sync-on-architecture-change rule** — keep context · plan · doc · style · data model in step.
 - **Richer plan templates** — bu (use cases · user stories · acceptance criteria · definition of
   done), qa (test scenarios · cases · status · coverage), dev (migration scripts · API changes ·
-  pages/routes); expanded `CONTEXT.md` §7 Data Model.
+  pages/routes); expanded `DEV.md` §7 Data Model.
 - **6-state task status** — `to do → plan → ready to implement → implement → ready to test → done`.
 - **icontext-feature scaffolding pre-check** — style guide · `docs/openapi.yaml` · `.vscode/launch.json`.
 - Added `adapters/claude.md` for both skills.

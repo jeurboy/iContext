@@ -22,6 +22,7 @@ update is available, mention it, then continue.
 ## Step 1 — Preconditions + required scaffolding
 1. Confirm `CONTEXT.md`, `plans/`, `PLAN.md` exist. If not, tell the user to run `icontext-init` first.
 1b. **Read the L2 context the feature touches**, not just `CONTEXT.md`: `PRODUCT.md` (§1–2) always;
+   `DEV.md` (§3–7) for architecture, services, API, or data-model work;
    `QA.md` (§9) before writing the test plan; `SECURITY.md` (§8) if the feature adds a route, page,
    role, or dependency; `DESIGN.md` (§12) if it has UI. On an older project these sections may all
    still be inside `CONTEXT.md` — that's fine, read them there and mention that `icontext-update`
@@ -43,7 +44,7 @@ List the `plans/NNN-*/` folders, take the highest `NNN`, +1 (zero-padded, 3 digi
 
 ## Step 3 — Gather the minimal brief
 Ask: feature name (→ slug), one-paragraph intent, services touched (use the real service names from
-`CONTEXT.md §6`, not hard-coded api/web/app), known constraints, and the user-visible outcome.
+`DEV.md §6`, not hard-coded api/web/app), known constraints, and the user-visible outcome.
 Keep this short; the selected discovery route expands it.
 
 ## Step 3.5 — Choose + run requirement discovery (required, every run)
@@ -99,7 +100,8 @@ contains role files; each of sections 0–11 lives in exactly one (map = CONTEXT
 Fill what you know; leave unknowns as `<!-- TODO -->`. In `README.md` set `Task status: plan`
 (the plan now exists; → `ready to implement` after the review chain); every file refs
 `../../CONTEXT.md` plus the L2 concern file for its role (`bu.md`/`po.md` → `PRODUCT.md` ·
-`qa.md` → `QA.md` · `ops.md` → `SECURITY.md` · `dev.md` → `DESIGN.md` when there's UI); the
+`qa.md` → `QA.md` · `ops.md` → `SECURITY.md` · `dev.md` → `DEV.md` and, when there's UI,
+`DESIGN.md`); the
 template ref lines already carry these. **Never copy an L2 section into the plan — link to it.**
 Put the §4 discovery route + requirement review / persona output (Steps 3.5–4)
 into `stk.md`, and apply accepted changes from the role review into `bu.md`, `po.md`, `dev.md`,

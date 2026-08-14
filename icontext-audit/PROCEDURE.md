@@ -31,14 +31,14 @@ the sibling path `../icontext-init/templates/`.
 
 Inventory the expected backbone:
 - L1 files: `CLAUDE.md`, `AGENTS.md`, `AGENT.md`, `GEMINI.md`
-- L2 files: `CONTEXT.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`, `ROLE.md`.
+- L2 files: `CONTEXT.md`, `DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`, `ROLE.md`.
   A project holding all of sections 1-13 in one `CONTEXT.md` is **not a defect** — it predates the
   L2 split. Report it as a `split candidate` and point the owner at `/icontext-update` Step 5.5;
   never split it here.
 - L3/status files: `PLAN.md`, `plans/README.md`, `plans/_TEMPLATE/`
 - Shared scaffolding: `docs/openapi.yaml`, `styles/css/tokens.css`, `styles/components/`,
   `.vscode/launch.json`, `docker-compose.yml`
-- Service guides: each service's `STRUCTURE.md`, using service names from `CONTEXT.md` section 6
+- Service guides: each service's `STRUCTURE.md`, using service names from `DEV.md` section 6
 - Feature plans: each `plans/NNN-name/` folder and its role files
 
 ## Step 2 - Compare against the latest template
@@ -46,7 +46,7 @@ Build a template-completeness table. Do not edit yet.
 
 Check:
 - The L2 files contain the latest section set **across all of them** — a section counts as present
-  wherever it lives (`PRODUCT.md` 1/2/13 · `CONTEXT.md` 3-7/10/11 · `SECURITY.md` 8/11.6 ·
+  wherever it lives (`PRODUCT.md` 1/2/13 · `DEV.md` 3-7 · `CONTEXT.md` 10/11 · `SECURITY.md` 8/11.6 ·
   `QA.md` 9 · `DESIGN.md` 12), and section numbers are stable across the split so existing
   references still resolve. Flag a section that appears in **two** files as a duplication defect.
   Sections to check: 1-13, section 11.0 main workflow,
@@ -107,7 +107,7 @@ Before asking or editing, present an audit register like this:
 | ID | Type | File / section | Evidence | Question for owner | Proposed action |
 |----|------|----------------|----------|--------------------|-----------------|
 | A1 | missing | `SECURITY.md` section 8 | heading absent | What auth/security model should be recorded? | add confirmed section |
-| A2 | stale | `CONTEXT.md` section 6 | `backend/` exists, context says `api/` | Should section 6 use `backend/`? | patch service list |
+| A2 | stale | `DEV.md` section 6 | `backend/` exists, context says `api/` | Should section 6 use `backend/`? | patch service list |
 | A3 | cleanup | `OLD_PLAN.md` | superseded by `plans/002-name/` | Keep, merge, archive, or delete? | archive if approved |
 
 Use stable IDs so the user can answer by ID.

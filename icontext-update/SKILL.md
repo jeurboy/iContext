@@ -1,7 +1,7 @@
 ---
 name: icontext-update
 description: Update an existing iContext project to the latest template shape, including
-             refactoring a monolithic CONTEXT.md into the Layer-2 split (PRODUCT.md, QA.md,
+             refactoring a monolithic CONTEXT.md into the Layer-2 split (DEV.md, PRODUCT.md, QA.md,
              SECURITY.md, DESIGN.md alongside CONTEXT.md). Use when a project
              already has CONTEXT.md or an iContext backbone and the user wants to split context by
              concern, or sync missing
@@ -34,7 +34,7 @@ never overwrite owner-authored content.
 ## Mappings
 - **Update check** — run `bash check-update.sh`.
 - **L2 split (Step 5.5)** — if the project still has one monolithic `CONTEXT.md`, propose splitting
-  §1/§2/§13 → `PRODUCT.md`, §9 → `QA.md`, §8/§11.6 → `SECURITY.md`, §12 → `DESIGN.md`. Get
+  §3–7 → `DEV.md`, §1/§2/§13 → `PRODUCT.md`, §9 → `QA.md`, §8/§11.6 → `SECURITY.md`, §12 → `DESIGN.md`. Get
   per-file approval with `AskUserQuestion`, **move** the owner's text verbatim (never copy or
   reword), leave a `➜ Moved to …` stub in `CONTEXT.md`, and rewrite the refs listed in 5.5.5.
   Section numbers never change.

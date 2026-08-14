@@ -4,7 +4,7 @@
 > Companion indexes: `PLAN.md` (status dashboard) · `plans/README.md` (plan index) · `ROLE.md` (multi-agent role panel).
 
 ## Context map — where each section lives
-Layer 2 is **five files at the repo root**, split by concern. Section numbers §1–13 are global and
+Layer 2 is **six files at the repo root**, split by concern. Section numbers §1–13 are global and
 **stable**: a section keeps its number wherever it lives, so every `§N` reference in plans, docs,
 and older notes still resolves. Read CONTEXT.md first; follow the link when you need that concern.
 
@@ -12,8 +12,8 @@ and older notes still resolves. Read CONTEXT.md first; follow the link when you 
 |---|---------|------|--------|
 | 1 | Product Overview | [PRODUCT.md](./PRODUCT.md) | `STK BU PO` |
 | 2 | Key Decisions | [PRODUCT.md](./PRODUCT.md) | `STK BU PO` |
-| 3–6 | Architecture · Tech Stack · Repo · Services | **CONTEXT.md** (here) | `DEV OPS` |
-| 7 | Data Model | **CONTEXT.md** (here) | `DEV OPS` |
+| 3–6 | Architecture · Tech Stack · Repo · Services | [DEV.md](./DEV.md) | `DEV OPS` |
+| 7 | Data Model | [DEV.md](./DEV.md) | `DEV OPS` |
 | 8 | Security Model | [SECURITY.md](./SECURITY.md) | `DEV QA OPS` |
 | 9 | Testing & Quality Gates | [QA.md](./QA.md) | `QA DEV OPS` |
 | 10 | Skills Used | **CONTEXT.md** (here) | all |
@@ -40,48 +40,19 @@ rejected). Deep technical ADRs live in `docs/adr/` and are linked from that tabl
 ## สถาปัตยกรรม · Architecture
 
 ### 3. สถาปัตยกรรมระบบ · System Architecture
-<!-- TODO: diagram / data flow -->
-- `web/` ({{WEB_STACK}}) → `api/` ({{API_STACK}}) → `db` ({{DB_STACK}})
-- `app/` ({{MOBILE_STACK}}) → `api/`
+➜ **Moved to [DEV.md](./DEV.md) §3** — system diagram, boundaries, and data flow.
 
 ### 4. Tech Stack
-| Layer | Choice | Notes |
-|-------|--------|-------|
-| Web | {{WEB_STACK}} | React Query · Tailwind · Playwright |
-| Mobile | {{MOBILE_STACK}} | state + Dio + feature-first (app/STRUCTURE.md) |
-| API | {{API_STACK}} | Clean Architecture · ORM-first, minimal raw SQL |
-| DB | {{DB_STACK}} | docker-compose · migrations |
+➜ **Moved to [DEV.md](./DEV.md) §4** — stack choices and implementation notes by layer.
 
 ### 5. โครงสร้าง Repo · Repo Structure
-- Mono-root with each service as its **own git repo wired as a submodule**: `api/`, `web/`, `app/`.
-- Context backbone lives at the root:
-  - **L1 agent files** — `CLAUDE.md` / `AGENTS.md` / `AGENT.md` / `GEMINI.md`
-  - **L2 context (5 files, split by concern)** — `CONTEXT.md` (this file: architecture + workflow) ·
-    `PRODUCT.md` · `QA.md` · `SECURITY.md` · `DESIGN.md` — see the context map at the top
-  - **L3 + shared** — `ROLE.md`, `PLAN.md`, `plans/`, `styles/`, `docs/`
+➜ **Moved to [DEV.md](./DEV.md) §5** — repository strategy, service layout, and context backbone.
 
 ### 6. รายการ Service · Services
-| Service | Stack | Port | STRUCTURE |
-|---------|-------|------|-----------|
-| api | {{API_STACK}} | {{API_PORT}} | api/STRUCTURE.md |
-| web | {{WEB_STACK}} | {{WEB_PORT}} | web/STRUCTURE.md |
-| app | {{MOBILE_STACK}} | — | app/STRUCTURE.md |
-| db | {{DB_STACK}} | {{DB_PORT}} | docker-compose.yml |
+➜ **Moved to [DEV.md](./DEV.md) §6** — service names, stacks, ports, and structure guides.
 
 ### 7. Data Model
-> Single source of truth for entities. Keep in sync with the plan's schema section + DB migrations
-> (§11.3). Update this whenever the data model changes.
-
-**Entities**
-| Entity | Key fields | Description |
-|--------|-----------|-------------|
-| <!-- e.g. User --> | id, ... | <!-- TODO --> |
-
-**Relationships**
-<!-- TODO: e.g. User 1—N Order; Order N—N Product (via OrderItem). One model can have many physical units. -->
-
-**ERD / notes**
-<!-- TODO: link or embed a diagram; note enums, indexes, soft-delete, audit fields -->
+➜ **Moved to [DEV.md](./DEV.md) §7** — entities, relationships, indexes, and migration notes.
 
 ---
 ## คุณภาพ & ความปลอดภัย · Quality & Security
@@ -123,8 +94,8 @@ Headline gates (detail in QA.md):
 
 ### 11. Workflow + Plan Standard
 - Build context first → then features one at a time via `/icontext-feature`. Never commit/push unless told.
-- **Second brain principle:** every `.md` file — this `CONTEXT.md`, its L2 siblings (`PRODUCT.md`,
-  `QA.md`, `SECURITY.md`, `DESIGN.md`), `PLAN.md`, everything under
+- **Second brain principle:** every `.md` file — this `CONTEXT.md`, its L2 siblings (`DEV.md`,
+  `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`), `PLAN.md`, everything under
   `plans/` and `docs/` — is the project's persistent memory, not throwaway paperwork. Whenever a
   plan or approach is adjusted, follow up in the affected plan: record the work done **and the
   reasoning / thought process** behind the change (what changed, why, what was rejected), so any
@@ -135,10 +106,11 @@ Use this workflow for every non-trivial feature so requirements, plan, context, 
 sync:
 
 1. **Context check** — read `CONTEXT.md` + the L2 files the feature touches
-   ([PRODUCT.md](./PRODUCT.md) always; [DESIGN.md](./DESIGN.md) if it has UI;
+   ([PRODUCT.md](./PRODUCT.md) always; [DEV.md](./DEV.md) for technical work;
+   [DESIGN.md](./DESIGN.md) if it has UI;
    [SECURITY.md](./SECURITY.md) if it adds a route/page/dependency; [QA.md](./QA.md) before writing
    any test), then `PLAN.md`, `plans/README.md`, and the relevant existing
-   plan(s). Confirm the feature belongs in this project and note affected services from §6.
+   plan(s). Confirm the feature belongs in this project and note affected services from `DEV.md` §6.
 2. **Requirement discovery route** — before writing the plan, ask the owner to choose:
    `/grill-with-docs` for requirements that mostly fit in one planning session, or `/wayfinder` for
    large/foggy requirements where the solution path is not clear yet. With `/grill-with-docs`,
@@ -146,7 +118,7 @@ sync:
    With `/wayfinder`, chart/continue the map and do not write the iContext plan until
    planning-critical tickets are resolved enough to produce a useful plan. Capture durable decisions
    in `docs/adr/` and update the L2 context when the feature changes project knowledge — especially
-   `PRODUCT.md` §2 (decisions) + §13 (open questions), `CONTEXT.md` §7 (data model), and
+   `PRODUCT.md` §2 (decisions) + §13 (open questions), `DEV.md` §7 (data model), and
    `SECURITY.md` §8 (security model). If companion skills are unavailable, run the same discovery process manually
    and document the outcome.
 3. **Requirement review with `ROLE.md` multi-agent panel** — use the roles/personas in `ROLE.md`
@@ -162,7 +134,7 @@ sync:
    its findings in the plan's `ops.md` §8. Only then move the plan to `ready to implement`.
 6. **Implementation loop** — implement in small slices following §11.5. Each slice ends with the
    **implement-phase security review** (`security-review` → secret · code-review · auth ·
-   dependency · docker, SECURITY.md §11.6). Keep `CONTEXT.md`, the plan, `docs/openapi.yaml`, styles, and data
+   dependency · docker, SECURITY.md §11.6). Keep `DEV.md`, the plan, `docs/openapi.yaml`, styles, and data
    model in sync when architecture changes.
 7. **Final QA + done gates** — move to `ready to test`, run the test plan, confirm User Stories are
    complete, sync the API spec, keep coverage > 80%, confirm no unresolved high/critical
@@ -203,16 +175,17 @@ Task status lifecycle: `to do → plan → ready to implement → implement → 
 #### 11.3 Keep everything in sync on architecture-impacting change
 Whenever a change affects the **core architecture** (§3–6) — services, data model, API contract,
 or shared conventions — update all of these **together, in the same change**, so nothing drifts:
-- **Context** — this `CONTEXT.md` (architecture §3–6 and **§7 Data Model** especially).
+- **Development context** — [DEV.md](./DEV.md) (architecture §3–6 and **§7 Data Model** especially).
 - **Plan** — the affected `plans/NNN-*/` (Tech & Architecture · Data Model/Schema · API Contract).
 - **Doc** — `docs/openapi.yaml` (API spec) and any other docs the change touches.
 - **Style** — `styles/css/tokens.css` + `styles/components/` when UI / look-and-feel is affected.
-- **Data model** — keep §7 here, the plan's schema section, and DB migrations consistent.
+- **Data model** — keep `DEV.md` §7, the plan's schema section, and DB migrations consistent.
 
 **L2 sibling triggers** — the same change must also update the concern file it touches:
 
 | If the change touches… | Update | In the same change |
 |------------------------|--------|--------------------|
+| architecture, stack, repo, services, or data model | [DEV.md](./DEV.md) §3–7 | ✔ |
 | product direction, scope, a decision, a new unknown | [PRODUCT.md](./PRODUCT.md) §1 / §2 / §13 | ✔ |
 | authn/authz, a new route or page, roles, secrets, PII | [SECURITY.md](./SECURITY.md) §8 | ✔ |
 | a quality gate, test type, scenario/priority/effort standard | [QA.md](./QA.md) §9 | ✔ |

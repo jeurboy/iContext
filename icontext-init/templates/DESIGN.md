@@ -2,7 +2,7 @@
 
 > **Split out of `CONTEXT.md`.** Holds §12. Section numbers are unchanged, so every existing
 > `§12` reference in plans and docs still resolves — only the file moved.
-> Siblings: [CONTEXT.md](./CONTEXT.md) (architecture + workflow) · [PRODUCT.md](./PRODUCT.md) ·
+> Siblings: [CONTEXT.md](./CONTEXT.md) (context map + workflow) · [DEV.md](./DEV.md) (development) · [PRODUCT.md](./PRODUCT.md) ·
 > [QA.md](./QA.md) · [SECURITY.md](./SECURITY.md)
 
 **Owners:** `DEV` + design · **Read by:** anyone touching UI (web or mobile), before writing a

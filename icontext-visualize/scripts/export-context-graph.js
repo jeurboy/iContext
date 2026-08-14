@@ -249,6 +249,7 @@ function detectReferencedFiles(root, markdown, allFiles) {
 }
 
 const L2_FILES = [
+  { name: 'DEV.md', concern: 'development & architecture', sections: 'sections 3-7', roles: ['dev'] },
   { name: 'PRODUCT.md', concern: 'product & direction', sections: 'sections 1, 2, 13', roles: ['bu', 'po'] },
   { name: 'QA.md', concern: 'testing standard', sections: 'section 9', roles: ['qa'] },
   { name: 'SECURITY.md', concern: 'security model', sections: 'sections 8, 11.6', roles: ['ops'] },
@@ -417,8 +418,8 @@ function makeGraph(root, title) {
       });
       addEdge(plan.id, `file:${rolePath}`, roleName, 'role-split');
 
-      // Each role file follows one L2 concern file (bu/po -> PRODUCT, qa -> QA,
-      // ops -> SECURITY, dev -> DESIGN). This is the wiring the split introduced.
+      // Each role file follows its L2 concern file (bu/po -> PRODUCT, qa -> QA,
+      // ops -> SECURITY, dev -> DEV + DESIGN). This is the wiring the split introduced.
       const roleKey = path.basename(rolePath, '.md').toLowerCase();
       for (const entry of presentL2) {
         if (entry.roles.includes(roleKey)) {

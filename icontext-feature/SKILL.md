@@ -49,7 +49,7 @@ Portable across agents - see [adapters/](./adapters/). SKILL.md is the Claude Co
   review panel. Put Works / Concern / Suggestion / Plan impact into `stk.md` §4 and fold accepted
   changes into the role files before `/autoplan`.
 - **Step 1b L2 context read** - read the Layer-2 files the feature touches, not just
-  `CONTEXT.md`: `PRODUCT.md` (§1-2) always, `QA.md` (§9) before the test plan, `SECURITY.md`
+  `CONTEXT.md`: `PRODUCT.md` (§1-2) always, `DEV.md` (§3-7) for technical work, `QA.md` (§9) before the test plan, `SECURITY.md`
   (§8) for new routes/pages/roles/deps, `DESIGN.md` (§12) for UI. If the project still keeps
   all of §1-13 in one `CONTEXT.md`, read them there and mention `icontext-update` can split it.
 - **Step 1 scaffolding check** - use `Bash` to check for `styles/` (style guide),

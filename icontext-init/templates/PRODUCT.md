@@ -2,7 +2,7 @@
 
 > **Split out of `CONTEXT.md`.** Holds §1 · §2 · §13. Section numbers are unchanged, so every
 > existing `§N` reference in plans and docs still resolves — only the file moved.
-> Siblings: [CONTEXT.md](./CONTEXT.md) (architecture + workflow) · [DESIGN.md](./DESIGN.md) ·
+> Siblings: [CONTEXT.md](./CONTEXT.md) (context map + workflow) · [DEV.md](./DEV.md) (development) · [DESIGN.md](./DESIGN.md) ·
 > [SECURITY.md](./SECURITY.md) · [PLAN.md](./PLAN.md) · [ROLE.md](./ROLE.md)
 
 **Owners:** `STK BU PO` · **Read by:** everyone, before writing any plan.

@@ -13,9 +13,9 @@ feature plans are made later by the separate `icontext-feature` procedure.
 - **Section-by-section confirmation:** confirm every L2 section (§1–13, wherever it lives) with the
   project owner before writing it (Step 2D). Never silently auto-fill or leave a bare placeholder
   without surfacing the section for confirm / edit / skip.
-- **L2 is five files, split by concern.** `CONTEXT.md` (context map + architecture §3–7 · skills
-  §10 · workflow §11) · `PRODUCT.md` (§1 · §2 · §13) · `QA.md` (§9) · `SECURITY.md` (§8 · §11.6) ·
-  `DESIGN.md` (§12). **Section numbers stay stable** wherever a section lives, so `§N` references
+- **L2 is six files, split by concern.** `CONTEXT.md` (context map · skills §10 · workflow §11) ·
+  `DEV.md` (architecture §3–7) · `PRODUCT.md` (§1 · §2 · §13) · `QA.md` (§9) · `SECURITY.md`
+  (§8 · §11.6) · `DESIGN.md` (§12). **Section numbers stay stable** wherever a section lives, so `§N` references
   in plans and docs keep resolving. A concern lives in exactly one file — never duplicate a section
   across files; `CONTEXT.md` keeps a pointer stub (`➜ Moved to …`) where a section moved out.
 - **Non-destructive — only add what's missing.** Don't delete or rewrite existing context: the
@@ -42,8 +42,8 @@ feature plans are made later by the separate `icontext-feature` procedure.
 **First, detect an existing iContext backbone** at the target root: `CONTEXT.md` plus any of
 `CLAUDE.md`/`AGENTS.md`/`AGENT.md`/`GEMINI.md`, `ROLE.md`, `PLAN.md`, `plans/`.
 - Backbone present → **UPDATE/SYNC** → Step 2C. *Do not re-scaffold.*
-- Backbone present **but L2 is still one monolithic `CONTEXT.md`** (no `PRODUCT.md` / `QA.md` /
-  `SECURITY.md` / `DESIGN.md`) → this is a **split candidate**. Offer the L2 split as part of
+- Backbone present **but L2 is still one monolithic `CONTEXT.md`** (no `DEV.md` / `PRODUCT.md` /
+  `QA.md` / `SECURITY.md` / `DESIGN.md`) → this is a **split candidate**. Offer the L2 split as part of
   Step 2C, or point the user at `icontext-update`, which owns the refactor. Never split without
   the owner's explicit approval.
 
@@ -61,7 +61,7 @@ site(s), stack (defaults below, overridable), ports (defaults: db `5415`, web `3
 and **the actual service directories**. `api/`, `web/`, `app/` are only the defaults — ask the
 owner what the project's services really are and what each dir is called (e.g. `backend/`,
 `frontend/`, `admin/`, `worker/`, `packages/<name>/`, or a single dir). There may be one service
-or many; don't assume the three-way split. Record the confirmed list in CONTEXT.md §6 (Services)
+or many; don't assume the three-way split. Record the confirmed list in DEV.md §6 (Services)
 and use those exact names everywhere (tree, docker-compose, `.vscode/launch.json`, submodule
 wiring). Then run the **detailed per-section interview in Step 2D** (first-time-init depth) to
 flesh out every CONTEXT.md section before writing.
@@ -79,7 +79,8 @@ matching `templates/stacks/<layer>-<choice>/STRUCTURE.md` into each service dir.
 <root>/
 ├── CLAUDE.md  AGENTS.md  AGENT.md  GEMINI.md
 │                                          L1 — agent boilerplate (all point to CONTEXT.md)
-├── CONTEXT.md                           L2 — context map + architecture §3–7 · skills §10 · workflow §11
+├── CONTEXT.md                           L2 — context map · skills §10 · workflow §11
+├── DEV.md                               L2 — §3–7 architecture · stack · repo · services · data model
 ├── PRODUCT.md                           L2 — §1 product overview · §2 key decisions · §13 open questions
 ├── QA.md                                L2 — §9 testing standard + quality gates
 ├── SECURITY.md                          L2 — §8 security model · §11.6 security-review wiring
@@ -115,15 +116,15 @@ repo strategy with the owner** (`AskUserQuestion`) — submodules are a strong o
 everyone wants. Offer: (a) **git submodules** — each service its own repo wired under the root
 (the default iContext layout); (b) **monorepo** — services as plain folders, one repo at the root;
 (c) **separate repos, not wired** — `git init` each service but don't add as submodules. Apply the
-owner's choice and record it in CONTEXT.md §5 (Repo Structure) + §2 (Key Decisions). **Do not commit.**
+owner's choice and record it in DEV.md §5 (Repo Structure) + PRODUCT.md §2 (Key Decisions). **Do not commit.**
 
 ## Step 2B — Brownfield: read & summarize an existing codebase
-Produce the same backbone, but with CONTEXT.md **derived from real code** (read-only first;
+Produce the same backbone, but with the L2 context **derived from real code** (read-only first;
 never overwrite source).
 1. Inventory: read manifests, detect stack/services/layout.
 2. Map architecture: entry points, routing, data layer, module boundaries (fan-out reads for
    large repos).
-3. Extract data model from schema/migrations/ORM models → CONTEXT.md §5.
+3. Extract data model from schema/migrations/ORM models → DEV.md §7.
 4. Extract API surface from routes/controllers → `docs/`.
 5. Detect real conventions (naming, lint, tests, coverage). Record, don't impose.
 6. Unknowns → `<!-- TODO: confirm ... -->`. Never invent facts.
@@ -135,7 +136,7 @@ never overwrite source).
 The project already has an iContext backbone, so treat it as the source of truth: leave any file
 that exists and has real content untouched, and patch only the gaps. Audit first, then add.
 1. **Inventory** every expected artifact and mark present/absent: L1 `CLAUDE.md`/`AGENTS.md`/
-   `AGENT.md`/`GEMINI.md`; the L2 set `CONTEXT.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` +
+   `AGENT.md`/`GEMINI.md`; the L2 set `CONTEXT.md` + `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` +
    `DESIGN.md` and §1–13 per-section (a section counts as present wherever it lives); `ROLE.md`; `PLAN.md`; `plans/_TEMPLATE/` +
    `plans/README.md`; `docker-compose.yml`; `docs/openapi.yaml`; `styles/css/tokens.css`;
    `styles/components/*.html`; each service's `STRUCTURE.md`.
@@ -152,7 +153,7 @@ that exists and has real content untouched, and patch only the gaps. Audit first
    (artifact · status · action) and go to Step 3.
 
 ## Step 2D — Section-by-section confirmation (every mode)
-Walk §1–13 in order **across the L2 files** (`PRODUCT.md` §1–2, `CONTEXT.md` §3–7, `SECURITY.md`
+Walk §1–13 in order **across the L2 files** (`PRODUCT.md` §1–2, `DEV.md` §3–7, `SECURITY.md`
 §8, `QA.md` §9, `CONTEXT.md` §10–11, `SECURITY.md` §11.6, `DESIGN.md` §12, `PRODUCT.md` §13).
 For each section, show the proposed/detected value (or
 "empty") and ask the project owner via `AskUserQuestion` to **confirm as-is / edit / skip**

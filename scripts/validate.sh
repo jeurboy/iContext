@@ -37,6 +37,11 @@ for file in \
   icontext-init/templates/AGENT.md \
   icontext-init/templates/GEMINI.md \
   icontext-init/templates/CONTEXT.md \
+  icontext-init/templates/DEV.md \
+  icontext-init/templates/PRODUCT.md \
+  icontext-init/templates/QA.md \
+  icontext-init/templates/SECURITY.md \
+  icontext-init/templates/DESIGN.md \
   icontext-init/templates/ROLE.md \
   icontext-init/templates/PLAN.md \
   icontext-init/templates/docker-compose.yml \
@@ -50,6 +55,13 @@ done
 for file in README.md bu.md po.md dev.md qa.md ops.md stk.md; do
   require_file "icontext-init/templates/plans/_TEMPLATE/$file"
   require_file "icontext-feature/templates/plan-template/$file"
+done
+
+for section in 3 4 5 6 7; do
+  rg -q "^### $section\\." icontext-init/templates/DEV.md ||
+    fail "DEV.md must own section $section"
+  rg -q "Moved to \\[DEV\\.md\\].*§$section" icontext-init/templates/CONTEXT.md ||
+    fail "CONTEXT.md must point section $section to DEV.md"
 done
 
 for stack in \

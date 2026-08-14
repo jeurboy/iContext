@@ -42,6 +42,6 @@ API spec synced (`docs/openapi.yaml`) · User Stories complete (po.md §3) · te
 · style guide updated if UI changed ([DESIGN.md](../../DESIGN.md) §12).
 
 ### L2 context this plan must stay in sync with
-[CONTEXT.md](../../CONTEXT.md) (architecture/workflow) · [PRODUCT.md](../../PRODUCT.md) (direction,
+[CONTEXT.md](../../CONTEXT.md) (context map/workflow) · [DEV.md](../../DEV.md) (development/architecture) · [PRODUCT.md](../../PRODUCT.md) (direction,
 decisions) · [QA.md](../../QA.md) (test standard) · [SECURITY.md](../../SECURITY.md) (security model) ·
 [DESIGN.md](../../DESIGN.md) (design system). Link to them — never copy a section in here.
