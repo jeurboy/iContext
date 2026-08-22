@@ -4,7 +4,7 @@
 > Companion indexes: `PLAN.md` (status dashboard) · `plans/README.md` (plan index) · `ROLE.md` (multi-agent role panel).
 
 ## Context map — where each section lives
-Layer 2 is **six files at the repo root**, split by concern. Section numbers §1–13 are global and
+Layer 2 is **seven files at the repo root**, split by concern. Section numbers §1–13 are global and
 **stable**: a section keeps its number wherever it lives, so every `§N` reference in plans, docs,
 and older notes still resolves. Read CONTEXT.md first; follow the link when you need that concern.
 
@@ -16,9 +16,10 @@ and older notes still resolves. Read CONTEXT.md first; follow the link when you 
 | 7 | Data Model | [DEV.md](./DEV.md) | `DEV OPS` |
 | 8 | Security Model | [SECURITY.md](./SECURITY.md) | `DEV QA OPS` |
 | 9 | Testing & Quality Gates | [QA.md](./QA.md) | `QA DEV OPS` |
-| 10 | Skills Used | **CONTEXT.md** (here) | all |
+| 10 | Skill Dependencies & Invocation | [SKILLS.md](./SKILLS.md) | all |
 | 11 | Workflow + Plan Standard | **CONTEXT.md** (here) | all |
 | 11.6 | Security review wiring | [SECURITY.md](./SECURITY.md) | `DEV QA OPS` |
+| 11.7 | Agent mutation safety + hooks | **CONTEXT.md** (here) | all |
 | 12 | Design Tokens & Design System | [DESIGN.md](./DESIGN.md) | `DEV` + design |
 | 13 | Open Questions | [PRODUCT.md](./PRODUCT.md) | `PO BU STK` |
 
@@ -76,26 +77,18 @@ Headline gates (detail in QA.md):
 - A plan reaches `done` only when: API spec synced · User Stories complete · tests > 80% ·
   security review clean (no unresolved high/critical finding from SECURITY.md §11.6).
 
-### 10. Skills ที่ใช้ · Skills Used
-- **Install first (every project):** `gstack` — https://github.com/garrytan/gstack — provides the
-  `/gstack-*` commands incl. **`/autoplan`** and the plan-review chain (`/plan-ceo-review`,
-  `/plan-eng-review`, `/plan-design-review`, `/plan-devex-review`) used before implementing.
-- **Install first (every project):** `security-review` — https://github.com/ice-limited/security-skill
-  — the security dependency skill. Runs real detectors (secret, code-review, auth, dependency,
-  docker, supply-chain, api, iac, kubernetes, cicd-pipeline) and reports their structured findings.
-  Wired into the plan + implement phases — see **[SECURITY.md](./SECURITY.md) §11.6**.
-- `gstack` · `ui-ux-pro-max` · `impeccable` (design/QA companions — see [DESIGN.md](./DESIGN.md) §12.7)
-- `grill-with-docs` (or equivalent grilling workflow) for clear-ish requirement discovery + ADR/domain updates
-- `wayfinder` for large/foggy requirements where the solution path is not clear yet
-- `icontext-init` (scaffold) · `icontext-feature` (plans)
+### 10. Skill Dependencies & Invocation
+➜ **Moved to [SKILLS.md](./SKILLS.md) §10** — direct dependencies, invocation triggers,
+composition order, exclusions, and fallbacks. Read it before selecting or invoking a skill.
 
 ---
 ## กระบวนการ & ดีไซน์ · Process & Design
 
 ### 11. Workflow + Plan Standard
-- Build context first → then features one at a time via `/icontext-feature`. Never commit/push unless told.
+- Build context first → then features one at a time via `/icontext-feature`. Commit, push, and every
+  direct DB/migration/seed action require an explicit per-invocation confirmation (§11.7).
 - **Second brain principle:** every `.md` file — this `CONTEXT.md`, its L2 siblings (`DEV.md`,
-  `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`), `PLAN.md`, everything under
+  `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`, `SKILLS.md`), `PLAN.md`, everything under
   `plans/` and `docs/` — is the project's persistent memory, not throwaway paperwork. Whenever a
   plan or approach is adjusted, follow up in the affected plan: record the work done **and the
   reasoning / thought process** behind the change (what changed, why, what was rejected), so any
@@ -106,7 +99,7 @@ Use this workflow for every non-trivial feature so requirements, plan, context, 
 sync:
 
 1. **Context check** — read `CONTEXT.md` + the L2 files the feature touches
-   ([PRODUCT.md](./PRODUCT.md) always; [DEV.md](./DEV.md) for technical work;
+   ([PRODUCT.md](./PRODUCT.md) and [SKILLS.md](./SKILLS.md) always; [DEV.md](./DEV.md) for technical work;
    [DESIGN.md](./DESIGN.md) if it has UI;
    [SECURITY.md](./SECURITY.md) if it adds a route/page/dependency; [QA.md](./QA.md) before writing
    any test), then `PLAN.md`, `plans/README.md`, and the relevant existing
@@ -190,6 +183,7 @@ or shared conventions — update all of these **together, in the same change**, 
 | authn/authz, a new route or page, roles, secrets, PII | [SECURITY.md](./SECURITY.md) §8 | ✔ |
 | a quality gate, test type, scenario/priority/effort standard | [QA.md](./QA.md) §9 | ✔ |
 | a token, component, breakpoint, or any look-and-feel rule | [DESIGN.md](./DESIGN.md) §12 | ✔ |
+| a direct skill dependency, trigger, order, exclusion, or fallback | [SKILLS.md](./SKILLS.md) §10 | ✔ |
 
 A concern lives in exactly one file — extend it there and link, never copy the section into a plan
 or into another L2 file.
@@ -203,7 +197,8 @@ or run the individual reviews when `/autoplan` is unavailable:
 - **`/plan-design-review`** — if the feature has UI
 - **`/plan-devex-review`** — if developer-facing (API, SDK, CLI)
 
-These come from the `gstack` skill (§10). Capture outcomes in the plan before implementation.
+These come from the `gstack` skill ([SKILLS.md](./SKILLS.md) §10). Capture outcomes in the plan
+before implementation.
 
 After the chain, run the **plan-phase security review** — `security-review` → **supply-chain**
 (SECURITY.md §11.6). A plan does not reach `ready to implement` with an unresolved high/critical supply-chain
@@ -241,6 +236,26 @@ is > 80% — then move the plan to **`ready to test`** for a final QA pass befor
 ➜ **Moved to [SECURITY.md](./SECURITY.md) §11.6** — which sub-skill runs in which phase
 (plan: supply-chain · implement: secret · code-review · auth · dependency · docker), the per-slice
 scope rules, and the `done` gate. Findings are always recorded in the plan's `ops.md` §8.
+
+#### 11.7 Agent mutation safety & hook wiring
+- **Confirmation gate:** before each `git commit`, `git push`, direct DB access, migration, seed,
+  reset, import, restore, DB push, or known DB-changing startup command, state the exact action,
+  target, environment, and impact, then get explicit user confirmation. Approval is not reusable
+  for a later invocation. Generic approval such as “continue” or “finish” is insufficient unless
+  it explicitly names the restricted action.
+- **Source edits vs execution:** editing migration, schema, or seed files inside an authorized code
+  change does not itself touch the DB. Running them against any local/staging/production database
+  is separately confirmation-gated.
+- **Hook when supported:** when the active AI host provides an interactive pre-command/pre-tool
+  hook, wire `.icontext/hooks/guard-command.sh` through the host's documented project-local hook
+  configuration. Merge with existing hooks; never overwrite them.
+- **Verify the real host path:** `git status` must pass; `git commit`, `git push`, a direct DB client,
+  and a seed/migration command must return an interactive `ask` decision. A direct script dry-run
+  alone is not enough.
+- **No usable hook:** if the host has no hook, or only supports a permanent block with no approval
+  path, keep these L1/§11.7 rules and report `hook unavailable; policy enforced by instructions`.
+- A missing, disabled, failed, or bypassed hook never grants permission. Full hook contract:
+  [.icontext/hooks/POLICY.md](./.icontext/hooks/POLICY.md).
 
 ### 12. Design Tokens & Design System
 ➜ **Moved to [DESIGN.md](./DESIGN.md) §12** — token map, theming, component inventory, layout &

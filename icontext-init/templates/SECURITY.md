@@ -4,7 +4,7 @@
 > wiring). Section numbers are unchanged, so every existing `§8` / `§11.6` reference in plans and
 > docs still resolves — only the file moved.
 > Siblings: [CONTEXT.md](./CONTEXT.md) (context map + workflow) · [DEV.md](./DEV.md) (development) · [PRODUCT.md](./PRODUCT.md) ·
-> [DESIGN.md](./DESIGN.md) · [QA.md](./QA.md)
+> [DESIGN.md](./DESIGN.md) · [QA.md](./QA.md) · [SKILLS.md](./SKILLS.md)
 
 **Owners:** `DEV QA OPS` · **Read by:** anyone adding a route, page, dependency, or secret.
 
@@ -46,7 +46,7 @@ reason) in its `ops.md` §8. Public exceptions are listed here, nowhere else:
 
 ### 11.6 Security review — `security-review` wired into the lifecycle
 
-The `security-review` skill (CONTEXT.md §10, https://github.com/ice-limited/security-skill) is a
+The `security-review` skill ([SKILLS.md](./SKILLS.md) §10, https://github.com/ice-limited/security-skill) is a
 **dependency skill**, not an optional extra. It invokes real static-analysis detectors and reports
 their own structured findings (Problem / Impact / Recommendation / Reference / severity /
 confidence). If a detector's prerequisite tool isn't installed, say so and relay the install

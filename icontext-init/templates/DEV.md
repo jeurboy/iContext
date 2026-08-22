@@ -3,7 +3,7 @@
 > **Owners:** `DEV OPS` · Sections: §3–7
 > Read [CONTEXT.md](./CONTEXT.md) first for the full context map and workflow.
 > Siblings: [PRODUCT.md](./PRODUCT.md) · [QA.md](./QA.md) ·
-> [SECURITY.md](./SECURITY.md) · [DESIGN.md](./DESIGN.md)
+> [SECURITY.md](./SECURITY.md) · [DESIGN.md](./DESIGN.md) · [SKILLS.md](./SKILLS.md)
 
 ## สถาปัตยกรรม · Architecture
 
@@ -24,10 +24,10 @@
 - Mono-root with each service as its **own git repo wired as a submodule**: `api/`, `web/`, `app/`.
 - Context backbone lives at the root:
   - **L1 agent files** — `CLAUDE.md` / `AGENTS.md` / `AGENT.md` / `GEMINI.md`
-  - **L2 context (6 files, split by concern)** — `CONTEXT.md` (context map + workflow) ·
+  - **L2 context (7 files, split by concern)** — `CONTEXT.md` (context map + workflow) ·
     `DEV.md` (this file: development + architecture) · `PRODUCT.md` · `QA.md` · `SECURITY.md` ·
-    `DESIGN.md` — see the context map in `CONTEXT.md`
-  - **L3 + shared** — `ROLE.md`, `PLAN.md`, `plans/`, `styles/`, `docs/`
+    `DESIGN.md` · `SKILLS.md` (skill dependencies + routing) — see the context map in `CONTEXT.md`
+  - **L3 + shared** — `ROLE.md`, `PLAN.md`, `plans/`, `styles/`, `docs/`, `.icontext/hooks/`
 
 ### 6. รายการ Service · Services
 | Service | Stack | Port | STRUCTURE |

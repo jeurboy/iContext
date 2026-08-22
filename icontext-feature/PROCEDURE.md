@@ -22,11 +22,13 @@ update is available, mention it, then continue.
 ## Step 1 — Preconditions + required scaffolding
 1. Confirm `CONTEXT.md`, `plans/`, `PLAN.md` exist. If not, tell the user to run `icontext-init` first.
 1b. **Read the L2 context the feature touches**, not just `CONTEXT.md`: `PRODUCT.md` (§1–2) always;
+   `SKILLS.md` (§10) always before selecting requirement, review, security, or implementation skills;
    `DEV.md` (§3–7) for architecture, services, API, or data-model work;
    `QA.md` (§9) before writing the test plan; `SECURITY.md` (§8) if the feature adds a route, page,
    role, or dependency; `DESIGN.md` (§12) if it has UI. On an older project these sections may all
    still be inside `CONTEXT.md` — that's fine, read them there and mention that `icontext-update`
-   can split them.
+   can split them. A six-file project may have only §10 left in `CONTEXT.md`; read it there and
+   mention `icontext-update` can move it into `SKILLS.md`.
 2. **Check the required scaffolding before planning.** For each artifact below, if it is missing,
    **ASK the user whether to create it now** (one prompt, multi-select is fine). Do not create
    silently and do not block — if the user declines, note it and continue.

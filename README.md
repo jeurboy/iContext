@@ -1,15 +1,15 @@
 # iContext
 
-**Version 1.13.0** · five portable agent-skills that bootstrap, audit, visualize, and maintain a **layered project
+**Version 1.14.0** · five portable agent-skills that bootstrap, audit, visualize, and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
 | Skill | Command | Does |
 |-------|---------|------|
-| **icontext-init** | `/icontext-init` | Scaffold the context backbone (L1 agent files · L2 `CONTEXT.md` + `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` + `DESIGN.md` · L3 `plans/`) + service skeletons. **Greenfield** (new), **brownfield** (read & summarize an existing codebase), or **update/sync** (fill only the missing pieces of an existing backbone). Confirms every L2 section with you first; **idempotent & non-destructive** — re-running never deletes or overwrites your context. |
-| **icontext-update** | `/icontext-update` | Update an existing iContext project that already has `CONTEXT.md` to the latest template shape. **Refactors a monolithic `CONTEXT.md` into the L2 split** (`DEV.md` · `PRODUCT.md` · `QA.md` · `SECURITY.md` · `DESIGN.md`) with per-file approval, moving your text verbatim and leaving pointer stubs. Also adds missing sections/artifacts such as `AGENTS.md`, `CONTEXT.md §11.0`, selectable requirement discovery, `ROLE.md` requirement-review protocol, refreshed plan templates, docs/styles/launch scaffolding, and service `STRUCTURE.md` files. Confirmation-first and additive only — reports every proposed change, waits for approval, and preserves owner-authored content. |
+| **icontext-init** | `/icontext-init` | Scaffold the context backbone (L1 agent files · L2 `CONTEXT.md` + `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` + `DESIGN.md` + `SKILLS.md` · L3 `plans/`) + service skeletons. **Greenfield** (new), **brownfield** (read & summarize an existing codebase), or **update/sync** (fill only the missing pieces of an existing backbone). Confirms every L2 section with you first; **idempotent & non-destructive** — re-running never deletes or overwrites your context. |
+| **icontext-update** | `/icontext-update` | Update an existing iContext project that already has `CONTEXT.md` to the latest template shape. **Refactors legacy L2 ownership into the seven-file split** (`DEV.md` · `PRODUCT.md` · `QA.md` · `SECURITY.md` · `DESIGN.md` · `SKILLS.md` alongside `CONTEXT.md`) with per-file approval, moving owner text verbatim and leaving pointer stubs. It also upgrades six-file projects by moving legacy §10 from `CONTEXT.md` into `SKILLS.md`, then adds only approved missing sections/artifacts. |
 | **icontext-audit** | `/icontext-audit` | Audit an existing iContext project for latest-template completeness, context/repo drift, plan-status sync, stale placeholders, and unnecessary Markdown cleanup candidates. It asks for an explicit decision on every missing, stale, unclear, or cleanup item before updating, archiving, or deleting anything, then re-audits and reports the final gap table. |
-| **icontext-visualize** | `/icontext-visualize` | Export an existing iContext project as an interactive static dependency graph: `context-graph.html` + `context-graph.js`. It reads the L2 set (`CONTEXT.md` + `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` + `DESIGN.md`) into a dedicated **L2 lane**, plus agent files, `ROLE.md`, `PLAN.md`, plans, docs, styles, service `STRUCTURE.md` files, manifests, and Markdown references, then adds readable lane layout, label-density controls, click focus with dependency fade, zoom/pan controls, start-node focus, animated node dragging, plan-status badges, and click-to-view Markdown without editing source context. |
+| **icontext-visualize** | `/icontext-visualize` | Export an existing iContext project as an interactive static dependency graph: `context-graph.html` + `context-graph.js`. It reads the seven-file L2 set (`CONTEXT.md` + `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` + `DESIGN.md` + `SKILLS.md`) into a dedicated **L2 lane**, plus agent files, plans, docs, styles, services, and Markdown references without editing source context. |
 | **icontext-feature** | `/icontext-feature` | Add one feature plan — a **folder** `plans/NNN-name/` split into role files — with the standard §0–11 structure, role owners, task-status lifecycle, selectable requirement discovery (`/grill-with-docs` or `/wayfinder`), `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pre-checks required scaffolding (style guide · `docs/openapi.yaml` · `.vscode/launch.json`) and offers to create what's missing. |
 
 ## The 3-layer context model
@@ -17,21 +17,23 @@ session already knowing your architecture, conventions, and plan status.
 ```
 Layer 1  CLAUDE.md · AGENTS.md · AGENT.md · GEMINI.md
                                                 agent boilerplate (hard rules, vendor-neutral)
-Layer 2  CONTEXT.md                          context map · skills §10 · workflow §11
+Layer 2  CONTEXT.md                          context map · workflow §11
          DEV.md                              §3–7 architecture · stack · repo · services · data model
          PRODUCT.md                          §1 product overview · §2 key decisions · §13 open questions
          QA.md                               §9 testing standard + quality gates
          SECURITY.md                         §8 security model · §11.6 security-review wiring
          DESIGN.md                           §12 design tokens + design system
+         SKILLS.md                           §10 skill dependencies · triggers · routing · fallbacks
 Layer 3  plans/NNN-name/                     one folder per feature, each refs the L2 files
          PLAN.md · plans/README.md           status dashboards (kept in sync, 3 places)
 ```
 
-**L2 is split across six files by concern, and section numbers are stable.** A section keeps its `§N` wherever it
-lives, so existing `§8` / `§9` / `§12` references keep resolving after the split. `CONTEXT.md`
+**L2 is split across seven files by concern, and section numbers are stable.** A section keeps its `§N` wherever it
+lives, so existing `§8` / `§9` / `§10` / `§12` references keep resolving after the split. `CONTEXT.md`
 opens with a **context map** (§ → file → owners) and leaves a `➜ Moved to …` stub where a
 section moved out. One concern lives in exactly one file — link to it, never copy it.
-Projects created before the split still work; `/icontext-update` offers the refactor.
+Projects created before the split still work; `/icontext-update` offers the refactor, including
+moving §10 from a legacy six-file project into `SKILLS.md`.
 
 Each plan is a **folder split by role** — sections **0–11** distributed across files by their
 primary owner (BU/PO/DEV/QA/OPS/STK):
@@ -59,26 +61,13 @@ run `/icontext-update` when the template itself changed or a known artifact is m
 plan status, and Markdown cleanup candidates; run `/icontext-visualize` when you want an HTML/JS
 dependency graph of the current context.
 
-## Wired-in skills (dependencies)
+## Skill dependency routing
 
-| Skill | Source | Phase | What runs |
-|-------|--------|-------|-----------|
-| `/grill-with-docs` | mattpocock/skills | requirement | discovery for clear-ish requirements |
-| `/wayfinder` | aihero.dev | requirement | discovery for large/foggy requirements |
-| `ROLE.md` panel | iContext template | requirement | BU·PO·DEV·QA·OPS·STK requirement review |
-| `/autoplan` + `/plan-*-review` | gstack | plan | ceo · eng · design (if UI) · devex (if dev-facing) |
-| **`security-review`** | [ice-limited/security-skill](https://github.com/ice-limited/security-skill) | **plan** | **supply-chain** |
-| **`security-review`** | same | **implement** (each slice) | **secret · code-review · auth · dependency · docker** |
-
-`security-review` runs real detectors (Semgrep, Trivy, Checkov, OSV-Scanner, Scorecard) and reports
-their structured findings — it is never a substitute for running them. Findings are recorded in the
-plan's `ops.md` §8.1 and gate `done`. Its remaining detectors (api · iac · kubernetes ·
-cicd-pipeline · race-condition) stay ad hoc. Full wiring: `SECURITY.md` §11.6.
-
-Task status flows `to do → plan → ready to implement → implement → ready to test → done`
-(reach `ready to implement` only after `/autoplan` or the review chain). Before implementing any
-plan, run the review chain via `/autoplan`: `/plan-ceo-review` (scope) · `/plan-eng-review`
-(architecture) · `/plan-design-review` (if UI) · `/plan-devex-review` (if developer-facing).
+Generated projects keep the complete direct-dependency registry and invocation matrix in
+[`SKILLS.md`](./icontext-init/templates/SKILLS.md) §10. It owns required/alternative/recommended/
+optional classification, when and when not to invoke each skill, composition order, and fallbacks.
+Individual skill packages still own their own trigger and procedure in their `SKILL.md`; the
+project-level `SKILLS.md` owns how those skills are composed.
 
 ## Self-update check
 Each skill ships a `VERSION` + `check-update.sh`. On **every run** (Step 0) the skill compares
@@ -159,14 +148,12 @@ iContext/
 ```
 
 ## Conventions baked in
-- Never `git commit` / `git push` unless explicitly told.
-- **Install `gstack`** (https://github.com/garrytan/gstack) — provides `/autoplan` + the plan-review chain.
-- **Before writing any plan, run requirement discovery**: choose `/grill-with-docs` for clear-ish
-  requirements or `/wayfinder` for large/foggy requirements without a clear solution path, then
-  review the requirement with the multi-agent role panel in `ROLE.md`.
-- **Before implementing any plan, run the review chain** (`/autoplan`): ceo · eng · design (if UI) · devex (if dev-facing).
-- **Install `security-review`** (https://github.com/ice-limited/security-skill) — the security dependency skill, wired into two phases (`CONTEXT.md` §11.6): **plan** → `supply-chain`; **implement** (each slice) → `secret` · `code-review` · `auth` · `dependency` · `docker`. Findings land in the plan's `ops.md` §8.1 and gate `done`.
-- **Confirm every `CONTEXT.md` section** with the owner before writing; **non-destructive** — never delete/overwrite existing context, only add what's missing.
+- Every `git commit`, `git push`, direct DB command, migration, seed/reset/import/restore, or known
+  DB-changing startup command requires explicit confirmation for that exact invocation. When the
+  host supports interactive hooks, `.icontext/hooks/guard-command.sh` enforces the gate.
+- **Follow `SKILLS.md` §10** for direct dependencies, triggers, exclusions, order, and fallbacks;
+  keep README skill lists overview-only.
+- **Confirm every L2 section** with the owner before writing; **non-destructive** — never delete/overwrite existing context, only add what's missing.
 - **Audit before cleanup** — `/icontext-audit` must ask about every missing, stale, unclear, or extra Markdown item before updating, archiving, or deleting it.
 - **Visualize read-only** — `/icontext-visualize` exports static HTML/JS graphs without changing context or app source files.
 - **On architecture-impacting change, update context · plan · doc · style · data model together** (no drift).
@@ -188,10 +175,30 @@ python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validat
 
 ## Changelog
 
+### 1.14.0
+- **Dedicated skill-routing context** — Layer 2 now includes `SKILLS.md` as the owner of stable
+  §10: direct dependencies, invocation triggers, composition order, exclusions, and fallbacks.
+  `CONTEXT.md` keeps the context map, a §10 pointer stub, and workflow §11.
+- **Legacy restructuring** — `icontext-update` now detects both monolithic projects and older
+  six-file projects, offers `SKILLS.md` as a separate per-file migration, moves owner-authored §10
+  text verbatim, leaves a pointer stub, and rewrites L1/plan references only after approval.
+- **End-to-end ownership** — init, audit, feature planning, visualization, plan templates, L1
+  templates, documentation, and validation understand the seven-file L2 shape.
+- **Systematic bug routing** — generated `SKILLS.md` registries route errors, regressions, stack
+  traces, and unexpected behavior through gstack `/investigate`: reproduce and prove root cause
+  before an authorized minimal fix, regression test, and fresh verification.
+- **Installable dependency provenance** — generated registries include verified upstream Git/source
+  URLs and install guidance so an agent can resolve a missing selected skill without guessing its
+  repository, then verify discovery in the target agent after installation.
+- **Confirmation-gated mutation hook** — generated projects include a portable pre-command guard
+  and policy for every commit, push, direct DB access/mutation, migration, seed, reset, import, or
+  restore. Init wires it when the host supports interactive hooks; update backfills it; audit verifies
+  both the artifacts and the real host path without running the restricted action.
+
 ### 1.13.0
 - **Dedicated development context** — Layer 2 now includes `DEV.md` as the owner of stable
-  sections §3–7 (architecture, stack, repository, services, and data model); `CONTEXT.md` keeps
-  the context map, pointer stubs, skills, and workflow.
+  sections §3–7 (architecture, stack, repository, services, and data model); at that release,
+  `CONTEXT.md` kept the context map, pointer stubs, skills, and workflow.
 - **End-to-end migration support** — `icontext-update` can opt-in migrate existing projects to the
   six-file L2 shape, while init, audit, feature-plan references, visualization, and validation all
   understand the new `DEV.md` ownership boundary.

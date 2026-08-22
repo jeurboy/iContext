@@ -4,6 +4,10 @@ Audit an existing iContext project for completeness, drift, and Markdown cleanup
 project already has `CONTEXT.md`, but you want to verify that the current context still matches the
 latest template and the real repository.
 
+The audit includes agent mutation safety: portable hook files, executable mode, L1/§11.7 rules,
+and the active host's real project-local hook registration. It never runs a commit, push, DB command,
+migration, or seed merely to test the guard.
+
 The workflow is audit-first and confirmation-first: it inventories the iContext backbone, compares
 it with the latest templates, checks for drift against repo evidence, lists unnecessary or stale
 Markdown candidates, asks for an explicit decision on every item, applies only approved updates,

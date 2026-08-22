@@ -3,7 +3,8 @@ name: icontext-init
 description: Establish or refresh the whole-project iContext backbone so agents understand a
              codebase's architecture, conventions, workflow, and plan status. Use for greenfield
              setup, brownfield onboarding, or update/sync when CONTEXT.md, L1 agent files
-             (CLAUDE.md, AGENTS.md, AGENT.md, GEMINI.md), DEV.md, ROLE.md, plans/, docs/openapi.yaml,
+             (CLAUDE.md, AGENTS.md, AGENT.md, GEMINI.md), DEV.md, SKILLS.md, ROLE.md, plans/, docs/openapi.yaml,
+             project safety hooks,
              styles/, service skeletons, or data/security sections are missing or stale. It
              interviews section-by-section and only adds missing context. Do NOT use for
              per-feature planning, implementation, standalone OpenAPI generation, README rewrites,
@@ -49,9 +50,14 @@ Two invariants worth holding in mind (full detail in PROCEDURE):
 - **Step 2D section confirm** — drive the per-section confirm/edit/skip loop with
   `AskUserQuestion` (batch related sections into one prompt to keep it short).
 - **File creation** — use `Write`/`Edit`, copying from `templates/` and substituting `{{VARS}}`.
+- **Safety hook (Step 2E)** — always create `.icontext/hooks/guard-command.sh` + `POLICY.md`. If
+  the host supports an interactive project pre-command hook, merge the guard into its documented
+  config and verify safe/restricted dry-run payloads. Never overwrite existing hooks; report the
+  instruction-only fallback when the host has no usable hook.
 - **Git** — `git init` only; **confirm the repo strategy (submodules / monorepo / separate repos)
   with `AskUserQuestion` before wiring services as submodules** (PROCEDURE Step 2A). Never
-  commit/push unless told.
+  commit/push unless told. Every commit, push, DB access/mutation, migration, or seed also requires
+  the per-invocation confirmation in CONTEXT.md §11.7.
 
 ## Stop rule
 Finish at context review (PROCEDURE Step 3). Do not create feature plans here — that is the

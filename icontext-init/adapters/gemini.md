@@ -12,7 +12,10 @@ Gemini has no native "skills". To run this workflow:
    - File checks / `git init` → shell tool.
    - File creation → write files by copying from `templates/`, substituting `{{VARS}}`.
    - Brownfield large-repo analysis → read files directly (no sub-agent); summarize.
-3. Honor the rules in PROCEDURE.md: never commit/push unless told; stop at context review.
+   - Safety hook → create `.icontext/hooks/`; wire it only if the active Gemini host documents an
+     interactive project hook. Otherwise report instruction-only enforcement.
+3. Honor the rules in PROCEDURE.md: require fresh confirmation for every commit, push, DB command,
+   migration, or seed; stop at context review.
 
 Tip: drop this repo's `templates/` next to the target project, or pass the absolute path so
 Gemini can read the templates.

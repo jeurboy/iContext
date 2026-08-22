@@ -3,7 +3,7 @@
 > **Split out of `CONTEXT.md`.** Holds §12. Section numbers are unchanged, so every existing
 > `§12` reference in plans and docs still resolves — only the file moved.
 > Siblings: [CONTEXT.md](./CONTEXT.md) (context map + workflow) · [DEV.md](./DEV.md) (development) · [PRODUCT.md](./PRODUCT.md) ·
-> [QA.md](./QA.md) · [SECURITY.md](./SECURITY.md)
+> [QA.md](./QA.md) · [SECURITY.md](./SECURITY.md) · [SKILLS.md](./SKILLS.md)
 
 **Owners:** `DEV` + design · **Read by:** anyone touching UI (web or mobile), before writing a
 single component.
@@ -57,7 +57,7 @@ single component.
 
 #### 12.7 Design workflow & companion skills
 <!-- Every UI change (page, component, screen, flow) goes through:
-     1. Design skills — e.g. `ui-ux-pro-max` + `impeccable` (see CONTEXT.md §10). If the project
+     1. Design skills — e.g. `ui-ux-pro-max` + `impeccable` (see SKILLS.md §10). If the project
         mandates them, say so here and don't start UI work before they're installed.
      2. `/plan-design-review` on any plan that has UI (CONTEXT.md §11.4).
      3. Style-guide update in the same change (12.1).

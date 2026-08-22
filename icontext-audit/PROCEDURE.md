@@ -20,7 +20,9 @@
 - **Cleanup is opt-in.** Markdown outside the template is not automatically "extra." Mark it as a
   cleanup candidate only with evidence, then ask whether to keep, merge, archive, or delete it.
   Delete only when the user explicitly approves deletion for that specific file or section.
-- **Never commit / push** unless explicitly told.
+- **Never commit / push or access/change a DB without per-invocation confirmation.** Audit is
+  read-only until approved; never run a DB client, migration, seed/reset/import/restore, or a
+  DB-changing startup path merely to verify documentation (CONTEXT.md §11.7).
 
 ## Step 0 - Update check
 Run `check-update.sh` next to this file and surface its one-line result. Continue even if offline.
@@ -31,13 +33,20 @@ the sibling path `../icontext-init/templates/`.
 
 Inventory the expected backbone:
 - L1 files: `CLAUDE.md`, `AGENTS.md`, `AGENT.md`, `GEMINI.md`
-- L2 files: `CONTEXT.md`, `DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`, `ROLE.md`.
+- L2 files: `CONTEXT.md`, `DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`, `SKILLS.md`,
+  `ROLE.md`.
   A project holding all of sections 1-13 in one `CONTEXT.md` is **not a defect** — it predates the
   L2 split. Report it as a `split candidate` and point the owner at `/icontext-update` Step 5.5;
   never split it here.
+  A six-file project with §10 still in `CONTEXT.md` is also a `SKILLS.md split candidate`; point
+  it at the same update step and do not create a duplicate §10 during audit.
+  A §10 pointer stub with no `SKILLS.md` target is a dangling-reference defect and requires owner
+  recovery input; do not silently reconstruct project-specific dependencies from the template.
 - L3/status files: `PLAN.md`, `plans/README.md`, `plans/_TEMPLATE/`
 - Shared scaffolding: `docs/openapi.yaml`, `styles/css/tokens.css`, `styles/components/`,
   `.vscode/launch.json`, `docker-compose.yml`
+- Agent safety: `.icontext/hooks/guard-command.sh`, `.icontext/hooks/POLICY.md`, executable mode,
+  L1/CONTEXT.md §11.7 rules, and the active host's project-local hook registration/status
 - Service guides: each service's `STRUCTURE.md`, using service names from `DEV.md` section 6
 - Feature plans: each `plans/NNN-name/` folder and its role files
 
@@ -46,19 +55,29 @@ Build a template-completeness table. Do not edit yet.
 
 Check:
 - The L2 files contain the latest section set **across all of them** — a section counts as present
-  wherever it lives (`PRODUCT.md` 1/2/13 · `DEV.md` 3-7 · `CONTEXT.md` 10/11 · `SECURITY.md` 8/11.6 ·
+  wherever it lives (`PRODUCT.md` 1/2/13 · `DEV.md` 3-7 · `SKILLS.md` 10 · `CONTEXT.md` 11 · `SECURITY.md` 8/11.6 ·
   `QA.md` 9 · `DESIGN.md` 12), and section numbers are stable across the split so existing
-  references still resolve. Flag a section that appears in **two** files as a duplication defect.
+  references still resolve. Flag a section that appears in **two** files as a duplication defect,
+  except for a `➜ Moved to …` pointer stub in `CONTEXT.md`, which is navigation rather than content.
   Sections to check: 1-13, section 11.0 main workflow,
   section 11.1 plan structure, section 11.2 plan rules, section 11.3 sync rule, section 11.4
   review chain, section 11.5 implementation loop, and section 11.6 `security-review` phase wiring
-  (plan = supply-chain; implement = secret, code-review, auth, dependency, docker).
+  (plan = supply-chain; implement = secret, code-review, auth, dependency, docker), plus section
+  11.7 agent mutation safety and hook wiring.
 - `ROLE.md` includes the Requirement Review Protocol.
+- `SKILLS.md` §10 includes the direct dependency registry and invocation routes, including the
+  gstack `/investigate` route for errors, regressions, stack traces, and unexpected behavior.
+  Each external direct dependency also has an upstream Git/source URL and installation guidance;
+  flag missing, placeholder, or obviously non-upstream URLs for owner confirmation.
 - Plan templates include `README.md`, `bu.md`, `po.md`, `dev.md`, `qa.md`, `ops.md`, and `stk.md`,
   including the latest Requirement Discovery / Requirement Review / Persona Panel shape and the
   `ops.md` section 8.1 Security review table.
-- L1 files point agents to `CONTEXT.md`, preserve the project rules, and include current workflow
-  guidance.
+- L1 files point agents to `CONTEXT.md` and `SKILLS.md`, preserve the project rules, and include
+  current workflow guidance.
+- The portable mutation guard protects every `git commit`, `git push`, direct DB command, and
+  migration/seed/reset/import/restore action with an interactive per-invocation confirmation. If the
+  active host supports hooks, verify the project hook is registered and exercises the guard; if it
+  does not, record instruction-only enforcement rather than treating that as silently active.
 - Shared scaffolding exists or is intentionally absent with a documented reason.
 
 Mark each item as `present`, `missing`, `partial`, `placeholder`, `stale`, or `unknown`.
@@ -130,7 +149,11 @@ while applying changes, stop and ask about the new item before writing it.
 Apply only approved actions:
 - Create missing files from `../icontext-init/templates/` with variables inferred from confirmed
   context. Use TODO markers only for values the user deferred.
-- Patch missing `CONTEXT.md` sections or subsections additively. Keep existing owner prose.
+- For an approved safety-hook gap, add/patch the portable artifacts, L1 rules, and CONTEXT.md §11.7;
+  merge the active host's documented project hook without overwriting unrelated hooks. Dry-run safe
+  and restricted payloads through the guard and the real host path when available.
+- Patch missing L2 sections or subsections additively. Keep existing owner prose. Route a legacy
+  §10 move to `icontext-update` instead of copying it into `SKILLS.md` during audit.
 - Patch stale context only for confirmed values, citing repo evidence when useful.
 - Update plan status in all required places when approved.
 - For cleanup, merge/archive/delete exactly as approved. If archiving and the project has no
@@ -144,5 +167,7 @@ Run the relevant inventory checks again. Output:
   `deleted`, `deferred`, `intentionally absent`, or `blocked`.
 - Remaining TODOs or deferred owner questions.
 - Files changed and files intentionally left alone.
+- Hook status: `active and verified`, `artifacts present; wiring pending`, or
+  `hook unavailable; policy enforced by instructions`.
 
 Stop here; do not create a feature plan and do not implement app code.

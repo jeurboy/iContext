@@ -30,3 +30,8 @@
 
 ## Deploy / Migrations / Env · `OPS`
 <!-- Migration steps, env vars, secrets, rollout/rollback notes. -->
+
+### Agent execution safety gate
+<!-- CONTEXT.md §11.7. Planning a command is not permission to execute it. Before EACH commit,
+push, direct DB command, migration, seed, reset, import, or restore, record the exact target and ask
+the user for explicit confirmation. Do not reuse approval from an earlier invocation. -->

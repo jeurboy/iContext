@@ -5,7 +5,7 @@ description: Audit an existing iContext project against the latest iContext temp
              context is complete, validate CONTEXT.md/agent files/plans against the template,
              find stale or drifted context, clean unnecessary Markdown, or keep iContext up to
              date. It inventories L1/L2/L3 artifacts, missing sections, placeholders, workflow
-             drift, plan/status sync, service docs, and cleanup candidates; asks the user for an
+             drift, plan/status sync, project safety-hook coverage, service docs, and cleanup candidates; asks the user for an
              explicit decision on every missing, unclear, stale, or cleanup item before writing;
              then applies only approved updates while preserving owner-authored content. Do NOT
              use for first-time setup or one feature plan; use icontext-init or icontext-feature.
@@ -39,9 +39,12 @@ updates.
   individually addressable.
 - **Update** - patch only approved gaps, preserve owner-authored text, and leave TODOs only when
   the user chooses to defer.
+- **Safety hook** - audit `.icontext/hooks`, L1/§11.7 rules, executable mode, and real active-host
+  wiring. Apply only approved backfills/merges and verify with non-executing safe/restricted probes.
 - **Cleanup** - never remove Markdown just because it is outside the template. Ask whether to keep,
   merge, archive, or delete each candidate, and only act on confirmed choices.
-- **Git** - never commit or push unless explicitly told.
+- **Restricted actions** - never commit, push, access/change a DB, migrate, or seed without the
+  exact per-invocation confirmation required by CONTEXT.md §11.7.
 
 ## Stop rule
 Finish after the re-audit summary and final gap table. Do not create a feature plan or implement

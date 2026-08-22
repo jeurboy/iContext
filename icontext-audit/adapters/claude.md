@@ -7,7 +7,7 @@ Claude Code is the native entry point: invoke `/icontext-audit` in a project tha
 2. Read `PROCEDURE.md`.
 3. Use `Bash`/`Read` to inventory the project against `../icontext-init/templates/`.
 4. Compare the written context against the actual repo structure, manifests, docs, tests, plans,
-   and service files.
+   service files, `.icontext/hooks/`, L1/§11.7 rules, and Claude's active project hook wiring.
 5. Present every missing, stale, unclear, or cleanup-candidate item with a stable ID.
 6. Use `AskUserQuestion` to get an explicit decision for every item before writing, moving,
    archiving, or deleting.

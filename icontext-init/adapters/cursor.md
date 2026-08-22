@@ -11,6 +11,8 @@ Cursor uses rules (`.cursor/rules/*.mdc`) and chat. To run this workflow:
    - Questions → ask inline in chat.
    - Detection / `git init` → terminal.
    - File creation → create from `templates/`, substituting `{{VARS}}`.
+   - Safety hook → create `.icontext/hooks/`; wire it only through Cursor's documented interactive
+     project hook, merging rather than replacing existing hook config.
 3. Optional: after scaffolding, add a Cursor rule that points at `CONTEXT.md` so every Cursor
    session loads the project context:
    ```
@@ -19,5 +21,5 @@ Cursor uses rules (`.cursor/rules/*.mdc`) and chat. To run this workflow:
    alwaysApply: true
    ---
    Read CONTEXT.md before doing anything. Follow its rules (tests >80%, central style tokens,
-   no commit without instruction).
+   per-invocation confirmation before commit, push, DB access/change, migration, or seed).
    ```

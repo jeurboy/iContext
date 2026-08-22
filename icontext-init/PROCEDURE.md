@@ -10,12 +10,19 @@ feature plans are made later by the separate `icontext-feature` procedure.
 ## Operating rules (always)
 - **Never run `git commit` / `git push` unless the user explicitly asks.** `git init` and
   staging are fine; committing is not.
+- **Never touch a database or run a migration/seed/reset/import/restore without explicit
+  confirmation for that exact command, target, and environment.** Editing DB-related source files
+  is not execution. Every later restricted command needs a new confirmation (CONTEXT.md §11.7).
+- **Wire the safety hook when the host supports interactive hooks.** Generate the portable guard
+  artifacts in `.icontext/hooks/` in every project. Register the guard only through a documented
+  host hook that can return `ask` (or equivalent); merge existing hook config and never overwrite it.
 - **Section-by-section confirmation:** confirm every L2 section (§1–13, wherever it lives) with the
   project owner before writing it (Step 2D). Never silently auto-fill or leave a bare placeholder
   without surfacing the section for confirm / edit / skip.
-- **L2 is six files, split by concern.** `CONTEXT.md` (context map · skills §10 · workflow §11) ·
+- **L2 is seven files, split by concern.** `CONTEXT.md` (context map · workflow §11) ·
   `DEV.md` (architecture §3–7) · `PRODUCT.md` (§1 · §2 · §13) · `QA.md` (§9) · `SECURITY.md`
-  (§8 · §11.6) · `DESIGN.md` (§12). **Section numbers stay stable** wherever a section lives, so `§N` references
+  (§8 · §11.6) · `DESIGN.md` (§12) · `SKILLS.md` (§10 skill dependencies + routing).
+  **Section numbers stay stable** wherever a section lives, so `§N` references
   in plans and docs keep resolving. A concern lives in exactly one file — never duplicate a section
   across files; `CONTEXT.md` keeps a pointer stub (`➜ Moved to …`) where a section moved out.
 - **Non-destructive — only add what's missing.** Don't delete or rewrite existing context: the
@@ -33,10 +40,14 @@ feature plans are made later by the separate `icontext-feature` procedure.
   it first means you and the user share the same picture of which version is acting before anything
   changes. It compares the local `VERSION` to the published one, is best-effort, and never blocks
   (offline/unpublished just prints "skipped"). If an update is available, mention it, then continue.
-- **Required companion skills:** check `gstack`, `ui-ux-pro-max`, `impeccable`,
+- **Required companion skills:** use `templates/SKILLS.md` §10 as the routing source of truth and
+  check `gstack`, `security-review`, `ui-ux-pro-max`, `impeccable`,
   `grill-with-docs`, and `wayfinder` (see
   `reference/required-skills.md`). If your agent can't check installation, just remind the user
   of the links.
+- **Hook capability:** detect whether the active host exposes a documented project-local
+  pre-command/pre-tool hook with an interactive approval decision. Record `supported`,
+  `unsupported`, or `unknown`; do not infer a config format from another agent.
 
 ## Step 1 — Choose mode
 **First, detect an existing iContext backbone** at the target root: `CONTEXT.md` plus any of
@@ -46,13 +57,16 @@ feature plans are made later by the separate `icontext-feature` procedure.
   `QA.md` / `SECURITY.md` / `DESIGN.md`) → this is a **split candidate**. Offer the L2 split as part of
   Step 2C, or point the user at `icontext-update`, which owns the refactor. Never split without
   the owner's explicit approval.
+- Backbone already has concern files but `SKILLS.md` is missing and §10 still lives in
+  `CONTEXT.md` → this is a **skill-registry split candidate**. Offer the `SKILLS.md` move through
+  `icontext-update` Step 5.5 with the same confirmation-first, move-not-copy rules.
 
 If no backbone, detect whether the target dir already has code (look for `package.json`, `go.mod`,
 `pubspec.yaml`, `pom.xml`, `requirements.txt`, `Cargo.toml`, `composer.json`, `*.csproj`).
 - No backbone, no code → **GREENFIELD** → Step 2A.
 - No backbone, code present → ask the user: **BROWNFIELD** (analyze existing → Step 2B) or greenfield anyway.
 
-In every mode, write each CONTEXT.md section only after confirming it per **Step 2D**.
+In every mode, write each L2 section only after confirming it per **Step 2D**.
 
 ## Step 2A — Greenfield: interview in depth, then generate
 This is a **first-time context init** — capture the real context, don't just fill defaults.
@@ -64,7 +78,7 @@ owner what the project's services really are and what each dir is called (e.g. `
 or many; don't assume the three-way split. Record the confirmed list in DEV.md §6 (Services)
 and use those exact names everywhere (tree, docker-compose, `.vscode/launch.json`, submodule
 wiring). Then run the **detailed per-section interview in Step 2D** (first-time-init depth) to
-flesh out every CONTEXT.md section before writing.
+flesh out every L2 section before writing.
 
 **Stack catalog (default ⭐ + alternatives → recommended pieces):**
 - Web: **Next.js (App Router)** ⭐ / Remix / Vite+React / Nuxt / SvelteKit → React Query + Tailwind + Playwright
@@ -79,12 +93,13 @@ matching `templates/stacks/<layer>-<choice>/STRUCTURE.md` into each service dir.
 <root>/
 ├── CLAUDE.md  AGENTS.md  AGENT.md  GEMINI.md
 │                                          L1 — agent boilerplate (all point to CONTEXT.md)
-├── CONTEXT.md                           L2 — context map · skills §10 · workflow §11
+├── CONTEXT.md                           L2 — context map · workflow §11
 ├── DEV.md                               L2 — §3–7 architecture · stack · repo · services · data model
 ├── PRODUCT.md                           L2 — §1 product overview · §2 key decisions · §13 open questions
 ├── QA.md                                L2 — §9 testing standard + quality gates
 ├── SECURITY.md                          L2 — §8 security model · §11.6 security-review wiring
 ├── DESIGN.md                            L2 — §12 design tokens + design system
+├── SKILLS.md                            L2 — §10 direct skill dependencies + invocation routing
 ├── ROLE.md                              persona panel (BU/PO/DEV/QA/OPS/STK)
 ├── PLAN.md                              status dashboard of all plans
 ├── docker-compose.yml                   pg:{{DB_PORT}} web:{{WEB_PORT}} api:{{API_PORT}}
@@ -93,13 +108,15 @@ matching `templates/stacks/<layer>-<choice>/STRUCTURE.md` into each service dir.
 ├── styles/components/*.html             style guide, one file per component
 ├── docs/openapi.yaml                    API spec (a.k.a. openapi.yml)
 ├── .vscode/launch.json                  debug configs (api/web/app · ports from §6)
+├── .icontext/hooks/                     portable AI mutation guard + policy (§11.7)
 ├── <service dirs>                       service skeletons — names per the owner (default api/ web/ app/)
 ```
 Service dir names above are the **default example**, not a requirement — substitute the actual
 dirs the owner confirmed (could be one dir, or `backend/ frontend/ admin/ …`). In **brownfield**
 (Step 2B), detect the real service dirs from the repo instead of asking.
 
-Embed the standing rules into the L1 files + CONTEXT.md: summarize stack+arch before
+Embed the standing rules into the L1 files + the owning L2 files (`SKILLS.md` for dependency
+routing, `CONTEXT.md` for workflow): summarize stack+arch before
 implementing; ask the user to choose `/grill-with-docs` or `/wayfinder` during requirement
 discovery (use `/wayfinder` for large/foggy requirements without a clear solution path); use
 `ROLE.md` as a multi-agent requirement review panel before locking plan scope; use gstack
@@ -137,9 +154,11 @@ The project already has an iContext backbone, so treat it as the source of truth
 that exists and has real content untouched, and patch only the gaps. Audit first, then add.
 1. **Inventory** every expected artifact and mark present/absent: L1 `CLAUDE.md`/`AGENTS.md`/
    `AGENT.md`/`GEMINI.md`; the L2 set `CONTEXT.md` + `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` +
-   `DESIGN.md` and §1–13 per-section (a section counts as present wherever it lives); `ROLE.md`; `PLAN.md`; `plans/_TEMPLATE/` +
+   `DESIGN.md` + `SKILLS.md` and §1–13 per-section (a section counts as present wherever it lives); `ROLE.md`; `PLAN.md`; `plans/_TEMPLATE/` +
    `plans/README.md`; `docker-compose.yml`; `docs/openapi.yaml`; `styles/css/tokens.css`;
    `styles/components/*.html`; each service's `STRUCTURE.md`.
+   Include `.icontext/hooks/guard-command.sh`, `.icontext/hooks/POLICY.md`, executable permission,
+   and the active host's real project-local hook registration/status.
 2. **Missing files** → create from `templates/`, substituting `{{VARS}}` read from the existing
    `CONTEXT.md` where possible.
 3. **Existing files** → do not overwrite. For the L2 files, only **add** sections that are absent
@@ -148,13 +167,17 @@ that exists and has real content untouched, and patch only the gaps. Audit first
    run it only with explicit approval, per `icontext-update` PROCEDURE Step 5.5. **Move** sections,
    never copy: the section text lands in the new file verbatim and `CONTEXT.md` keeps a
    `➜ Moved to …` pointer stub. If the owner declines, leave the monolith alone and note it.
+3c. **Missing `SKILLS.md` with §10 still in `CONTEXT.md`** → propose moving §10 verbatim into the
+   `SKILLS.md` template and leaving its pointer stub, per `icontext-update` Step 5.5. Treat this as
+   a restructure, not a normal missing-file backfill; never create a second copy of §10.
 4. **Version / format drift** → report it and propose a patch; apply only with the owner's OK.
 5. Confirm each added/changed section via **Step 2D**, then output a **gap table**
    (artifact · status · action) and go to Step 3.
 
 ## Step 2D — Section-by-section confirmation (every mode)
 Walk §1–13 in order **across the L2 files** (`PRODUCT.md` §1–2, `DEV.md` §3–7, `SECURITY.md`
-§8, `QA.md` §9, `CONTEXT.md` §10–11, `SECURITY.md` §11.6, `DESIGN.md` §12, `PRODUCT.md` §13).
+§8, `QA.md` §9, `SKILLS.md` §10, `CONTEXT.md` §11, `SECURITY.md` §11.6, `DESIGN.md` §12,
+`PRODUCT.md` §13).
 For each section, show the proposed/detected value (or
 "empty") and ask the project owner via `AskUserQuestion` to **confirm as-is / edit / skip**
 (skip → `<!-- TODO -->`). Write a section only after its confirmation, into its owning file.
@@ -183,7 +206,22 @@ not be left blank. If they are missing, empty, an unsubstituted `{{VAR}}`, or a 
   context has no project description, always ask the user for it. (Also treat platforms and the
   one-line product purpose as mandatory.)
 
+## Step 2E — Install and verify the agent mutation guard
+1. Copy `templates/.icontext/hooks/guard-command.sh` and `POLICY.md` into the target project and
+   keep the guard executable. In UPDATE/SYNC mode, create/patch only after the owner approves the
+   listed gap; never replace owner changes silently.
+2. If Step 0 found a documented interactive project hook, show the exact host config file and merge
+   required to run the guard before shell commands. Preserve unrelated hooks. For an existing config,
+   get explicit approval before the merge.
+3. If the host has no interactive approval hook, do not install a permanent allow/block-only hook.
+   Keep the L1 + CONTEXT.md §11.7 rules and record `hook unavailable; policy enforced by instructions`.
+4. Dry-run the guard: `git status` must allow; `git commit`, `git push`, a direct DB client, and a
+   seed/migration command must ask. When wired, repeat these as non-executing probes through the real
+   host hook path. Do not run the restricted actions themselves merely to test the guard.
+5. Report one of: `hook active and verified`, `hook artifacts installed; host wiring pending`, or
+   `hook unavailable; policy enforced by instructions`.
+
 ## Step 3 — Review & stop
-Summarize CONTEXT.md (and, in UPDATE/SYNC, the gap table), ask about remaining `<!-- TODO -->`
+Summarize CONTEXT.md (and, in UPDATE/SYNC, the gap table), report the Step 2E hook status, ask about remaining `<!-- TODO -->`
 gaps worth filling now, then tell the user: context is ready — run `icontext-feature` for the
 first plan. Do not implement.

@@ -1,18 +1,14 @@
 ---
 name: icontext-update
-description: Update an existing iContext project to the latest template shape, including
-             refactoring a monolithic CONTEXT.md into the Layer-2 split (DEV.md, PRODUCT.md, QA.md,
-             SECURITY.md, DESIGN.md alongside CONTEXT.md). Use when a project
-             already has CONTEXT.md or an iContext backbone and the user wants to split context by
-             concern, or sync missing
-             sections, L1 agent files including AGENTS.md, ROLE.md workflow guidance, plan
-             templates, selectable requirement discovery guidance (/grill-with-docs or /wayfinder),
-             docs/openapi.yaml, styles, launch config, or service STRUCTURE files from the current
-             iContext templates. Adds only missing artifacts or missing sections,
-             confirms every proposed change with the user before writing, preserves owner-authored
-             content, leaves TODOs for unknown facts, and stops after the context/template backfill.
-             Do NOT use for greenfield setup or one feature plan; use icontext-init or
-             icontext-feature instead.
+description: Update an existing iContext backbone to the latest template shape. Use when a project
+             already has CONTEXT.md and needs missing L1/L2/L3 artifacts, workflow/security/skill
+             routing (including gstack /investigate), project safety hooks, plan templates, docs, styles, launch config,
+             or service STRUCTURE files; or when restructuring legacy context by splitting a
+             monolithic CONTEXT.md into DEV.md, PRODUCT.md, QA.md, SECURITY.md, DESIGN.md, and
+             SKILLS.md, including moving legacy §10 into SKILLS.md. It is confirmation-first and
+             additive, preserves owner-authored content, leaves TODOs for unknown facts, and stops
+             after backfill. Do NOT use for greenfield setup or one feature plan; use icontext-init
+             or icontext-feature instead.
 allowed-tools:
   - Read
   - Write
@@ -34,7 +30,9 @@ never overwrite owner-authored content.
 ## Mappings
 - **Update check** — run `bash check-update.sh`.
 - **L2 split (Step 5.5)** — if the project still has one monolithic `CONTEXT.md`, propose splitting
-  §3–7 → `DEV.md`, §1/§2/§13 → `PRODUCT.md`, §9 → `QA.md`, §8/§11.6 → `SECURITY.md`, §12 → `DESIGN.md`. Get
+  §3–7 → `DEV.md`, §1/§2/§13 → `PRODUCT.md`, §9 → `QA.md`, §8/§11.6 → `SECURITY.md`, §12 → `DESIGN.md`,
+  §10 → `SKILLS.md`. Also propose the §10 move when the project already has the older six-file L2
+  split but no `SKILLS.md`. Get
   per-file approval with `AskUserQuestion`, **move** the owner's text verbatim (never copy or
   reword), leave a `➜ Moved to …` stub in `CONTEXT.md`, and rewrite the refs listed in 5.5.5.
   Section numbers never change.
@@ -43,8 +41,12 @@ never overwrite owner-authored content.
   exact action; write only after confirmation.
 - **Backfill** — create missing files from templates and insert missing sections/headings only after
   confirmation.
+- **Safety hook (Step 5.6)** — detect/backfill `.icontext/hooks`, L1/§11.7 rules, and documented
+  interactive host wiring after approval. Merge existing hook config, verify dry-run payloads, and
+  report instruction-only enforcement when the host has no usable hook.
 - **Questions** — ask only when a value is mandatory and cannot be inferred; otherwise use TODOs.
-- **Git** — never commit or push unless explicitly told.
+- **Restricted actions** — never commit, push, access/change a DB, migrate, or seed without the
+  exact per-invocation confirmation required by CONTEXT.md §11.7.
 
 ## Stop rule
 Finish after the gap table and summary. Do not create a feature plan or implement app code.

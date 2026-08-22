@@ -253,7 +253,8 @@ const L2_FILES = [
   { name: 'PRODUCT.md', concern: 'product & direction', sections: 'sections 1, 2, 13', roles: ['bu', 'po'] },
   { name: 'QA.md', concern: 'testing standard', sections: 'section 9', roles: ['qa'] },
   { name: 'SECURITY.md', concern: 'security model', sections: 'sections 8, 11.6', roles: ['ops'] },
-  { name: 'DESIGN.md', concern: 'design system', sections: 'section 12', roles: ['dev'] }
+  { name: 'DESIGN.md', concern: 'design system', sections: 'section 12', roles: ['dev'] },
+  { name: 'SKILLS.md', concern: 'skill dependencies & routing', sections: 'section 10', roles: ['bu', 'po', 'dev', 'qa', 'ops', 'stk'] }
 ];
 
 // A section left in CONTEXT.md after the split is a pointer stub, not real content.
@@ -419,7 +420,7 @@ function makeGraph(root, title) {
       addEdge(plan.id, `file:${rolePath}`, roleName, 'role-split');
 
       // Each role file follows its L2 concern file (bu/po -> PRODUCT, qa -> QA,
-      // ops -> SECURITY, dev -> DEV + DESIGN). This is the wiring the split introduced.
+      // ops -> SECURITY, dev -> DEV + DESIGN, all roles -> SKILLS). This is the wiring the split introduced.
       const roleKey = path.basename(rolePath, '.md').toLowerCase();
       for (const entry of presentL2) {
         if (entry.roles.includes(roleKey)) {

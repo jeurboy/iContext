@@ -5,7 +5,7 @@ description: Export an existing iContext project as an interactive dependency gr
              dependencies, inspect how CONTEXT.md connects to plans/services/docs/styles/API
              artifacts, create a graph from iContext files, or produce an HTML/JS context map.
              It reads the Layer-2 context set (CONTEXT.md plus DEV.md, PRODUCT.md, QA.md, SECURITY.md,
-             DESIGN.md when the project has split them), L1 agent files, ROLE.md, PLAN.md, plans, docs, styles, service
+             DESIGN.md, SKILLS.md when the project has split them), L1 agent files, ROLE.md, PLAN.md, plans, docs, styles, service
              STRUCTURE files, manifests, and Markdown references; writes context-graph.html and
              context-graph.js with a dedicated Layer-2 lane, readable lane layout, label-density controls, click focus with
              dependency fade, zoom, pan, start-node focus, animated dragging, plan-status badges, and
@@ -28,7 +28,7 @@ view of an existing iContext project. The bundled exporter is
 
 ## Mappings
 - **Update check** - run `bash check-update.sh`.
-- **Layer-2 split** - `DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`, and `DESIGN.md` render as `l2`
+- **Layer-2 split** - `DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`, and `SKILLS.md` render as `l2`
   nodes in their own lane below `CONTEXT.md`, each owning its sections. A project that keeps
   everything in one `CONTEXT.md` exports fine with no `l2` nodes.
 - **Exporter** - run `node scripts/export-context-graph.js --root <project-root> --out <output-dir>`.

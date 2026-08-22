@@ -5,7 +5,7 @@ of files, `context-graph.html` and `context-graph.js`, that can be opened direct
 without a server or package install.
 
 The exporter reads the Layer-2 context set — `CONTEXT.md` plus `DEV.md`, `PRODUCT.md`, `QA.md`,
-`SECURITY.md`, and `DESIGN.md` when the project has split them — along with agent files,
+`SECURITY.md`, `DESIGN.md`, and `SKILLS.md` when the project has split them — along with agent files,
 role/status files, plans, docs, style artifacts,
 service `STRUCTURE.md` files, manifests, and useful Markdown references. The concern files get
 their own `l2` lane under `CONTEXT.md`, each owning its sections, and every plan role file links to

@@ -16,6 +16,9 @@ adapters — you normally don't need to read it; Claude reads `SKILL.md` → `PR
    - **Brownfield inventory** → dispatch the `Explore` agent (read-only fan-out) for large repos,
      then synthesize into `CONTEXT.md`.
    - **File creation** → `Write`/`Edit`, copying from `templates/` and substituting `{{VARS}}`.
+   - **Safety hook** → create `.icontext/hooks/`; when Claude's documented project hook supports
+     interactive `ask`, merge the guard without replacing existing hooks and verify dry-run payloads.
 3. Honor the hard rules in `PROCEDURE.md`: **non-destructive** (never delete/overwrite existing
-   context — only add the missing pieces); never `git commit`/`git push` unless told; stop at
+   context — only add the missing pieces); gate every commit, push, DB command, migration, and seed
+   per CONTEXT.md §11.7; stop at
    context review (do not create feature plans — that's `icontext-feature`).

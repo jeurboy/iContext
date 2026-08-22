@@ -44,7 +44,7 @@ node <skill-dir>/scripts/export-context-graph.js --root <project-root> --out <ou
 
 The exporter should read:
 - L2 context: `CONTEXT.md` plus its concern siblings `DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`,
-  `DESIGN.md` when they exist. Each becomes its own `l2` node in a dedicated lane under
+  `DESIGN.md`, `SKILLS.md` when they exist. Each becomes its own `l2` node in a dedicated lane under
   `CONTEXT.md`, with section nodes attributed to the file that owns them. Pointer stubs left in
   `CONTEXT.md` (`➜ Moved to …`) are skipped so a moved section appears exactly once.
   A project that predates the split (everything still inside `CONTEXT.md`) exports normally with
@@ -53,7 +53,8 @@ The exporter should read:
   L2 sibling
 - Status/role files: `ROLE.md`, `PLAN.md`, `plans/README.md`
 - Feature plans under `plans/NNN-name/`; each role file also links to the L2 concern file it
-  follows (`bu`/`po` → `PRODUCT.md` · `qa` → `QA.md` · `ops` → `SECURITY.md` · `dev` → `DEV.md` + `DESIGN.md`)
+  follows (`bu`/`po` → `PRODUCT.md` · `qa` → `QA.md` · `ops` → `SECURITY.md` · `dev` → `DEV.md` + `DESIGN.md` ·
+  all roles → `SKILLS.md` for invocation routing)
 - `docs/openapi.yaml` or `docs/openapi.yml`
 - `styles/css/tokens.css` and `styles/components/`
 - Service `STRUCTURE.md` files and common manifests
