@@ -1,7 +1,7 @@
 # {{PROJECT_NAME}} — CLAUDE.md (Layer 1)
 
 Agent boilerplate for Claude. Single source of truth: **[CONTEXT.md](./CONTEXT.md)**.
-(Mirror of `AGENTS.md` / `AGENT.md` / `GEMINI.md`.)
+(Mirror of the selected `AGENTS.md`/`agents.md` and `AGENT.md`/`agent.md` aliases plus `GEMINI.md`.)
 
 ## Read first
 - [CONTEXT.md](./CONTEXT.md) — L2 context map + workflow (read before anything)

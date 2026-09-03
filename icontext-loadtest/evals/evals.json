@@ -1,0 +1,25 @@
+{
+  "skill_name": "icontext-loadtest",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "ช่วยสร้าง load test ให้หน้า dashboard ของโปรเจกต์นี้",
+      "expected_output": "Asks which concrete dashboard route/platform to test before generating scripts, then traces its real API fan-out."
+    },
+    {
+      "id": 2,
+      "prompt": "ต้องการวัด capacity หน้า home โดย staging ใช้ production DB ร่วมกัน",
+      "expected_output": "Generates or plans guarded scripts but blocks execution because the target shares production data."
+    },
+    {
+      "id": 3,
+      "prompt": "ทำ k6 ramp test และ report RPS/response time แยก API ให้หน่อย",
+      "expected_output": "Asks for the target page, derives routes from code, and generates named profiles plus route-aligned metrics and reports without running k6."
+    },
+    {
+      "id": 4,
+      "prompt": "ช่วยสรุปผลหน้า home จาก /tmp/load-results/home-summary.json เป็นภาษาคน",
+      "expected_output": "Asks/acknowledges the target page, reads only the supplied path, and reports intended versus achieved load, throughput, latency, errors, dropped iterations, bottleneck evidence, and capacity validity without rerunning k6."
+    }
+  ]
+}

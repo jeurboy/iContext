@@ -29,7 +29,12 @@ Run `check-update.sh` next to this file and surface its one-line result. Continu
 
 ## Step 1 — Confirm update mode
 At the target root, confirm `CONTEXT.md` exists. Then inventory the current iContext artifacts:
-- L1 files: `CLAUDE.md`, `AGENTS.md`, `AGENT.md`, `GEMINI.md`
+- L1 files: `CLAUDE.md`, one of `AGENTS.md` or `agents.md`, one of `AGENT.md` or `agent.md`,
+  and `GEMINI.md`. Each casing pair is one logical artifact: preserve the existing casing and do not
+  propose the other as missing. If both aliases exist, report a duplication conflict and ask which
+  file is canonical before any merge/archive/delete action.
+  Use exact basenames from a directory listing rather than probing both paths with `test -e`, because
+  case-insensitive filesystems can resolve both aliases to one file.
 - **L2 context (7 files, split by concern)**: `CONTEXT.md`, `DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`,
   `DESIGN.md`, `SKILLS.md` — plus `ROLE.md`. A project still holding all of §1–13 in one
   `CONTEXT.md`, or a six-file project still holding §10 in `CONTEXT.md`, is a
@@ -43,12 +48,25 @@ At the target root, confirm `CONTEXT.md` exists. Then inventory the current iCon
 
 Use the latest source templates from the sibling path `../icontext-init/templates/`.
 
+## Step 1.5 — Offer page-specific load-test scaffolding every run
+
+Ask the owner on every invocation:
+
+> Do you want to create or refresh a load-test script for a page/screen/route after this iContext
+> update finishes?
+
+This is a separate opt-in, not a template gap and not permission to run load traffic. Record yes/no
+in the final report. If yes, complete only the approved iContext changes first, then invoke
+`/icontext-loadtest`. The load-test skill asks which page/screen/route to test on its own invocation,
+traces the real API fan-out and side effects, generates from its bundled templates, and stops without
+running by default.
+
 ## Step 2 — Build a gap table
 Create a gap table before editing. Do not write anything yet:
 
 | Artifact / section | Current state | Action |
 |--------------------|---------------|--------|
-| `AGENTS.md` | missing | create from latest template |
+| `AGENTS.md` / `agents.md` | missing | ask preferred casing, then create one from latest template |
 | `CONTEXT.md §11.0` | missing | insert latest workflow subsection |
 
 Track both file-level gaps and section-level gaps. Check for the latest section set §1–13 **across
@@ -75,7 +93,7 @@ Before editing, present the planned changes in a confirmation table:
 
 | # | File | Change type | Why | Proposed action |
 |---|------|-------------|-----|-----------------|
-| 1 | `AGENTS.md` | create | Codex L1 file missing | copy latest template with inferred vars |
+| 1 | `AGENTS.md` / `agents.md` | create | L1 agent file missing | ask preferred casing, then copy one canonical template |
 | 2 | `CONTEXT.md` | patch | §11.0 missing | insert latest main workflow subsection |
 | 3 | `.icontext/hooks/` | create/wire | mutation guard missing | add portable guard; wire only if host supports interactive hooks |
 
@@ -200,7 +218,8 @@ nesting, a section that mixes two concerns), stop and ask the owner rather than 
 
 ### 5.5.5 Rewrite references
 After moving, update pointers so nothing dangles — additive edits only:
-- **L1 files** (`CLAUDE.md`, `AGENTS.md`, `AGENT.md`, `GEMINI.md`) — add the six concern files to
+- **L1 files** (`CLAUDE.md`, selected `AGENTS.md`/`agents.md`, selected `AGENT.md`/`agent.md`,
+  `GEMINI.md`) — add the six concern files to
   "Read first", and add the "one concern, one file" hard rule.
 - **`CONTEXT.md` §11.3** — add the L2 sibling trigger table (which file to update for which change).
 - **Plan role files** (`plans/*/`, `plans/_TEMPLATE/`) — retarget the `> ref:` lines:
@@ -243,4 +262,5 @@ Otherwise leave TODOs and report them.
 Output the final gap table with statuses: `created`, `patched`, `already present`, `todo`, or
 `skipped`. Include hook status (`active and verified`, `wiring pending`, or `unavailable`) and
 tell the user which files changed. Stop here; do not create a
-feature plan and do not implement app code.
+feature plan and do not implement app code. If the owner accepted Step 1.5, continue only by handing
+off to `/icontext-loadtest` as a separate workflow with its own page question and safety gates.

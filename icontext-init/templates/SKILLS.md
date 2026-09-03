@@ -43,6 +43,7 @@
 | `icontext-audit` | optional maintenance | checking completeness, repo drift, plan/status sync, placeholders, or Markdown cleanup candidates | first-time setup or a known narrow migration | latest iContext templates | Read-only until every proposed change receives an explicit decision |
 | `icontext-visualize` | optional inspection | exporting the current context and dependencies as an interactive graph | the user asked to modify context rather than inspect it | Node.js runtime | Generates static HTML/JS without editing source context |
 | `icontext-feature` | required for a new feature plan | adding a feature or capability after the context backbone exists | implementing the feature or doing whole-project setup | one discovery route, `ROLE.md`, `/autoplan`, `security-review` | Creates and prepares one numbered role-split plan; stops before implementation |
+| `icontext-loadtest` | optional performance tooling | creating or refreshing page-specific k6 load tests for capacity, RPS, concurrency, ramp, stress, or soak | no concrete page/screen/route has been selected | `DEV.md` service/runtime context, `QA.md` quality gates, bundled load-test templates | Asks for the page every invocation, traces real API fan-out/hidden writes, generates guarded scripts and stops without running by default |
 
 #### 10.3 Source & install registry
 
@@ -53,7 +54,7 @@
 | `/grill-with-docs`, `/wayfinder` | https://github.com/mattpocock/skills.git | Use the upstream skill installer for the selected skill; do not install the whole catalog unless requested |
 | `ui-ux-pro-max` | https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git | Follow the repository's agent-specific installation instructions |
 | `impeccable` | https://github.com/pbakaus/impeccable.git | Prefer the upstream installer documented by the repository |
-| `icontext-init`, `icontext-update`, `icontext-audit`, `icontext-visualize`, `icontext-feature` | https://github.com/jeurboy/iContext.git | Install or update iContext for the active agent using the repository instructions |
+| `icontext-init`, `icontext-update`, `icontext-audit`, `icontext-visualize`, `icontext-feature`, `icontext-loadtest` | https://github.com/jeurboy/iContext.git | Install or update iContext for the active agent using the repository instructions |
 
 When a selected required skill is missing, surface its URL and use the active agent's supported
 installation flow. Review upstream instructions before running an installer, respect host/user
@@ -68,6 +69,7 @@ discoverable; verify it through the target agent's skill lookup afterward.
 | Existing backbone needs latest structure | `icontext-update` |
 | Existing context needs a completeness/drift review | `icontext-audit` |
 | Need a dependency graph only | `icontext-visualize` |
+| Need page capacity, RPS, concurrency, ramp, stress, or soak scripts | `icontext-loadtest` → ask target page every invocation → trace real request fan-out/side effects → generate + offline validate → explicit execution gate |
 | Bug, error, failed regression, or unexpected system behavior | `/investigate` → collect evidence + reproduce → trace root cause → test the hypothesis → fix only if authorized → regression test + fresh verification |
 | Clear-ish new feature | `/grill-with-docs` → `ROLE.md` review → `icontext-feature` → `/autoplan` → `security-review:supply-chain` |
 | Large/foggy new feature | `/wayfinder` until planning-critical tickets resolve → `ROLE.md` review → `icontext-feature` → `/autoplan` → `security-review:supply-chain` |

@@ -1,6 +1,7 @@
 # icontext-init (portable skill)
 
-Scaffold a layered context backbone (L1 agent files including Codex `AGENTS.md` / L2
+Scaffold a layered context backbone (L1 agent files including `AGENTS.md`/`agents.md` and
+`AGENT.md`/`agent.md` casing aliases / L2
 `CONTEXT.md` + concern files including `DEV.md` and `SKILLS.md` / L3 `plans/`) plus a portable
 confirmation-gated agent safety hook and service skeletons for a web/mobile project. Works
 **greenfield** (new project), **brownfield** (read & summarize an existing codebase), or
@@ -28,7 +29,7 @@ icontext-init/
 ├── PROCEDURE.md        agent-neutral source of truth
 ├── README.md           this file
 ├── adapters/           per-agent entry points (gemini, codex, cursor)
-├── templates/          files copied into the new project (with {{VARS}}), incl. AGENTS.md + DEV.md + SKILLS.md + .icontext/hooks/
+├── templates/          canonical files copied using the selected casing, incl. AGENTS/agents + AGENT/agent + DEV.md + SKILLS.md + .icontext/hooks/
 │   └── stacks/         structure guides per technology choice
 └── reference/          companion-skill links
 ```

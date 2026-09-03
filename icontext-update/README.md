@@ -2,7 +2,7 @@
 
 Update an existing iContext project to the latest template shape. Use it when the project already
 has `CONTEXT.md` or an iContext backbone, but is missing newer sections such as the main
-development workflow, Codex `AGENTS.md`, selectable requirement discovery (`/grill-with-docs` or
+development workflow, `AGENTS.md`/`agents.md` and `AGENT.md`/`agent.md` aliases, selectable requirement discovery (`/grill-with-docs` or
 `/wayfinder`), `ROLE.md` multi-agent requirement review, refreshed plan templates, style/docs
 scaffolding, or service `STRUCTURE.md` files.
 

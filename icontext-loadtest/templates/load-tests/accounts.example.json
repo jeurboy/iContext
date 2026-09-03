@@ -1,0 +1,12 @@
+[
+  {
+    "user_id": "mock-user-001",
+    "access_token": "replace-with-short-lived-test-token",
+    "test_only": true
+  },
+  {
+    "user_id": "mock-user-002",
+    "access_token": "replace-with-short-lived-test-token",
+    "test_only": true
+  }
+]

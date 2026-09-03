@@ -5,7 +5,8 @@ description: Export an existing iContext project as an interactive dependency gr
              dependencies, inspect how CONTEXT.md connects to plans/services/docs/styles/API
              artifacts, create a graph from iContext files, or produce an HTML/JS context map.
              It reads the Layer-2 context set (CONTEXT.md plus DEV.md, PRODUCT.md, QA.md, SECURITY.md,
-             DESIGN.md, SKILLS.md when the project has split them), L1 agent files, ROLE.md, PLAN.md, plans, docs, styles, service
+             DESIGN.md, SKILLS.md when the project has split them), L1 agent files including
+             AGENTS.md/agents.md and AGENT.md/agent.md aliases, ROLE.md, PLAN.md, plans, docs, styles, service
              STRUCTURE files, manifests, and Markdown references; writes context-graph.html and
              context-graph.js with a dedicated Layer-2 lane, readable lane layout, label-density controls, click focus with
              dependency fade, zoom, pan, start-node focus, animated dragging, plan-status badges, and

@@ -1,7 +1,7 @@
 # {{PROJECT_NAME}} — GEMINI.md (Layer 1)
 
 Agent boilerplate for Gemini. Single source of truth: **CONTEXT.md**.
-(Mirror of `AGENTS.md` / `AGENT.md` / `CLAUDE.md`.)
+(Mirror of the selected `AGENTS.md`/`agents.md` and `AGENT.md`/`agent.md` aliases plus `CLAUDE.md`.)
 
 ## Read first
 - `CONTEXT.md` — L2 context map + workflow (read before anything)

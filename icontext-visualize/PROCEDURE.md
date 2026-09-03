@@ -49,7 +49,7 @@ The exporter should read:
   `CONTEXT.md` (`➜ Moved to …`) are skipped so a moved section appears exactly once.
   A project that predates the split (everything still inside `CONTEXT.md`) exports normally with
   no `l2` nodes — the graph is not an audit and never reports that as a defect.
-- L1 files: `CLAUDE.md`, `AGENTS.md`, `AGENT.md`, `GEMINI.md` — each reads `CONTEXT.md` and every
+- L1 files: `CLAUDE.md`, `AGENTS.md`/`agents.md`, `AGENT.md`/`agent.md`, `GEMINI.md` — each reads `CONTEXT.md` and every
   L2 sibling
 - Status/role files: `ROLE.md`, `PLAN.md`, `plans/README.md`
 - Feature plans under `plans/NNN-name/`; each role file also links to the L2 concern file it

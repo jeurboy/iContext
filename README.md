@@ -1,6 +1,6 @@
 # iContext
 
-**Version 1.14.0** · five portable agent-skills that bootstrap, audit, visualize, and maintain a **layered project
+**Version 1.15.0** · six portable agent-skills that bootstrap, audit, visualize, load-test, and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
@@ -11,11 +11,12 @@ session already knowing your architecture, conventions, and plan status.
 | **icontext-audit** | `/icontext-audit` | Audit an existing iContext project for latest-template completeness, context/repo drift, plan-status sync, stale placeholders, and unnecessary Markdown cleanup candidates. It asks for an explicit decision on every missing, stale, unclear, or cleanup item before updating, archiving, or deleting anything, then re-audits and reports the final gap table. |
 | **icontext-visualize** | `/icontext-visualize` | Export an existing iContext project as an interactive static dependency graph: `context-graph.html` + `context-graph.js`. It reads the seven-file L2 set (`CONTEXT.md` + `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` + `DESIGN.md` + `SKILLS.md`) into a dedicated **L2 lane**, plus agent files, plans, docs, styles, services, and Markdown references without editing source context. |
 | **icontext-feature** | `/icontext-feature` | Add one feature plan — a **folder** `plans/NNN-name/` split into role files — with the standard §0–11 structure, role owners, task-status lifecycle, selectable requirement discovery (`/grill-with-docs` or `/wayfinder`), `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pre-checks required scaffolding (style guide · `docs/openapi.yaml` · `.vscode/launch.json`) and offers to create what's missing. |
+| **icontext-loadtest** | `/icontext-loadtest` | Ask which page/screen/route to test on every invocation, trace its real client/API fan-out and hidden writes, then generate guarded k6 profiles, route metrics, and HTML/JSON reports from bundled templates. Never runs load traffic without a separate exact environment approval. |
 
 ## The 3-layer context model
 
 ```
-Layer 1  CLAUDE.md · AGENTS.md · AGENT.md · GEMINI.md
+Layer 1  CLAUDE.md · AGENTS.md/agents.md · AGENT.md/agent.md · GEMINI.md
                                                 agent boilerplate (hard rules, vendor-neutral)
 Layer 2  CONTEXT.md                          context map · workflow §11
          DEV.md                              §3–7 architecture · stack · repo · services · data model
@@ -59,7 +60,7 @@ Context maintenance workflow:
 run `/icontext-update` when the template itself changed or a known artifact is missing; run
 `/icontext-audit` when you want a full health check against the latest template, real repo state,
 plan status, and Markdown cleanup candidates; run `/icontext-visualize` when you want an HTML/JS
-dependency graph of the current context.
+dependency graph of the current context; run `/icontext-loadtest` for page-specific capacity scripts.
 
 ## Skill dependency routing
 
@@ -99,7 +100,7 @@ curl -fsSL https://raw.githubusercontent.com/jeurboy/iContext/main/install.sh | 
 | `windsurf` | `./.windsurf/rules/icontext.md` | project |
 | `cline` | `./.clinerules/icontext.md` | project |
 | `gemini` | `./.gemini/GEMINI.md` | project |
-| `codex` | `./AGENTS.md` *(append)* | project |
+| `codex` | existing `./AGENTS.md` or `./agents.md` *(uppercase default; append)* | project |
 | `aider` | `./CONVENTIONS.md` *(append)* | project |
 
 Skill files are cached at `~/.icontext/` (override with `ICONTEXT_HOME`); non-Claude tools get a
@@ -144,7 +145,8 @@ iContext/
 ├── icontext-update/    SKILL.md · PROCEDURE.md · VERSION · check-update.sh · adapters/
 ├── icontext-audit/     SKILL.md · PROCEDURE.md · VERSION · check-update.sh · adapters/
 ├── icontext-visualize/ SKILL.md · PROCEDURE.md · VERSION · check-update.sh · scripts/ · adapters/
-└── icontext-feature/   SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/ · adapters/
+├── icontext-feature/   SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/ · adapters/
+└── icontext-loadtest/  SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/ · adapters/
 ```
 
 ## Conventions baked in
@@ -171,9 +173,22 @@ python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validat
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-audit
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-visualize
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-feature
+python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-loadtest
 ```
 
 ## Changelog
+
+### 1.15.0
+- **New `/icontext-loadtest` skill** — asks for the target page/screen/route every invocation,
+  traces real API fan-out and hidden writes, and generates guarded k6 profiles plus route-level
+  metrics and HTML/JSON reports from sanitized bundled templates without running by default.
+- **Development context wiring** — generated `DEV.md` documents k6 load-test tooling, evidence, and
+  the isolated-environment execution boundary; generated `SKILLS.md` owns invocation routing.
+- **Maintenance opt-in** — `/icontext-update` and `/icontext-audit` now ask on every run whether the
+  owner wants a page-specific load-test script, then hand off only when accepted.
+- **L1 casing aliases** — init/update/audit/visualize and the installer accept `AGENTS.md` or
+  `agents.md`, and `AGENT.md` or `agent.md`, preserving the project's selected casing without
+  generating duplicate instruction files.
 
 ### 1.14.0
 - **Dedicated skill-routing context** — Layer 2 now includes `SKILLS.md` as the owner of stable

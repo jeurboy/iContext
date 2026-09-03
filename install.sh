@@ -12,7 +12,7 @@
 #   windsurf        Windsurf      → ./.windsurf/rules/icontext.md
 #   cline           Cline         → ./.clinerules/icontext.md
 #   gemini          Gemini CLI    → ./.gemini/GEMINI.md
-#   codex           OpenAI Codex  → ./AGENTS.md (append)
+#   codex           OpenAI Codex  → existing ./AGENTS.md or ./agents.md (append; uppercase default)
 #   aider           Aider         → ./CONVENTIONS.md (append)
 #
 # Skill files are cached at ${ICONTEXT_HOME:-~/.icontext}; non-Claude pointers reference them.
@@ -20,7 +20,7 @@ set -euo pipefail
 
 REPO_URL="${ICONTEXT_REPO:-https://github.com/jeurboy/iContext.git}"
 ICONTEXT_HOME="${ICONTEXT_HOME:-$HOME/.icontext}"
-SKILLS=(icontext-init icontext-update icontext-audit icontext-visualize icontext-feature)
+SKILLS=(icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-loadtest)
 
 TOOL="claude"
 MODE="copy"
@@ -76,7 +76,7 @@ install_claude() {                      # $1 = destination skills dir
 
 pointer_body() {                        # $1 = adapter name
   cat <<EOF
-iContext gives you five workflows to scaffold, audit, visualize, and maintain this project's layered context.
+iContext gives you six workflows to scaffold, audit, visualize, load-test, and maintain this project's layered context.
 
 Skill files (read these to run the workflow):
 - \`$ICONTEXT_HOME/icontext-init/PROCEDURE.md\` — scaffold or update/sync the context backbone
@@ -88,6 +88,8 @@ Skill files (read these to run the workflow):
 - \`$ICONTEXT_HOME/icontext-visualize/PROCEDURE.md\` — export a static HTML/JS dependency graph
   from CONTEXT.md, plans, services, docs, styles, and related Markdown files.
 - \`$ICONTEXT_HOME/icontext-feature/PROCEDURE.md\` — add one feature plan (role-split folder).
+- \`$ICONTEXT_HOME/icontext-loadtest/PROCEDURE.md\` — ask for a target page every invocation,
+  trace its real API fan-out, and generate guarded k6 scripts/reports without running by default.
 
 Tool-specific notes (when present):
 - \`$ICONTEXT_HOME/icontext-init/adapters/$1.md\`
@@ -95,9 +97,10 @@ Tool-specific notes (when present):
 - \`$ICONTEXT_HOME/icontext-audit/adapters/$1.md\`
 - \`$ICONTEXT_HOME/icontext-visualize/adapters/$1.md\`
 - \`$ICONTEXT_HOME/icontext-feature/adapters/$1.md\`
+- \`$ICONTEXT_HOME/icontext-loadtest/adapters/$1.md\`
 To start: follow icontext-init's PROCEDURE.md, use icontext-update for missing template backfills,
 use icontext-audit for drift/cleanup checks, icontext-visualize for graph exports, then
-icontext-feature for each feature.
+icontext-feature for each feature, and icontext-loadtest for page-specific capacity scripts.
 EOF
 }
 
@@ -123,6 +126,12 @@ append_pointer() {                      # $1 = file, $2 = adapter name (idempote
   echo "  appended pointer -> $file"
 }
 
+agents_pointer_target() {
+  local existing
+  existing="$(find "$PWD" -maxdepth 1 -type f \( -name AGENTS.md -o -name agents.md \) -print -quit 2>/dev/null || true)"
+  printf '%s' "${existing:-$PWD/AGENTS.md}"
+}
+
 echo "iContext → $TOOL   (source: $SRC)"
 case "$TOOL" in
   claude)         install_claude "$HOME/.claude/skills" ;;
@@ -132,7 +141,7 @@ case "$TOOL" in
   windsurf)       write_pointer  "$PWD/.windsurf/rules/icontext.md" gemini ;;
   cline)          write_pointer  "$PWD/.clinerules/icontext.md" gemini ;;
   gemini)         write_pointer  "$PWD/.gemini/GEMINI.md" gemini ;;
-  codex)          append_pointer "$PWD/AGENTS.md" codex ;;
+  codex)          append_pointer "$(agents_pointer_target)" codex ;;
   aider)          append_pointer "$PWD/CONVENTIONS.md" codex ;;
 esac
 

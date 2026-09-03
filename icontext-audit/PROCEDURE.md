@@ -32,7 +32,12 @@ At the target root, confirm `CONTEXT.md` exists. Then identify the iContext sour
 the sibling path `../icontext-init/templates/`.
 
 Inventory the expected backbone:
-- L1 files: `CLAUDE.md`, `AGENTS.md`, `AGENT.md`, `GEMINI.md`
+- L1 files: `CLAUDE.md`, one of `AGENTS.md` or `agents.md`, one of `AGENT.md` or `agent.md`, and
+  `GEMINI.md`. Treat each casing pair as one logical artifact and preserve existing casing. If both
+  aliases exist, add a duplication row and ask which is canonical; never merge/archive/delete one
+  without its own explicit decision.
+  Detect the actual casing from directory entries, not two independent existence checks; on a
+  case-insensitive filesystem both alias paths can resolve to the same inode.
 - L2 files: `CONTEXT.md`, `DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`, `SKILLS.md`,
   `ROLE.md`.
   A project holding all of sections 1-13 in one `CONTEXT.md` is **not a defect** — it predates the
@@ -49,6 +54,17 @@ Inventory the expected backbone:
   L1/CONTEXT.md §11.7 rules, and the active host's project-local hook registration/status
 - Service guides: each service's `STRUCTURE.md`, using service names from `DEV.md` section 6
 - Feature plans: each `plans/NNN-name/` folder and its role files
+
+## Step 1.5 - Offer page-specific load-test scaffolding every run
+
+Ask the owner on every invocation:
+
+> Do you want to create or refresh a load-test script for a page/screen/route after this audit?
+
+Record yes/no in the audit register. This optional offer is not an audit defect and approval does
+not authorise traffic. If yes, finish the audit and all separately approved maintenance first, then
+invoke `/icontext-loadtest`. That workflow asks which page/screen/route to test every time, traces
+the real request fan-out and hidden writes, and generates/validates offline by default.
 
 ## Step 2 - Compare against the latest template
 Build a template-completeness table. Do not edit yet.
@@ -72,7 +88,8 @@ Check:
 - Plan templates include `README.md`, `bu.md`, `po.md`, `dev.md`, `qa.md`, `ops.md`, and `stk.md`,
   including the latest Requirement Discovery / Requirement Review / Persona Panel shape and the
   `ops.md` section 8.1 Security review table.
-- L1 files point agents to `CONTEXT.md` and `SKILLS.md`, preserve the project rules, and include
+- L1 files (including the selected lowercase/uppercase aliases) point agents to `CONTEXT.md` and
+  `SKILLS.md`, preserve the project rules, and include
   current workflow guidance.
 - The portable mutation guard protects every `git commit`, `git push`, direct DB command, and
   migration/seed/reset/import/restore action with an interactive per-invocation confirmation. If the
@@ -170,4 +187,6 @@ Run the relevant inventory checks again. Output:
 - Hook status: `active and verified`, `artifacts present; wiring pending`, or
   `hook unavailable; policy enforced by instructions`.
 
-Stop here; do not create a feature plan and do not implement app code.
+Stop here; do not create a feature plan and do not implement app code. If the owner accepted Step
+1.5, continue only by handing off to `/icontext-loadtest` as a separate workflow with its own page
+question and execution gate.

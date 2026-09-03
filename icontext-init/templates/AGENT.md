@@ -1,6 +1,7 @@
-# {{PROJECT_NAME}} — AGENT.md (Layer 1, vendor-neutral boilerplate)
+# {{PROJECT_NAME}} — AGENT.md / agent.md (Layer 1, vendor-neutral boilerplate)
 
-Generic agent boilerplate (any AI). The single source of truth is **CONTEXT.md**.
+Generic agent boilerplate for any AI. The single source of truth is **CONTEXT.md**. Generate this
+canonical template as either `AGENT.md` or `agent.md` according to the target tool; do not create both.
 
 ## Read first
 - `CONTEXT.md` — L2 context map + workflow (read before anything)

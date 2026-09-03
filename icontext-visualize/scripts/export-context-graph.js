@@ -332,7 +332,11 @@ function makeGraph(root, title) {
     }
   }
 
-  const l1Files = ['CLAUDE.md', 'AGENTS.md', 'AGENT.md', 'GEMINI.md'];
+  // Use the directory's real entry names instead of exists() so case-insensitive filesystems do
+  // not turn one AGENTS/agents alias into two graph nodes.
+  const rootEntries = new Set(fs.readdirSync(root));
+  const l1Files = ['CLAUDE.md', 'AGENTS.md', 'agents.md', 'AGENT.md', 'agent.md', 'GEMINI.md']
+    .filter((name) => rootEntries.has(name));
   for (const name of l1Files) {
     const file = path.join(root, name);
     if (!exists(file)) continue;

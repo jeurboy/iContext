@@ -7,5 +7,6 @@
 > `PLAN.md`, then run gstack `/autoplan` to prepare the plan before implementation. Stop at the plan.
 > Don't commit.
 
-Codex auto-reads the project's `AGENT.md`/`AGENTS.md`, so project rules load automatically.
+Codex conventionally auto-reads uppercase `AGENTS.md`; iContext also recognizes lowercase
+`agents.md`/`agent.md` for other tools, whose auto-discovery behavior remains vendor-specific.
 Tool mapping: questions → inline · file ops → shell/file.

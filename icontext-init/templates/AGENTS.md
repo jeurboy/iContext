@@ -1,7 +1,8 @@
-# {{PROJECT_NAME}} — AGENTS.md (Layer 1, Codex)
+# {{PROJECT_NAME}} — AGENTS.md / agents.md (Layer 1, agent instructions)
 
-Agent boilerplate for OpenAI Codex. Single source of truth: **CONTEXT.md**.
-(Mirror of `AGENT.md` / `CLAUDE.md` / `GEMINI.md`.)
+Agent boilerplate for OpenAI Codex and other tools that discover project instructions. Single source
+of truth: **CONTEXT.md**. Generate this canonical template as either `AGENTS.md` or `agents.md`
+according to the target tool; do not create both.
 
 ## Read first
 - `CONTEXT.md` — L2 context map + workflow (read before anything)

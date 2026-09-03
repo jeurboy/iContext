@@ -20,10 +20,28 @@
 | API | {{API_STACK}} | Clean Architecture · ORM-first, minimal raw SQL |
 | DB | {{DB_STACK}} | docker-compose · migrations |
 
+### 4.1 เครื่องมือ Load Test · Load-test tooling
+| Tool | Location | Purpose |
+|------|----------|---------|
+| Grafana k6 | `load-tests/` | วัด page journey, API throughput/RPS, concurrency, ramp, stress และ soak พร้อมรายงานแยก route |
+
+- ใช้ `/icontext-loadtest` เพื่อสร้างหรือปรับชุดทดสอบ โดย skill ต้องถามหน้า/screen/route ที่ต้องการ
+  ทดสอบใหม่ทุกครั้ง แล้ว trace API fan-out และ hidden writes จากโค้ดจริง
+- ค่าเริ่มต้นคือสร้าง script และตรวจ syntax แบบ offline เท่านั้น ห้ามรัน k6, start/restart service,
+  migrate, seed หรือแตะ DB โดยไม่มีการอนุมัติใหม่ที่ระบุ environment และคำสั่งชัดเจน
+- staging ที่ใช้ production DB/service ร่วมกันไม่ใช่ target ที่ปลอดภัย แม้ workload จะมีเฉพาะ GET
+- บันทึก build revision, infrastructure profile, journeys/time unit, RPS, VUs, in-flight requests,
+  dropped iterations, error rate และ p50/p95/p99 ทุกครั้งที่มีการรันโดยผู้ได้รับอนุญาต
+- เมื่อต้องการแปลผล ให้ส่ง path ของ summary JSON, HTML หรือ result directory ให้
+  `/icontext-loadtest`; skill ต้องอ่าน artifact แบบ read-only และสรุปค่าที่ตั้งใจยิงเทียบกับค่าจริง
+- Workload ใช้ GET เป็นค่าเริ่มต้น หากต้องมี POST/PUT/PATCH/DELETE รวมถึง Login ต้องถาม owner ใหม่
+  ทุก invocation พร้อมแจ้ง side effect และห้ามถือ approval ครั้งก่อนเป็นสิทธิ์ถาวร
+
 ### 5. โครงสร้าง Repo · Repo Structure
 - Mono-root with each service as its **own git repo wired as a submodule**: `api/`, `web/`, `app/`.
 - Context backbone lives at the root:
-  - **L1 agent files** — `CLAUDE.md` / `AGENTS.md` / `AGENT.md` / `GEMINI.md`
+  - **L1 agent files** — `CLAUDE.md` / one of `AGENTS.md` or `agents.md` / one of `AGENT.md` or
+    `agent.md` / `GEMINI.md` (preserve the casing selected for the project's agent tooling)
   - **L2 context (7 files, split by concern)** — `CONTEXT.md` (context map + workflow) ·
     `DEV.md` (this file: development + architecture) · `PRODUCT.md` · `QA.md` · `SECURITY.md` ·
     `DESIGN.md` · `SKILLS.md` (skill dependencies + routing) — see the context map in `CONTEXT.md`

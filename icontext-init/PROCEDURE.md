@@ -33,6 +33,14 @@ feature plans are made later by the separate `icontext-feature` procedure.
 - **Idempotent:** re-running on an existing backbone is safe — it enters UPDATE/SYNC (Step 2C)
   and fills only the gaps, following the non-destructive rule above.
 - **Stop at context.** Do not generate feature plans here.
+- **Accept L1 filename casing aliases.** Treat `AGENTS.md` and `agents.md` as one logical artifact,
+  and `AGENT.md` and `agent.md` as one logical artifact. Preserve the casing already used by the
+  project. For a new project, ask which casing its AI tool discovers and default to uppercase when
+  unknown. Generate one file from each pair, never both. If both aliases exist, report a duplication
+  conflict and ask which is canonical; never merge/delete one silently.
+  Detect aliases from the exact basenames returned by a directory listing (`rg --files`, `find`, or
+  `readdir`), not by testing both paths independently: case-insensitive filesystems make both path
+  probes resolve to the same file.
 
 ## Step 0 — Update check + pre-flight
 - **Update check, up front:** run `check-update.sh` (next to this file) before the real work and
@@ -51,7 +59,8 @@ feature plans are made later by the separate `icontext-feature` procedure.
 
 ## Step 1 — Choose mode
 **First, detect an existing iContext backbone** at the target root: `CONTEXT.md` plus any of
-`CLAUDE.md`/`AGENTS.md`/`AGENT.md`/`GEMINI.md`, `ROLE.md`, `PLAN.md`, `plans/`.
+`CLAUDE.md`/(`AGENTS.md` or `agents.md`)/(`AGENT.md` or `agent.md`)/`GEMINI.md`, `ROLE.md`,
+`PLAN.md`, `plans/`.
 - Backbone present → **UPDATE/SYNC** → Step 2C. *Do not re-scaffold.*
 - Backbone present **but L2 is still one monolithic `CONTEXT.md`** (no `DEV.md` / `PRODUCT.md` /
   `QA.md` / `SECURITY.md` / `DESIGN.md`) → this is a **split candidate**. Offer the L2 split as part of
@@ -91,7 +100,7 @@ matching `templates/stacks/<layer>-<choice>/STRUCTURE.md` into each service dir.
 
 ```
 <root>/
-├── CLAUDE.md  AGENTS.md  AGENT.md  GEMINI.md
+├── CLAUDE.md  (AGENTS.md|agents.md)  (AGENT.md|agent.md)  GEMINI.md
 │                                          L1 — agent boilerplate (all point to CONTEXT.md)
 ├── CONTEXT.md                           L2 — context map · workflow §11
 ├── DEV.md                               L2 — §3–7 architecture · stack · repo · services · data model
@@ -145,15 +154,18 @@ never overwrite source).
 4. Extract API surface from routes/controllers → `docs/`.
 5. Detect real conventions (naming, lint, tests, coverage). Record, don't impose.
 6. Unknowns → `<!-- TODO: confirm ... -->`. Never invent facts.
-7. Write the backbone AROUND the repo (CLAUDE/AGENTS/AGENT/GEMINI, CONTEXT filled, ROLE, plan
+7. Write the backbone AROUND the repo (CLAUDE, the selected AGENTS/agents and AGENT/agent aliases,
+   GEMINI, CONTEXT filled, ROLE, plan
    template, docs). Don't duplicate existing `styles/` or compose files; reference them.
    Don't move source — document the actual layout; put suggestions under "Migration notes".
 
 ## Step 2C — Update/Sync: fill only what's missing (idempotent)
 The project already has an iContext backbone, so treat it as the source of truth: leave any file
 that exists and has real content untouched, and patch only the gaps. Audit first, then add.
-1. **Inventory** every expected artifact and mark present/absent: L1 `CLAUDE.md`/`AGENTS.md`/
-   `AGENT.md`/`GEMINI.md`; the L2 set `CONTEXT.md` + `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` +
+1. **Inventory** every expected artifact and mark present/absent: L1 `CLAUDE.md`/one of
+   `AGENTS.md` or `agents.md`/one of `AGENT.md` or `agent.md`/`GEMINI.md`; treat each alias pair as
+   present when either casing exists, and flag both-present as a duplication conflict. Then inventory
+   the L2 set `CONTEXT.md` + `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` +
    `DESIGN.md` + `SKILLS.md` and §1–13 per-section (a section counts as present wherever it lives); `ROLE.md`; `PLAN.md`; `plans/_TEMPLATE/` +
    `plans/README.md`; `docker-compose.yml`; `docs/openapi.yaml`; `styles/css/tokens.css`;
    `styles/components/*.html`; each service's `STRUCTURE.md`.

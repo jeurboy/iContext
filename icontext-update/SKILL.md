@@ -1,7 +1,8 @@
 ---
 name: icontext-update
 description: Update an existing iContext backbone to the latest template shape. Use when a project
-             already has CONTEXT.md and needs missing L1/L2/L3 artifacts, workflow/security/skill
+             already has CONTEXT.md and needs missing L1/L2/L3 artifacts (including
+             AGENTS.md/agents.md and AGENT.md/agent.md casing aliases), workflow/security/skill
              routing (including gstack /investigate), project safety hooks, plan templates, docs, styles, launch config,
              or service STRUCTURE files; or when restructuring legacy context by splitting a
              monolithic CONTEXT.md into DEV.md, PRODUCT.md, QA.md, SECURITY.md, DESIGN.md, and
@@ -47,6 +48,10 @@ never overwrite owner-authored content.
 - **Questions** — ask only when a value is mandatory and cannot be inferred; otherwise use TODOs.
 - **Restricted actions** — never commit, push, access/change a DB, migrate, or seed without the
   exact per-invocation confirmation required by CONTEXT.md §11.7.
+- **Load-test offer (every run)** — ask whether the owner wants a page-specific load-test script.
+  If yes, finish the approved update first, then hand off to `/icontext-loadtest`; that skill asks
+  which page/screen/route to test and generates offline by default.
 
 ## Stop rule
-Finish after the gap table and summary. Do not create a feature plan or implement app code.
+Finish after the gap table and summary. If the owner accepted the load-test offer, hand off to
+`/icontext-loadtest` as a separate workflow. Do not create a feature plan or implement app code.

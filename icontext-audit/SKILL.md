@@ -4,7 +4,8 @@ description: Audit an existing iContext project against the latest iContext temp
              current repository reality. Use whenever the user asks to check whether project
              context is complete, validate CONTEXT.md/agent files/plans against the template,
              find stale or drifted context, clean unnecessary Markdown, or keep iContext up to
-             date. It inventories L1/L2/L3 artifacts, missing sections, placeholders, workflow
+             date. It inventories L1/L2/L3 artifacts including AGENTS.md/agents.md and
+             AGENT.md/agent.md casing aliases, missing sections, placeholders, workflow
              drift, plan/status sync, project safety-hook coverage, service docs, and cleanup candidates; asks the user for an
              explicit decision on every missing, unclear, stale, or cleanup item before writing;
              then applies only approved updates while preserving owner-authored content. Do NOT
@@ -45,7 +46,11 @@ updates.
   merge, archive, or delete each candidate, and only act on confirmed choices.
 - **Restricted actions** - never commit, push, access/change a DB, migrate, or seed without the
   exact per-invocation confirmation required by CONTEXT.md §11.7.
+- **Load-test offer (every run)** - ask whether the owner wants a page-specific load-test script.
+  If yes, finish the audit first, then hand off to `/icontext-loadtest`; it asks for the target page
+  and generates offline by default.
 
 ## Stop rule
-Finish after the re-audit summary and final gap table. Do not create a feature plan or implement
+Finish after the re-audit summary and final gap table. If the owner accepted the load-test offer,
+hand off to `/icontext-loadtest` as a separate workflow. Do not create a feature plan or implement
 app code.
