@@ -40,6 +40,9 @@ updates.
   individually addressable.
 - **Update** - patch only approved gaps, preserve owner-authored text, and leave TODOs only when
   the user chooses to defer.
+- **Merge-conflict routing** - flag a missing `resolving-merge-conflicts` row/route in
+  `SKILLS.md` §10 or a missing `DEV.md` §5.1 workflow section as an additive gap for the owner to
+  approve; resolving an actual conflict is outside audit scope.
 - **Safety hook** - audit `.icontext/hooks`, L1/§11.7 rules, executable mode, and real active-host
   wiring. Apply only approved backfills/merges and verify with non-executing safe/restricted probes.
 - **Cleanup** - never remove Markdown just because it is outside the template. Ask whether to keep,

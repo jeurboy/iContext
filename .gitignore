@@ -1,1 +1,5 @@
 .DS_Store
+.aicb
+.agents/
+.claude/
+skills-lock.json

@@ -47,6 +47,50 @@
     `DESIGN.md` · `SKILLS.md` (skill dependencies + routing) — see the context map in `CONTEXT.md`
   - **L3 + shared** — `ROLE.md`, `PLAN.md`, `plans/`, `styles/`, `docs/`, `.icontext/hooks/`
 
+### 5.1 การแก้ Merge Conflict · Merge-conflict resolution
+- เมื่อ git merge หรือ rebase ค้างอยู่ที่ conflict ให้เรียก skill `resolving-merge-conflicts`
+  (เงื่อนไขเรียกใช้อยู่ใน [SKILLS.md](./SKILLS.md) §10) โดยเริ่มจากอ่านสถานะ merge/rebase ปัจจุบัน
+  และไฟล์ที่ conflict เสมอ อย่าเดาจาก marker อย่างเดียว
+- ก่อนแก้แต่ละ hunk ให้หาต้นทางและเจตนาเดิมของทั้งสองฝั่งจาก commit message, PR หรือ issue/ticket
+  ที่เกี่ยวข้อง แล้วแก้โดยรักษาเจตนาของทั้งสองฝั่งไว้ถ้าทำได้ ถ้าเข้ากันไม่ได้ให้เลือกฝั่งที่ตรงกับ
+  เป้าหมายที่แถลงไว้ของการ merge พร้อมจด trade-off — ห้ามประดิษฐ์พฤติกรรมใหม่ และห้าม
+  `--abort` โดยไม่ถาม owner ก่อน
+- conflict ใน generated artifacts (เช่น lockfile, generated code) อย่าเก็บแก้ทีละบรรทัด ให้ถาม owner
+  ว่าจะ regenerate ใหม่ดีกว่าหรือไม่
+- หลังแก้ครบทุก hunk ให้รัน automated checks ของโปรเจกต์ตามลำดับ typecheck → tests → format
+  แล้วแก้ทุกอย่างที่ merge ทำให้พังก่อนจบงาน
+- การจบ merge/rebase (stage + commit หรือ `rebase --continue` จนครบทุก commit) ยังอยู่ภายใต้เกต
+  [CONTEXT.md](./CONTEXT.md) §11.7 เสมอ — ต้องได้ per-invocation confirmation ก่อนทุกครั้ง แม้ upstream
+  skill จะระบุให้ commit อัตโนมัติ เพราะกฎของโปรเจกต์มีลำดับเหนือกว่า default ของ skill ภายนอก
+  (SKILLS.md §10.5)
+- ถ้า skill ไม่พร้อมใช้ ให้แก้ด้วยมือตามลำดับขั้นเดียวกันนี้ และบันทึกลง plan ที่เกี่ยวข้องว่าใช้ manual fallback
+
+### 5.2 การ Implement · Implementation execution flow
+> Canonical flow คือ loop ใน [CONTEXT.md](./CONTEXT.md) §11.5 — section นี้ถอดเป็นขั้นปฏิบัติสำหรับการ
+> execute จริงเท่านั้น ไม่ใช่ flow ชุดใหม่ หากสองที่ขัดกัน ให้ยึด §11.5 เสมอ
+
+- ก่อนเริ่ม: plan ต้องอยู่ที่ status `ready to implement` (review chain §11.4 ผ่านแล้ว) และมี spec/plan/
+  ticket source ชัดเจน
+- ลำดับต่อหนึ่ง slice (วนซ้ำจนครบทุก User Story):
+  1. **Slice** — หยิบงานที่เล็กที่สุดที่ขยับ User Story หนึ่งอัน (po.md §3) ไปข้างหน้า
+  2. **Implement** — เขียนโค้ดตาม slice; ถ้า owner เรียก skill `implement` (mattpocock) ให้ใช้มันเป็น
+     เพียงตัว execute ขั้นนี้ (TDD ตาม seams ที่ตกลงไว้, รัน typecheck และ test file เดี่ยวระหว่างทางได้)
+     แต่ลำดับขั้นที่เหลือของ loop ห้ามข้ามหรือเรียงใหม่ตาม flow ภายในของ skill เช่นห้ามเก็บ full
+     suite ไว้รอท้ายสุดแทนการ retest หลังทุกการแก้
+  3. **Test แบบจริง** — unit test สำหรับ API, Playwright สำหรับ UI ตาม `qa.md` §9 ของ plan พร้อมระบุ
+     คำสั่งที่รันจริง ผลที่คาดหวัง และวิธีวัด coverage (> 80%)
+  4. **Retest/Regression** — หลัง**ทุก**การแก้ ให้รัน suite ที่เกี่ยวข้องทั้งหมดใหม่ ไม่ใช่เฉพาะ test ใหม่
+     แก้จนเขียวแล้ว mark test case ที่ผ่านใน `qa.md`
+  5. **Review กับ owner** — แสดงสิ่งที่สร้าง (diff · screenshot · app ที่รันได้) อธิบายวิธีที่ test แล้วถาม
+     feedback อย่างชัดเจน; จะรัน `code-review` (mattpocock) เป็น optional pass ก่อนขั้นนี้ได้
+     (standards/spec — ไม่แทน §11.6)
+  6. **Security review** — รัน `security-review` detectors ตาม §11.6 เฉพาะไฟล์ที่ slice แตะ ก่อนออกจาก loop
+  7. **Fold feedback** — นำ feedback กลับเข้า slice ถัดไป
+- การ commit เข้า current branch (ท้าย slice หรือตามที่ upstream skill สั่ง) ต้องผ่าน per-invocation
+  confirmation ตาม [CONTEXT.md](./CONTEXT.md) §11.7 เสมอ — กฎโปรเจกต์เหนือกว่า default ของ skill ภายนอก
+  (SKILLS.md §10.5) และ hook `.icontext/hooks/guard-command.sh` จะ intercept ให้ถามอยู่ดี
+- ถ้าไม่ใช้ skill ให้ implement ด้วยมือตามลำดับขั้นใน section นี้ได้ทั้งหมด (manual fallback ตาม §10)
+
 ### 6. รายการ Service · Services
 | Service | Stack | Port | STRUCTURE |
 |---------|-------|------|-----------|

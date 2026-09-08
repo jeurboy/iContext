@@ -19,7 +19,9 @@
   ask the owner if the field is mandatory for the backfill.
 - **Keep the latest workflow visible.** Ensure the context mentions the selectable requirement
   discovery route (`/grill-with-docs` for clear-ish requirements, `/wayfinder` for large/foggy
-  requirements), `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation.
+  requirements), `ROLE.md` multi-agent requirement review, gstack `/autoplan` plan preparation,
+  and the `resolving-merge-conflicts` route for in-progress merge/rebase conflicts (workflow
+  documented in `DEV.md` §5.1).
 - **Never commit / push or access/change a DB without per-invocation confirmation.** Migrations,
   seed/reset/import/restore, direct DB clients, and DB-changing startup flags are gated even when
   locally scoped. Hook installation never grants permission (CONTEXT.md §11.7).
@@ -77,8 +79,14 @@ Also check §11.7 agent mutation safety: fresh confirmation for every commit, pu
 access/mutation, migration, seed/reset/import/restore, and documented interactive hook wiring.
 Within `SKILLS.md` §10, also check the direct dependency registry and invocation routes for the
 current required entries, including gstack `/investigate` for errors, regressions, stack traces,
-and unexpected behavior. A missing row or route is a section-level additive gap, not a reason to
-replace the owner's registry.
+and unexpected behavior, `resolving-merge-conflicts` for in-progress merge/rebase conflicts (when
+its row or route is missing, also backfill the `DEV.md` §5.1 workflow section in the same
+approved change), the user-invoked `to-spec` route for publishing a discussion as a tracker
+spec, the mattpocock `code-review` standards/spec pass (distinct from `security-review`'s
+security-scoped `code-review` detector), and the user-invoked mattpocock `implement` executor
+(the §11.5 loop keeps its original step order; when its row or route is missing, also backfill
+the `DEV.md` §5.2 execution-flow section in the same approved change). A missing row or route
+is a section-level additive gap, not a reason to replace the owner's registry.
 Check the §10 source/install registry too: every external direct dependency needs a verified
 upstream Git/source URL and install guidance. Treat a missing URL as an additive gap; never guess a
 repository or replace an owner-pinned fork/ref without confirmation.

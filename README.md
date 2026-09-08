@@ -1,6 +1,6 @@
 # iContext
 
-**Version 1.15.0** · six portable agent-skills that bootstrap, audit, visualize, load-test, and maintain a **layered project
+**Version 1.16.0** · six portable agent-skills that bootstrap, audit, visualize, load-test, and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
@@ -177,6 +177,32 @@ python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validat
 ```
 
 ## Changelog
+
+### 1.16.0
+- **Merge-conflict routing** — generated `DEV.md` §5.1 documents the `resolving-merge-conflicts`
+  workflow (inspect merge state → recover each side's intent from commits/PRs/issues → resolve
+  hunks preserving both intents without inventing behaviour → run typecheck · tests · format →
+  finish only after the §11.7 confirmation), and generated `SKILLS.md` §10 owns its dependency
+  row, upstream source URL, and invocation route.
+- **Maintenance wiring** — `/icontext-update` backfills the registry row/route and §5.1 section
+  as approved additive gaps; `/icontext-audit` flags their absence. The external skill stays a
+  recommended dependency with a documented manual fallback.
+- **Tracker-spec route** — generated `SKILLS.md` §10 also registers the user-invoked `to-spec`
+  skill: synthesize an already-discussed requirement into a spec, confirm the test seams with the
+  owner, publish it to the configured issue tracker, then import/link it into the `plans/NNN-*`
+  folder, which stays the canonical plan artifact.
+- **Standards/spec code review** — generated `SKILLS.md` §10 registers mattpocock's `code-review`
+  (explicitly distinguished from `security-review`'s security-scoped `code-review` detector): a
+  two-axis pass over a diff since a fixed point — repo coding standards + smell baseline, and
+  faithfulness to the originating plan/spec — with the `plans/NNN-*` folder as the default spec
+  source. It complements, never replaces, the §11.6 security-review detectors.
+- **Implementation executor** — generated `SKILLS.md` §10 also registers the user-invoked
+  mattpocock `implement` skill: it only executes the "Implement the slice" step of the §11.5
+  loop, which keeps its **original step order** (slice → implement → concrete test → full-suite
+  retest after every change → owner review → §11.6 detectors → fold feedback) — the skill's
+  internal ordering yields to it, and its final commit step stays §11.7-gated. Generated
+  `DEV.md` §5.2 spells out the execution flow, the optional `code-review` pre-review pass, and
+  the commit gate; `/tdd` chaining stays owned upstream.
 
 ### 1.15.0
 - **New `/icontext-loadtest` skill** — asks for the target page/screen/route every invocation,

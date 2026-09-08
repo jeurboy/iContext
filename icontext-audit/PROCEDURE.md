@@ -82,7 +82,13 @@ Check:
   11.7 agent mutation safety and hook wiring.
 - `ROLE.md` includes the Requirement Review Protocol.
 - `SKILLS.md` §10 includes the direct dependency registry and invocation routes, including the
-  gstack `/investigate` route for errors, regressions, stack traces, and unexpected behavior.
+  gstack `/investigate` route for errors, regressions, stack traces, and unexpected behavior, the
+  `resolving-merge-conflicts` route for in-progress merge/rebase conflicts together with its
+  `DEV.md` §5.1 workflow section, the user-invoked `to-spec` tracker-spec route, the mattpocock `code-review`
+  standards/spec pass (distinct from `security-review`'s security-scoped
+  `code-review` detector), and the user-invoked mattpocock `implement` executor together with its
+  `DEV.md` §5.2 execution-flow section (the §11.5 loop keeps its original step order; flag a
+  missing one as an additive gap, not a registry rewrite).
   Each external direct dependency also has an upstream Git/source URL and installation guidance;
   flag missing, placeholder, or obviously non-upstream URLs for owner confirmation.
 - Plan templates include `README.md`, `bu.md`, `po.md`, `dev.md`, `qa.md`, `ops.md`, and `stk.md`,

@@ -3,7 +3,7 @@ name: icontext-update
 description: Update an existing iContext backbone to the latest template shape. Use when a project
              already has CONTEXT.md and needs missing L1/L2/L3 artifacts (including
              AGENTS.md/agents.md and AGENT.md/agent.md casing aliases), workflow/security/skill
-             routing (including gstack /investigate), project safety hooks, plan templates, docs, styles, launch config,
+             routing (including gstack /investigate and resolving-merge-conflicts), project safety hooks, plan templates, docs, styles, launch config,
              or service STRUCTURE files; or when restructuring legacy context by splitting a
              monolithic CONTEXT.md into DEV.md, PRODUCT.md, QA.md, SECURITY.md, DESIGN.md, and
              SKILLS.md, including moving legacy §10 into SKILLS.md. It is confirmation-first and
@@ -42,6 +42,10 @@ never overwrite owner-authored content.
   exact action; write only after confirmation.
 - **Backfill** — create missing files from templates and insert missing sections/headings only after
   confirmation.
+- **Merge-conflict route** — backfill the `resolving-merge-conflicts` registry row, invocation
+  route (`SKILLS.md` §10), and `DEV.md` §5.1 workflow section only as approved additive gaps. The
+  skill stays an external upstream dependency, and finishing a merge/rebase keeps the §11.7
+  confirmation gate.
 - **Safety hook (Step 5.6)** — detect/backfill `.icontext/hooks`, L1/§11.7 rules, and documented
   interactive host wiring after approval. Merge existing hook config, verify dry-run payloads, and
   report instruction-only enforcement when the host has no usable hook.

@@ -99,6 +99,34 @@ rg -q "icontext-loadtest" icontext-init/templates/DEV.md ||
   fail "DEV.md must document icontext-loadtest tooling"
 rg -q "icontext-loadtest" icontext-init/templates/SKILLS.md ||
   fail "SKILLS.md must route load-test work to icontext-loadtest"
+rg -q "resolving-merge-conflicts" icontext-init/templates/DEV.md ||
+  fail "DEV.md must document the resolving-merge-conflicts workflow"
+rg -q "resolving-merge-conflicts" icontext-init/templates/SKILLS.md ||
+  fail "SKILLS.md must route merge conflicts to resolving-merge-conflicts"
+rg -q "resolving-merge-conflicts" icontext-update/PROCEDURE.md ||
+  fail "icontext-update must backfill the resolving-merge-conflicts route"
+rg -q "resolving-merge-conflicts" icontext-audit/PROCEDURE.md ||
+  fail "icontext-audit must check the resolving-merge-conflicts route"
+rg -q "to-spec" icontext-init/templates/SKILLS.md ||
+  fail "SKILLS.md must route tracker-spec requests to to-spec"
+rg -q "to-spec" icontext-update/PROCEDURE.md ||
+  fail "icontext-update must backfill the to-spec route"
+rg -q "to-spec" icontext-audit/PROCEDURE.md ||
+  fail "icontext-audit must check the to-spec route"
+rg -q 'code-review` \(mattpocock\)' icontext-init/templates/SKILLS.md ||
+  fail "SKILLS.md must route standards/spec reviews to the mattpocock code-review skill"
+rg -q 'mattpocock `code-review`' icontext-update/PROCEDURE.md ||
+  fail "icontext-update must backfill the mattpocock code-review route"
+rg -q 'mattpocock `code-review`' icontext-audit/PROCEDURE.md ||
+  fail "icontext-audit must check the mattpocock code-review route"
+rg -q 'implement` \(mattpocock\)' icontext-init/templates/SKILLS.md ||
+  fail "SKILLS.md must route user-invoked implementation to the mattpocock implement skill"
+rg -q 'implement` \(mattpocock\)' icontext-init/templates/DEV.md ||
+  fail "DEV.md must document the mattpocock implement execution flow"
+rg -q 'mattpocock `implement`' icontext-update/PROCEDURE.md ||
+  fail "icontext-update must backfill the mattpocock implement route"
+rg -q 'mattpocock `implement`' icontext-audit/PROCEDURE.md ||
+  fail "icontext-audit must check the mattpocock implement route"
 rg -q "AGENTS.md.*agents.md" icontext-init/PROCEDURE.md ||
   fail "icontext-init must recognize AGENTS.md/agents.md aliases"
 rg -q "AGENT.md.*agent.md" icontext-update/PROCEDURE.md ||
