@@ -1,27 +1,28 @@
 # {{PROJECT_NAME}} — CONTEXT.md (Layer 2 · single source of truth)
 
 > **Read this before anything.** Every plan in `plans/` must `ref` this file.
-> Companion indexes: `PLAN.md` (status dashboard) · `plans/README.md` (plan index) · `ROLE.md` (multi-agent role panel).
+> Companion indexes: `PLAN.md` (status dashboard) · `plans/README.md` (plan index) · `context/ROLE.md` (multi-agent role panel).
 
 ## Context map — where each section lives
-Layer 2 is **seven files at the repo root**, split by concern. Section numbers §1–13 are global and
+Layer 2 is **this context map (`CONTEXT.md`) at the repo root plus six concern files in
+[`context/`](./context/)**, split by concern. Section numbers §1–13 are global and
 **stable**: a section keeps its number wherever it lives, so every `§N` reference in plans, docs,
 and older notes still resolves. Read CONTEXT.md first; follow the link when you need that concern.
 
 | § | Section | File | Owners |
 |---|---------|------|--------|
-| 1 | Product Overview | [PRODUCT.md](./PRODUCT.md) | `STK BU PO` |
-| 2 | Key Decisions | [PRODUCT.md](./PRODUCT.md) | `STK BU PO` |
-| 3–6 | Architecture · Tech Stack · Repo · Services | [DEV.md](./DEV.md) | `DEV OPS` |
-| 7 | Data Model | [DEV.md](./DEV.md) | `DEV OPS` |
-| 8 | Security Model | [SECURITY.md](./SECURITY.md) | `DEV QA OPS` |
-| 9 | Testing & Quality Gates | [QA.md](./QA.md) | `QA DEV OPS` |
-| 10 | Skill Dependencies & Invocation | [SKILLS.md](./SKILLS.md) | all |
+| 1 | Product Overview | [PRODUCT.md](./context/PRODUCT.md) | `STK BU PO` |
+| 2 | Key Decisions | [PRODUCT.md](./context/PRODUCT.md) | `STK BU PO` |
+| 3–6 | Architecture · Tech Stack · Repo · Services | [DEV.md](./context/DEV.md) | `DEV OPS` |
+| 7 | Data Model | [DEV.md](./context/DEV.md) | `DEV OPS` |
+| 8 | Security Model | [SECURITY.md](./context/SECURITY.md) | `DEV QA OPS` |
+| 9 | Testing & Quality Gates | [QA.md](./context/QA.md) | `QA DEV OPS` |
+| 10 | Skill Dependencies & Invocation | [SKILLS.md](./context/SKILLS.md) | all |
 | 11 | Workflow + Plan Standard | **CONTEXT.md** (here) | all |
-| 11.6 | Security review wiring | [SECURITY.md](./SECURITY.md) | `DEV QA OPS` |
+| 11.6 | Security review wiring | [SECURITY.md](./context/SECURITY.md) | `DEV QA OPS` |
 | 11.7 | Agent mutation safety + hooks | **CONTEXT.md** (here) | all |
-| 12 | Design Tokens & Design System | [DESIGN.md](./DESIGN.md) | `DEV` + design |
-| 13 | Open Questions | [PRODUCT.md](./PRODUCT.md) | `PO BU STK` |
+| 12 | Design Tokens & Design System | [DESIGN.md](./context/DESIGN.md) | `DEV` + design |
+| 13 | Open Questions | [PRODUCT.md](./context/PRODUCT.md) | `PO BU STK` |
 
 > **Rule:** a concern lives in exactly one file. Never copy a section into another file — link to
 > it. If a change touches more than one of these files, update them **in the same change** (§11.3).
@@ -30,42 +31,42 @@ and older notes still resolves. Read CONTEXT.md first; follow the link when you 
 ## ผลิตภัณฑ์ & ทิศทาง · Product & Direction
 
 ### 1. ภาพรวมผลิตภัณฑ์ · Product Overview
-➜ **Moved to [PRODUCT.md](./PRODUCT.md) §1** — what the product is, platforms, target users,
+➜ **Moved to [PRODUCT.md](./context/PRODUCT.md) §1** — what the product is, platforms, target users,
 value proposition, success metrics, non-goals.
 
 ### 2. Key Decisions
-➜ **Moved to [PRODUCT.md](./PRODUCT.md) §2** — decision log (date · decision · why · alternatives
+➜ **Moved to [PRODUCT.md](./context/PRODUCT.md) §2** — decision log (date · decision · why · alternatives
 rejected). Deep technical ADRs live in `docs/adr/` and are linked from that table.
 
 ---
 ## สถาปัตยกรรม · Architecture
 
 ### 3. สถาปัตยกรรมระบบ · System Architecture
-➜ **Moved to [DEV.md](./DEV.md) §3** — system diagram, boundaries, and data flow.
+➜ **Moved to [DEV.md](./context/DEV.md) §3** — system diagram, boundaries, and data flow.
 
 ### 4. Tech Stack
-➜ **Moved to [DEV.md](./DEV.md) §4** — stack choices and implementation notes by layer.
+➜ **Moved to [DEV.md](./context/DEV.md) §4** — stack choices and implementation notes by layer.
 
 ### 5. โครงสร้าง Repo · Repo Structure
-➜ **Moved to [DEV.md](./DEV.md) §5** — repository strategy, service layout, and context backbone.
+➜ **Moved to [DEV.md](./context/DEV.md) §5** — repository strategy, service layout, and context backbone.
 
 ### 6. รายการ Service · Services
-➜ **Moved to [DEV.md](./DEV.md) §6** — service names, stacks, ports, and structure guides.
+➜ **Moved to [DEV.md](./context/DEV.md) §6** — service names, stacks, ports, and structure guides.
 
 ### 7. Data Model
-➜ **Moved to [DEV.md](./DEV.md) §7** — entities, relationships, indexes, and migration notes.
+➜ **Moved to [DEV.md](./context/DEV.md) §7** — entities, relationships, indexes, and migration notes.
 
 ---
 ## คุณภาพ & ความปลอดภัย · Quality & Security
 
 ### 8. Security Model
-➜ **Moved to [SECURITY.md](./SECURITY.md) §8** — authn, authz/roles (deny-by-default + permissions
+➜ **Moved to [SECURITY.md](./context/SECURITY.md) §8** — authn, authz/roles (deny-by-default + permissions
 matrix rule), data protection & PII, secrets handling, threats & accepted risks.
 Automated enforcement: the `security-review` dependency skill runs in the plan and implement
-phases — see **[SECURITY.md](./SECURITY.md) §11.6** for which sub-skill runs when.
+phases — see **[SECURITY.md](./context/SECURITY.md) §11.6** for which sub-skill runs when.
 
 ### 9. Testing & Quality Gates
-➜ **Moved to [QA.md](./QA.md) §9** — coverage gate per service, the 🛑 AC-traceability rule,
+➜ **Moved to [QA.md](./context/QA.md) §9** — coverage gate per service, the 🛑 AC-traceability rule,
 scenario naming (Title 1 / Title 2), test types, the four required scenario kinds
 (Success · Alternative · Boundary · Edge incl. permission-denied), priority, effort, reusability,
 and optional tracker export.
@@ -78,7 +79,7 @@ Headline gates (detail in QA.md):
   security review clean (no unresolved high/critical finding from SECURITY.md §11.6).
 
 ### 10. Skill Dependencies & Invocation
-➜ **Moved to [SKILLS.md](./SKILLS.md) §10** — direct dependencies, invocation triggers,
+➜ **Moved to [SKILLS.md](./context/SKILLS.md) §10** — direct dependencies, invocation triggers,
 composition order, exclusions, and fallbacks. Read it before selecting or invoking a skill.
 
 ---
@@ -87,9 +88,10 @@ composition order, exclusions, and fallbacks. Read it before selecting or invoki
 ### 11. Workflow + Plan Standard
 - Build context first → then features one at a time via `/icontext-feature`. Commit, push, and every
   direct DB/migration/seed action require an explicit per-invocation confirmation (§11.7).
-- **Second brain principle:** every `.md` file — this `CONTEXT.md`, its L2 siblings (`DEV.md`,
-  `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`, `SKILLS.md`), `PLAN.md`, everything under
-  `plans/` and `docs/` — is the project's persistent memory, not throwaway paperwork. Whenever a
+- **Second brain principle:** every `.md` file — this `CONTEXT.md`, its L2 siblings in
+  `context/` (`DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`, `SKILLS.md`, `ROLE.md`),
+  `PLAN.md`, everything under `plans/` and `docs/` — is the project's persistent memory, not
+  throwaway paperwork. Whenever a
   plan or approach is adjusted, follow up in the affected plan: record the work done **and the
   reasoning / thought process** behind the change (what changed, why, what was rejected), so any
   human or agent can reconstruct the thinking later. Never change direction silently.
@@ -99,9 +101,9 @@ Use this workflow for every non-trivial feature so requirements, plan, context, 
 sync:
 
 1. **Context check** — read `CONTEXT.md` + the L2 files the feature touches
-   ([PRODUCT.md](./PRODUCT.md) and [SKILLS.md](./SKILLS.md) always; [DEV.md](./DEV.md) for technical work;
-   [DESIGN.md](./DESIGN.md) if it has UI;
-   [SECURITY.md](./SECURITY.md) if it adds a route/page/dependency; [QA.md](./QA.md) before writing
+   ([PRODUCT.md](./context/PRODUCT.md) and [SKILLS.md](./context/SKILLS.md) always; [DEV.md](./context/DEV.md) for technical work;
+   [DESIGN.md](./context/DESIGN.md) if it has UI;
+   [SECURITY.md](./context/SECURITY.md) if it adds a route/page/dependency; [QA.md](./context/QA.md) before writing
    any test), then `PLAN.md`, `plans/README.md`, and the relevant existing
    plan(s). Confirm the feature belongs in this project and note affected services from `DEV.md` §6.
 2. **Requirement discovery route** — before writing the plan, ask the owner to choose:
@@ -168,7 +170,7 @@ Task status lifecycle: `to do → plan → ready to implement → implement → 
 #### 11.3 Keep everything in sync on architecture-impacting change
 Whenever a change affects the **core architecture** (§3–6) — services, data model, API contract,
 or shared conventions — update all of these **together, in the same change**, so nothing drifts:
-- **Development context** — [DEV.md](./DEV.md) (architecture §3–6 and **§7 Data Model** especially).
+- **Development context** — [DEV.md](./context/DEV.md) (architecture §3–6 and **§7 Data Model** especially).
 - **Plan** — the affected `plans/NNN-*/` (Tech & Architecture · Data Model/Schema · API Contract).
 - **Doc** — `docs/openapi.yaml` (API spec) and any other docs the change touches.
 - **Style** — `styles/css/tokens.css` + `styles/components/` when UI / look-and-feel is affected.
@@ -178,12 +180,12 @@ or shared conventions — update all of these **together, in the same change**, 
 
 | If the change touches… | Update | In the same change |
 |------------------------|--------|--------------------|
-| architecture, stack, repo, services, or data model | [DEV.md](./DEV.md) §3–7 | ✔ |
-| product direction, scope, a decision, a new unknown | [PRODUCT.md](./PRODUCT.md) §1 / §2 / §13 | ✔ |
-| authn/authz, a new route or page, roles, secrets, PII | [SECURITY.md](./SECURITY.md) §8 | ✔ |
-| a quality gate, test type, scenario/priority/effort standard | [QA.md](./QA.md) §9 | ✔ |
-| a token, component, breakpoint, or any look-and-feel rule | [DESIGN.md](./DESIGN.md) §12 | ✔ |
-| a direct skill dependency, trigger, order, exclusion, or fallback | [SKILLS.md](./SKILLS.md) §10 | ✔ |
+| architecture, stack, repo, services, or data model | [DEV.md](./context/DEV.md) §3–7 | ✔ |
+| product direction, scope, a decision, a new unknown | [PRODUCT.md](./context/PRODUCT.md) §1 / §2 / §13 | ✔ |
+| authn/authz, a new route or page, roles, secrets, PII | [SECURITY.md](./context/SECURITY.md) §8 | ✔ |
+| a quality gate, test type, scenario/priority/effort standard | [QA.md](./context/QA.md) §9 | ✔ |
+| a token, component, breakpoint, or any look-and-feel rule | [DESIGN.md](./context/DESIGN.md) §12 | ✔ |
+| a direct skill dependency, trigger, order, exclusion, or fallback | [SKILLS.md](./context/SKILLS.md) §10 | ✔ |
 
 A concern lives in exactly one file — extend it there and link, never copy the section into a plan
 or into another L2 file.
@@ -197,7 +199,7 @@ or run the individual reviews when `/autoplan` is unavailable:
 - **`/plan-design-review`** — if the feature has UI
 - **`/plan-devex-review`** — if developer-facing (API, SDK, CLI)
 
-These come from the `gstack` skill ([SKILLS.md](./SKILLS.md) §10). Capture outcomes in the plan
+These come from the `gstack` skill ([SKILLS.md](./context/SKILLS.md) §10). Capture outcomes in the plan
 before implementation.
 
 After the chain, run the **plan-phase security review** — `security-review` → **supply-chain**
@@ -233,7 +235,7 @@ Repeat until every User Story passes, acceptance criteria (bu.md / qa.md) are me
 is > 80% — then move the plan to **`ready to test`** for a final QA pass before `done`.
 
 #### 11.6 Security review — `security-review` wired into the lifecycle
-➜ **Moved to [SECURITY.md](./SECURITY.md) §11.6** — which sub-skill runs in which phase
+➜ **Moved to [SECURITY.md](./context/SECURITY.md) §11.6** — which sub-skill runs in which phase
 (plan: supply-chain · implement: secret · code-review · auth · dependency · docker), the per-slice
 scope rules, and the `done` gate. Findings are always recorded in the plan's `ops.md` §8.
 
@@ -258,10 +260,10 @@ scope rules, and the `done` gate. Findings are always recorded in the plan's `op
   [.icontext/hooks/POLICY.md](./.icontext/hooks/POLICY.md).
 
 ### 12. Design Tokens & Design System
-➜ **Moved to [DESIGN.md](./DESIGN.md) §12** — token map, theming, component inventory, layout &
+➜ **Moved to [DESIGN.md](./context/DESIGN.md) §12** — token map, theming, component inventory, layout &
 responsive rules, accessibility baseline, design workflow, voice & content.
 Headline rule: central tokens in `styles/css/tokens.css` only — **never inline colors /
 look-and-feel**; web (Tailwind) and mobile (theme) mirror those tokens.
 
 ### 13. Open Questions
-➜ **Moved to [PRODUCT.md](./PRODUCT.md) §13** — open questions with owner + what unblocks them.
+➜ **Moved to [PRODUCT.md](./context/PRODUCT.md) §13** — open questions with owner + what unblocks them.

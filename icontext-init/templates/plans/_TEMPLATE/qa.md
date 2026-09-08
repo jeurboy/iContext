@@ -1,9 +1,9 @@
 # NNN · QA (Testing) — <Feature Name>
 
-> ref: [CONTEXT.md](../../CONTEXT.md) · **standard:** [QA.md](../../QA.md) §9 · index: [README.md](./README.md)
+> ref: [CONTEXT.md](../../CONTEXT.md) · **standard:** [QA.md](../../context/QA.md) §9 · index: [README.md](./README.md)
 > Owns: test plan + acceptance for THIS feature. Coverage gate > 80%.
 > The authoring standard (naming, types, priority, effort, reusability, export) lives in
-> [QA.md](../../QA.md) §9 — **don't restate it here**, just follow it.
+> [QA.md](../../context/QA.md) §9 — **don't restate it here**, just follow it.
 
 ## 9. Test Plan (>80%) · `QA DEV OPS`
 

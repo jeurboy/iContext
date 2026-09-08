@@ -19,9 +19,12 @@ feature plans are made later by the separate `icontext-feature` procedure.
 - **Section-by-section confirmation:** confirm every L2 section (§1–13, wherever it lives) with the
   project owner before writing it (Step 2D). Never silently auto-fill or leave a bare placeholder
   without surfacing the section for confirm / edit / skip.
-- **L2 is seven files, split by concern.** `CONTEXT.md` (context map · workflow §11) ·
-  `DEV.md` (architecture §3–7) · `PRODUCT.md` (§1 · §2 · §13) · `QA.md` (§9) · `SECURITY.md`
-  (§8 · §11.6) · `DESIGN.md` (§12) · `SKILLS.md` (§10 skill dependencies + routing).
+- **L2 is the context map at the root plus a `context/` folder, split by concern.**
+  `CONTEXT.md` at the repo root (context map · workflow §11) · `context/DEV.md` (§3–7) ·
+  `context/PRODUCT.md` (§1 · §2 · §13) · `context/QA.md` (§9) · `context/SECURITY.md`
+  (§8 · §11.6) · `context/DESIGN.md` (§12) · `context/SKILLS.md` (§10 skill dependencies +
+  routing) · `context/ROLE.md` (persona panel). L1 agent files stay at the repo root (that is
+  where agents discover them) and `CONTEXT.md` stays at the root as the L2 entry point.
   **Section numbers stay stable** wherever a section lives, so `§N` references
   in plans and docs keep resolving. A concern lives in exactly one file — never duplicate a section
   across files; `CONTEXT.md` keeps a pointer stub (`➜ Moved to …`) where a section moved out.
@@ -48,7 +51,7 @@ feature plans are made later by the separate `icontext-feature` procedure.
   it first means you and the user share the same picture of which version is acting before anything
   changes. It compares the local `VERSION` to the published one, is best-effort, and never blocks
   (offline/unpublished just prints "skipped"). If an update is available, mention it, then continue.
-- **Required companion skills:** use `templates/SKILLS.md` §10 as the routing source of truth and
+- **Required companion skills:** use `templates/context/SKILLS.md` §10 as the routing source of truth and
   check `gstack`, `security-review`, `ui-ux-pro-max`, `impeccable`,
   `grill-with-docs`, and `wayfinder` (see
   `reference/required-skills.md`). If your agent can't check installation, just remind the user
@@ -59,14 +62,18 @@ feature plans are made later by the separate `icontext-feature` procedure.
 
 ## Step 1 — Choose mode
 **First, detect an existing iContext backbone** at the target root: `CONTEXT.md` plus any of
-`CLAUDE.md`/(`AGENTS.md` or `agents.md`)/(`AGENT.md` or `agent.md`)/`GEMINI.md`, `ROLE.md`,
+`CLAUDE.md`/(`AGENTS.md` or `agents.md`)/(`AGENT.md` or `agent.md`)/`GEMINI.md`, `context/ROLE.md`,
 `PLAN.md`, `plans/`.
 - Backbone present → **UPDATE/SYNC** → Step 2C. *Do not re-scaffold.*
-- Backbone present **but L2 is still one monolithic `CONTEXT.md`** (no `DEV.md` / `PRODUCT.md` /
-  `QA.md` / `SECURITY.md` / `DESIGN.md`) → this is a **split candidate**. Offer the L2 split as part of
-  Step 2C, or point the user at `icontext-update`, which owns the refactor. Never split without
-  the owner's explicit approval.
-- Backbone already has concern files but `SKILLS.md` is missing and §10 still lives in
+- Backbone present **but L2 is still one monolithic `CONTEXT.md`** (no `context/DEV.md` /
+  `context/PRODUCT.md` / `context/QA.md` / `context/SECURITY.md` / `context/DESIGN.md`) → this is a
+  **split candidate**. Offer the L2 split as part of Step 2C, or point the user at
+  `icontext-update`, which owns the refactor. Never split without the owner's explicit approval.
+- Backbone already has concern files **at the repo root** (legacy layout: `DEV.md`, `PRODUCT.md`,
+  `QA.md`, `SECURITY.md`, `DESIGN.md`, `SKILLS.md`, or `ROLE.md` directly in the root instead of
+  `context/`) → this is a **relocate candidate**. Offer the move into `context/` via
+  `icontext-update` Step 5.7; never move files without the owner's explicit approval.
+- Backbone already has concern files but `context/SKILLS.md` is missing and §10 still lives in
   `CONTEXT.md` → this is a **skill-registry split candidate**. Offer the `SKILLS.md` move through
   `icontext-update` Step 5.5 with the same confirmation-first, move-not-copy rules.
 
@@ -101,15 +108,16 @@ matching `templates/stacks/<layer>-<choice>/STRUCTURE.md` into each service dir.
 ```
 <root>/
 ├── CLAUDE.md  (AGENTS.md|agents.md)  (AGENT.md|agent.md)  GEMINI.md
-│                                          L1 — agent boilerplate (all point to CONTEXT.md)
-├── CONTEXT.md                           L2 — context map · workflow §11
-├── DEV.md                               L2 — §3–7 architecture · stack · repo · services · data model
-├── PRODUCT.md                           L2 — §1 product overview · §2 key decisions · §13 open questions
-├── QA.md                                L2 — §9 testing standard + quality gates
-├── SECURITY.md                          L2 — §8 security model · §11.6 security-review wiring
-├── DESIGN.md                            L2 — §12 design tokens + design system
-├── SKILLS.md                            L2 — §10 direct skill dependencies + invocation routing
-├── ROLE.md                              persona panel (BU/PO/DEV/QA/OPS/STK)
+│                                          L1 — agent boilerplate at the root (all point to CONTEXT.md)
+├── CONTEXT.md                           L2 — context map · workflow §11 (repo-root entry point)
+├── context/                             L2 — concern files, one per concern
+│   ├── DEV.md                           §3–7 architecture · stack · repo · services · data model
+│   ├── PRODUCT.md                       §1 product overview · §2 key decisions · §13 open questions
+│   ├── QA.md                            §9 testing standard + quality gates
+│   ├── SECURITY.md                      §8 security model · §11.6 security-review wiring
+│   ├── DESIGN.md                        §12 design tokens + design system
+│   ├── SKILLS.md                        §10 skill dependencies + invocation routing
+│   └── ROLE.md                          persona panel (BU/PO/DEV/QA/OPS/STK)
 ├── PLAN.md                              status dashboard of all plans
 ├── docker-compose.yml                   pg:{{DB_PORT}} web:{{WEB_PORT}} api:{{API_PORT}}
 ├── plans/_TEMPLATE/  plans/README.md   L3 — plan template folder (role-split §0–11) + index
@@ -135,7 +143,7 @@ discovery (use `/wayfinder` for large/foggy requirements without a clear solutio
 CONTEXT.md, carry task status `to do → plan → ready to implement → implement → ready to test → done`; a plan reaches `done`
 only when API spec synced + User Stories complete + tests >80%; on status change update the
 3 places (plan file · plans/README.md · PLAN.md). The full plan-section spec (with role
-owners) is CONTEXT.md §11.1.
+owners) is CONTEXT.md §11.1. Use `context/ROLE.md` as the multi-agent requirement review panel.
 
 Git wiring: `git init` at the root. **Before wiring each service as a git submodule, confirm the
 repo strategy with the owner** (`AskUserQuestion`) — submodules are a strong opinion and not what
@@ -165,8 +173,9 @@ that exists and has real content untouched, and patch only the gaps. Audit first
 1. **Inventory** every expected artifact and mark present/absent: L1 `CLAUDE.md`/one of
    `AGENTS.md` or `agents.md`/one of `AGENT.md` or `agent.md`/`GEMINI.md`; treat each alias pair as
    present when either casing exists, and flag both-present as a duplication conflict. Then inventory
-   the L2 set `CONTEXT.md` + `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` +
-   `DESIGN.md` + `SKILLS.md` and §1–13 per-section (a section counts as present wherever it lives); `ROLE.md`; `PLAN.md`; `plans/_TEMPLATE/` +
+   the L2 set `CONTEXT.md` + `context/DEV.md` + `context/PRODUCT.md` + `context/QA.md` +
+   `context/SECURITY.md` + `context/DESIGN.md` + `context/SKILLS.md` + `context/ROLE.md` and
+   §1–13 per-section (a section counts as present wherever it lives); `PLAN.md`; `plans/_TEMPLATE/` +
    `plans/README.md`; `docker-compose.yml`; `docs/openapi.yaml`; `styles/css/tokens.css`;
    `styles/components/*.html`; each service's `STRUCTURE.md`.
    Include `.icontext/hooks/guard-command.sh`, `.icontext/hooks/POLICY.md`, executable permission,
@@ -175,21 +184,26 @@ that exists and has real content untouched, and patch only the gaps. Audit first
    `CONTEXT.md` where possible.
 3. **Existing files** → do not overwrite. For the L2 files, only **add** sections that are absent
    and append `<!-- TODO -->` to empty ones; keep all author content verbatim.
-3b. **Monolithic `CONTEXT.md`** (all of §1–13 in one file, no L2 siblings) → propose the split and
-   run it only with explicit approval, per `icontext-update` PROCEDURE Step 5.5. **Move** sections,
-   never copy: the section text lands in the new file verbatim and `CONTEXT.md` keeps a
+3b. **Monolithic `CONTEXT.md`** (all of §1–13 in one file, no L2 siblings in `context/`) → propose
+   the split and run it only with explicit approval, per `icontext-update` PROCEDURE Step 5.5. **Move**
+   sections, never copy: the section text lands in the new file verbatim and `CONTEXT.md` keeps a
    `➜ Moved to …` pointer stub. If the owner declines, leave the monolith alone and note it.
-3c. **Missing `SKILLS.md` with §10 still in `CONTEXT.md`** → propose moving §10 verbatim into the
-   `SKILLS.md` template and leaving its pointer stub, per `icontext-update` Step 5.5. Treat this as
-   a restructure, not a normal missing-file backfill; never create a second copy of §10.
+3c. **Legacy root-level siblings** (`DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`,
+   `SKILLS.md`, or `ROLE.md` sitting at the repo root instead of `context/`) → propose the
+   relocation via `icontext-update` Step 5.7; never move files silently. Create missing `context/`
+   files at their new path only after that approved move, not as a fresh template copy that would
+   strand the owner's root-level text.
+3d. **Missing `context/SKILLS.md` with §10 still in `CONTEXT.md`** → propose moving §10 verbatim into the
+   `context/SKILLS.md` template and leaving its pointer stub, per `icontext-update` Step 5.5. Treat
+   this as a restructure, not a normal missing-file backfill; never create a second copy of §10.
 4. **Version / format drift** → report it and propose a patch; apply only with the owner's OK.
 5. Confirm each added/changed section via **Step 2D**, then output a **gap table**
    (artifact · status · action) and go to Step 3.
 
 ## Step 2D — Section-by-section confirmation (every mode)
-Walk §1–13 in order **across the L2 files** (`PRODUCT.md` §1–2, `DEV.md` §3–7, `SECURITY.md`
-§8, `QA.md` §9, `SKILLS.md` §10, `CONTEXT.md` §11, `SECURITY.md` §11.6, `DESIGN.md` §12,
-`PRODUCT.md` §13).
+Walk §1–13 in order **across the L2 files** (`context/PRODUCT.md` §1–2, `context/DEV.md` §3–7,
+`context/SECURITY.md` §8, `context/QA.md` §9, `context/SKILLS.md` §10, `CONTEXT.md` §11,
+`context/SECURITY.md` §11.6, `context/DESIGN.md` §12, `context/PRODUCT.md` §13).
 For each section, show the proposed/detected value (or
 "empty") and ask the project owner via `AskUserQuestion` to **confirm as-is / edit / skip**
 (skip → `<!-- TODO -->`). Write a section only after its confirmation, into its owning file.

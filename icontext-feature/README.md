@@ -2,12 +2,12 @@
 
 Generate one feature plan (`plans/NNN-<slug>/ (folder, role files)`) using the standard §0–11
 structure with role owners, a status lifecycle, selectable requirement discovery (`/grill-with-docs`
-or `/wayfinder`), `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pairs with
+or `/wayfinder`), `context/ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pairs with
 `icontext-init`. Stops at the plan — never implements.
 
 ## Prerequisite — discovery skills
 The plan flow **runs requirement discovery before writing it** and then reviews the requirement
-through `ROLE.md` (see PROCEDURE.md Steps 3.5–4). For Claude Code, install Matt Pocock's discovery
+through `context/ROLE.md` (see PROCEDURE.md Steps 3.5–4). For Claude Code, install Matt Pocock's discovery
 skills once:
 
 ```
@@ -18,7 +18,7 @@ Select `wayfinder` + `grill-me` + `grill-with-docs` (which pull in `grilling` + 
 target Claude Code, then run `/setup-matt-pocock-skills`. Sources:
 <https://www.aihero.dev/skills-wayfinder> and <https://github.com/mattpocock/skills>.
 If they aren't installed, the flow falls back to `/grill-me` / `/grilling`, or a manual discovery
-pass. After that, run the `ROLE.md` multi-agent panel before `/autoplan`.
+pass. After that, run the `context/ROLE.md` multi-agent panel before `/autoplan`.
 
 ## One procedure, many agents
 Workflow defined once in **[PROCEDURE.md](./PROCEDURE.md)**. Thin entry points per agent:

@@ -38,11 +38,11 @@ Run via gstack `/autoplan` (or one by one). Check off + capture outcomes before 
 
 ### Gates before `done`
 API spec synced (`docs/openapi.yaml`) · User Stories complete (po.md §3) · test coverage > 80%
-(qa.md §9 / [QA.md](../../QA.md)) · security review clean ([SECURITY.md](../../SECURITY.md) §11.6)
-· style guide updated if UI changed ([DESIGN.md](../../DESIGN.md) §12).
+(qa.md §9 / [QA.md](../../context/QA.md)) · security review clean ([SECURITY.md](../../context/SECURITY.md) §11.6)
+· style guide updated if UI changed ([DESIGN.md](../../context/DESIGN.md) §12).
 
 ### L2 context this plan must stay in sync with
-[CONTEXT.md](../../CONTEXT.md) (context map/workflow) · [DEV.md](../../DEV.md) (development/architecture) · [PRODUCT.md](../../PRODUCT.md) (direction,
-decisions) · [QA.md](../../QA.md) (test standard) · [SECURITY.md](../../SECURITY.md) (security model) ·
-[DESIGN.md](../../DESIGN.md) (design system) · [SKILLS.md](../../SKILLS.md) (skill dependencies and
+[CONTEXT.md](../../CONTEXT.md) (context map/workflow) · [DEV.md](../../context/DEV.md) (development/architecture) · [PRODUCT.md](../../context/PRODUCT.md) (direction,
+decisions) · [QA.md](../../context/QA.md) (test standard) · [SECURITY.md](../../context/SECURITY.md) (security model) ·
+[DESIGN.md](../../context/DESIGN.md) (design system) · [SKILLS.md](../../context/SKILLS.md) (skill dependencies and
 invocation routes). Link to them — never copy a section in here.

@@ -29,7 +29,7 @@ allowed-tools:
 >   edge cases, terminology, and ADR/context updates.
 > - **`/wayfinder`** for large, foggy requirements where the solution is not clear yet or the effort
 >   spans multiple decision/research/prototype sessions.
-> Next, use `ROLE.md` as a multi-agent panel to review the requirement. Only start scaffolding /
+> Next, use `context/ROLE.md` as a multi-agent panel to review the requirement. Only start scaffolding /
 > writing the plan **after** the selected discovery route + role review. If `/wayfinder` creates a
 > map with unresolved planning-critical tickets, stop at the map and resume the plan once the way is
 > clear. (Falls back to `/grill-me`, `/grilling`, or a manual pass if companion skills aren't installed.)
@@ -45,14 +45,15 @@ Portable across agents - see [adapters/](./adapters/). SKILL.md is the Claude Co
   choose **`/grill-with-docs`** or **`/wayfinder`**. Recommend `/wayfinder` when the requirement is
   too large/foggy for a single plan and the solution path is not clear. Proceed to the plan only once
   the selected route has resolved the planning-critical decisions.
-- **Step 4 ROLE.md review (required)** - read `ROLE.md` and use it as a multi-agent requirement
+- **Step 4 ROLE.md review (required)** - read `context/ROLE.md` and use it as a multi-agent requirement
   review panel. Put Works / Concern / Suggestion / Plan impact into `stk.md` §4 and fold accepted
   changes into the role files before `/autoplan`.
 - **Step 1b L2 context read** - read the Layer-2 files the feature touches, not just
-  `CONTEXT.md`: `PRODUCT.md` (§1-2) and `SKILLS.md` (§10) always, `DEV.md` (§3-7) for technical work, `QA.md` (§9) before the test plan, `SECURITY.md`
-  (§8) for new routes/pages/roles/deps, `DESIGN.md` (§12) for UI. If the project still keeps
-  all of §1-13 in one `CONTEXT.md`, or only keeps legacy §10 there, read it there and mention
-  `icontext-update` can split it into the latest seven-file L2 shape.
+  `CONTEXT.md`: `context/PRODUCT.md` (§1-2) and `context/SKILLS.md` (§10) always, `context/DEV.md` (§3-7) for technical work, `context/QA.md` (§9) before the test plan, `context/SECURITY.md`
+  (§8) for new routes/pages/roles/deps, `context/DESIGN.md` (§12) for UI. If the project still keeps
+  all of §1-13 in one `CONTEXT.md`, keeps only legacy §10 there, or keeps the concern files at the
+  repo root, read them where they are and mention `icontext-update` can split/relocate them
+  (Steps 5.5/5.7) into the latest `context/` L2 shape.
 - **Step 1 scaffolding check** - use `Bash` to check for `styles/` (style guide),
   `docs/openapi.yaml`, and `.vscode/launch.json`. For any that are missing, ask with
   `AskUserQuestion` (multi-select) whether to create them, then create approved ones from the

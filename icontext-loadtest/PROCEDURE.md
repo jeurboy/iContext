@@ -43,8 +43,10 @@ Then determine the invocation mode:
 
 ## Step 2 — Read project context and trace the real journey
 
-Require an existing iContext backbone. Read `CONTEXT.md`, `DEV.md`, `QA.md`, `SECURITY.md`, and
-`SKILLS.md` when present. Inspect the selected client route and every mounted provider/layout/component
+Require an existing iContext backbone. Read `CONTEXT.md` and, when present, the `context/`
+siblings `context/DEV.md`, `context/QA.md`, `context/SECURITY.md`, and
+`context/SKILLS.md` (on a pre-1.17 project these files may sit at the repo root — read them where
+they are). Inspect the selected client route and every mounted provider/layout/component
 that can issue requests.
 
 Build an endpoint register containing:

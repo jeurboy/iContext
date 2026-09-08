@@ -5,8 +5,10 @@ description: Update an existing iContext backbone to the latest template shape. 
              AGENTS.md/agents.md and AGENT.md/agent.md casing aliases), workflow/security/skill
              routing (including gstack /investigate and resolving-merge-conflicts), project safety hooks, plan templates, docs, styles, launch config,
              or service STRUCTURE files; or when restructuring legacy context by splitting a
-             monolithic CONTEXT.md into DEV.md, PRODUCT.md, QA.md, SECURITY.md, DESIGN.md, and
-             SKILLS.md, including moving legacy §10 into SKILLS.md. It is confirmation-first and
+             monolithic CONTEXT.md into the context/ concern files (DEV.md, PRODUCT.md, QA.md,
+             SECURITY.md, DESIGN.md, SKILLS.md), moving legacy §10 into context/SKILLS.md, or
+             relocating pre-1.17 root-level concern files (and ROLE.md) into the context/ folder.
+             It is confirmation-first and
              additive, preserves owner-authored content, leaves TODOs for unknown facts, and stops
              after backfill. Do NOT use for greenfield setup or one feature plan; use icontext-init
              or icontext-feature instead.
@@ -31,12 +33,17 @@ never overwrite owner-authored content.
 ## Mappings
 - **Update check** — run `bash check-update.sh`.
 - **L2 split (Step 5.5)** — if the project still has one monolithic `CONTEXT.md`, propose splitting
-  §3–7 → `DEV.md`, §1/§2/§13 → `PRODUCT.md`, §9 → `QA.md`, §8/§11.6 → `SECURITY.md`, §12 → `DESIGN.md`,
-  §10 → `SKILLS.md`. Also propose the §10 move when the project already has the older six-file L2
+  §3–7 → `context/DEV.md`, §1/§2/§13 → `context/PRODUCT.md`, §9 → `context/QA.md`, §8/§11.6 →
+  `context/SECURITY.md`, §12 → `context/DESIGN.md`, §10 → `context/SKILLS.md`. Also propose the §10
+  move when the project already has the older six-file L2
   split but no `SKILLS.md`. Get
   per-file approval with `AskUserQuestion`, **move** the owner's text verbatim (never copy or
   reword), leave a `➜ Moved to …` stub in `CONTEXT.md`, and rewrite the refs listed in 5.5.5.
   Section numbers never change.
+- **L2 relocation (Step 5.7)** — pre-1.17 projects keep `DEV.md`, `PRODUCT.md`, `QA.md`,
+  `SECURITY.md`, `DESIGN.md`, `SKILLS.md`, and `ROLE.md` at the repo root. Offer the per-file move
+  into `context/` (contents verbatim; only links change), then rewrite the inbound references
+  (`CONTEXT.md` map/stubs, L1 read-first lists, plan `ref:` lines) and verify nothing dangles.
 - **Inventory** — use shell/file reads to compare the project against `icontext-init/templates/`.
 - **Confirm changes** — before every file creation or patch, tell the user the file, reason, and
   exact action; write only after confirmation.

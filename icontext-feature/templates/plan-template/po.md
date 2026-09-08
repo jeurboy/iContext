@@ -1,6 +1,6 @@
 # NNN · PO (Product Owner) — <Feature Name>
 
-> ref: [CONTEXT.md](../../CONTEXT.md) · **product:** [PRODUCT.md](../../PRODUCT.md) §1–2 · index: [README.md](./README.md)
+> ref: [CONTEXT.md](../../CONTEXT.md) · **product:** [PRODUCT.md](../../context/PRODUCT.md) §1–2 · index: [README.md](./README.md)
 > Owns: scope, user stories, task breakdown, open questions.
 
 ## 2. Scope (in / out) · `PO DEV`

@@ -2,7 +2,7 @@
 
 > **Split out of `CONTEXT.md`.** Holds §9. Section numbers are unchanged, so every existing `§9`
 > reference in plans and docs still resolves — only the file moved.
-> Siblings: [CONTEXT.md](./CONTEXT.md) (context map + workflow) · [DEV.md](./DEV.md) (development) · [PRODUCT.md](./PRODUCT.md) ·
+> Siblings: [CONTEXT.md](../CONTEXT.md) (context map + workflow) · [DEV.md](./DEV.md) (development) · [PRODUCT.md](./PRODUCT.md) ·
 > [DESIGN.md](./DESIGN.md) · [SECURITY.md](./SECURITY.md) · [SKILLS.md](./SKILLS.md)
 
 **Owners:** `QA DEV OPS` · **Read by:** QA before writing scenarios, DEV before claiming `done`.

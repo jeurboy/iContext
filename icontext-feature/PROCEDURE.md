@@ -1,7 +1,8 @@
 # icontext-feature — procedure (agent-neutral)
 
 > Source of truth for the `icontext-feature` workflow. Any agent executes these steps.
-> Requires a project initialized by `icontext-init` (has `CONTEXT.md`, `plans/`, `PLAN.md`, `ROLE.md`).
+> Requires a project initialized by `icontext-init` (has `CONTEXT.md`, `plans/`, `PLAN.md`,
+> `context/ROLE.md`).
 
 Create one feature plan using the standard structure. **Stop at the plan — do not implement.**
 
@@ -12,7 +13,7 @@ Create one feature plan using the standard structure. **Stop at the plan — do 
 - The plan structure is defined in **CONTEXT.md §11.1** (sections 0–11 with role owners).
 - Requirement workflow is part of the plan, not optional polish: gather a brief, ask the user to
   choose a discovery route (`/grill-with-docs` or `/wayfinder`), run the selected route, then review
-  the requirement through `ROLE.md` before locking scope or writing final plan content.
+  the requirement through `context/ROLE.md` before locking scope or writing final plan content.
 
 ## Step 0 — Update check (every run)
 Run `check-update.sh` (next to this file) and surface its one line. Best-effort: compares local
@@ -21,14 +22,16 @@ update is available, mention it, then continue.
 
 ## Step 1 — Preconditions + required scaffolding
 1. Confirm `CONTEXT.md`, `plans/`, `PLAN.md` exist. If not, tell the user to run `icontext-init` first.
-1b. **Read the L2 context the feature touches**, not just `CONTEXT.md`: `PRODUCT.md` (§1–2) always;
-   `SKILLS.md` (§10) always before selecting requirement, review, security, or implementation skills;
-   `DEV.md` (§3–7) for architecture, services, API, or data-model work;
-   `QA.md` (§9) before writing the test plan; `SECURITY.md` (§8) if the feature adds a route, page,
-   role, or dependency; `DESIGN.md` (§12) if it has UI. On an older project these sections may all
-   still be inside `CONTEXT.md` — that's fine, read them there and mention that `icontext-update`
-   can split them. A six-file project may have only §10 left in `CONTEXT.md`; read it there and
-   mention `icontext-update` can move it into `SKILLS.md`.
+1b. **Read the L2 context the feature touches**, not just `CONTEXT.md`. The concern files live in
+   `context/`: `context/PRODUCT.md` (§1–2) always;
+   `context/SKILLS.md` (§10) always before selecting requirement, review, security, or implementation skills;
+   `context/DEV.md` (§3–7) for architecture, services, API, or data-model work;
+   `context/QA.md` (§9) before writing the test plan; `context/SECURITY.md` (§8) if the feature adds a route, page,
+   role, or dependency; `context/DESIGN.md` (§12) if it has UI. On an older project these sections
+   may all still be inside `CONTEXT.md` or the concern files may sit at the repo root — that's
+   fine, read them where they are and mention that `icontext-update`
+   can split/relocate them (Steps 5.5/5.7). A six-file project may have only §10 left in `CONTEXT.md`; read it there and
+   mention `icontext-update` can move it into `context/SKILLS.md`.
 2. **Check the required scaffolding before planning.** For each artifact below, if it is missing,
    **ASK the user whether to create it now** (one prompt, multi-select is fine). Do not create
    silently and do not block — if the user declines, note it and continue.
@@ -46,7 +49,7 @@ List the `plans/NNN-*/` folders, take the highest `NNN`, +1 (zero-padded, 3 digi
 
 ## Step 3 — Gather the minimal brief
 Ask: feature name (→ slug), one-paragraph intent, services touched (use the real service names from
-`DEV.md §6`, not hard-coded api/web/app), known constraints, and the user-visible outcome.
+`context/DEV.md §6`, not hard-coded api/web/app), known constraints, and the user-visible outcome.
 Keep this short; the selected discovery route expands it.
 
 ## Step 3.5 — Choose + run requirement discovery (required, every run)
@@ -75,9 +78,10 @@ Then run the selected route:
   scope, and ticket-like questions sized to one agent session.
 
 ## Step 4 — ROLE.md requirement review (required)
-Read `ROLE.md` and review the discovered requirement before locking scope.
+Read `context/ROLE.md` (root-level `ROLE.md` on a pre-1.17 project) and review the discovered
+requirement before locking scope.
 - If the agent supports subagents, dispatch one reviewer per role/persona (BU/PO/DEV/QA/OPS/STK or
-  the concrete personas in `ROLE.md`) and merge the results.
+  the concrete personas in `context/ROLE.md`) and merge the results.
 - If subagents are unavailable, emulate separate role passes in one response.
 - Each reviewer returns: Works · Concern · Suggestion · Plan impact.
 - Put the selected discovery route and outcome in the plan's **§4.0 Requirement Discovery** (`stk.md`),
@@ -94,16 +98,16 @@ contains role files; each of sections 0–11 lives in exactly one (map = CONTEXT
 - `bu.md` — 0 Decisions · 1 Goal · Use Cases · User Stories · Acceptance Criteria · Definition of Done
 - `po.md` — 2 Scope · 3 User Stories (mandatory) · 10 Tasks/Checklist · 11 Open Questions
 - `dev.md` — 5 Tech & Architecture · 6 Data Model/Schema · Migration scripts · 7 API Contract · API changes · Pages/routes
-- `qa.md` — 9 Test Plan (>80%) · acceptance criteria (every case traces to an AC id) · Test Scenarios · Test Cases · Scenario checklist · Test Status · Test Coverage (standard: `QA.md` §9)
-- `ops.md` — 8 Security & Privacy · Deploy/Migrations (model + review wiring: `SECURITY.md` §8, §11.6)
+- `qa.md` — 9 Test Plan (>80%) · acceptance criteria (every case traces to an AC id) · Test Scenarios · Test Cases · Scenario checklist · Test Status · Test Coverage (standard: `context/QA.md` §9)
+- `ops.md` — 8 Security & Privacy · Deploy/Migrations (model + review wiring: `context/SECURITY.md` §8, §11.6)
 - `stk.md` — 4 Requirement Discovery / Requirement Review / Persona Panel
 - `README.md` — folder index + **canonical Task status** + owner/created
 
 Fill what you know; leave unknowns as `<!-- TODO -->`. In `README.md` set `Task status: plan`
 (the plan now exists; → `ready to implement` after the review chain); every file refs
-`../../CONTEXT.md` plus the L2 concern file for its role (`bu.md`/`po.md` → `PRODUCT.md` ·
-`qa.md` → `QA.md` · `ops.md` → `SECURITY.md` · `dev.md` → `DEV.md` and, when there's UI,
-`DESIGN.md`); the
+`../../CONTEXT.md` plus the L2 concern file for its role (`bu.md`/`po.md` → `context/PRODUCT.md` ·
+`qa.md` → `context/QA.md` · `ops.md` → `context/SECURITY.md` · `dev.md` → `context/DEV.md` and, when there's UI,
+`context/DESIGN.md`); the
 template ref lines already carry these. **Never copy an L2 section into the plan — link to it.**
 Put the §4 discovery route + requirement review / persona output (Steps 3.5–4)
 into `stk.md`, and apply accepted changes from the role review into `bu.md`, `po.md`, `dev.md`,
@@ -119,7 +123,7 @@ Run gstack `/autoplan` to review scope, architecture, design (if UI), and develo
 developer-facing). If `/autoplan` is unavailable, run the individual plan review skills listed in
 `CONTEXT.md §11.4`. Apply accepted review changes before implementation.
 
-Then run the **plan-phase security review** (`SECURITY.md §11.6`): the `security-review` skill's
+Then run the **plan-phase security review** (`context/SECURITY.md` §11.6): the `security-review` skill's
 **supply-chain** sub-skill, against the dependencies / build / release surface this plan proposes.
 Record the real detector output in `ops.md` §8.1 — findings, and for each high/critical one either
 the fix or an explicit accepted-risk decision with its reason. If `security-review` isn't installed

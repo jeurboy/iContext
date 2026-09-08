@@ -43,15 +43,17 @@ node <skill-dir>/scripts/export-context-graph.js --root <project-root> --out <ou
 ```
 
 The exporter should read:
-- L2 context: `CONTEXT.md` plus its concern siblings `DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`,
-  `DESIGN.md`, `SKILLS.md` when they exist. Each becomes its own `l2` node in a dedicated lane under
+- L2 context: `CONTEXT.md` (repo root) plus its concern siblings `DEV.md`, `PRODUCT.md`, `QA.md`,
+  `SECURITY.md`, `DESIGN.md`, `SKILLS.md` — resolved in `context/` first, then at the repo root
+  for pre-1.17 projects, when they exist. Each becomes its own `l2` node in a dedicated lane under
   `CONTEXT.md`, with section nodes attributed to the file that owns them. Pointer stubs left in
   `CONTEXT.md` (`➜ Moved to …`) are skipped so a moved section appears exactly once.
   A project that predates the split (everything still inside `CONTEXT.md`) exports normally with
   no `l2` nodes — the graph is not an audit and never reports that as a defect.
 - L1 files: `CLAUDE.md`, `AGENTS.md`/`agents.md`, `AGENT.md`/`agent.md`, `GEMINI.md` — each reads `CONTEXT.md` and every
   L2 sibling
-- Status/role files: `ROLE.md`, `PLAN.md`, `plans/README.md`
+- Status/role files: `ROLE.md` (in `context/`, or at the root on a pre-1.17 project), `PLAN.md`,
+  `plans/README.md`
 - Feature plans under `plans/NNN-name/`; each role file also links to the L2 concern file it
   follows (`bu`/`po` → `PRODUCT.md` · `qa` → `QA.md` · `ops` → `SECURITY.md` · `dev` → `DEV.md` + `DESIGN.md` ·
   all roles → `SKILLS.md` for invocation routing)

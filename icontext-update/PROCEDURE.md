@@ -8,9 +8,10 @@
 - **Requires an existing project context.** If the target root has no `CONTEXT.md`, stop and tell
   the user to run `icontext-init` first.
 - **Never overwrite owner-authored content.** Existing text is the source of truth. Add only missing
-  files, headings, sections, or clearly missing workflow bullets. The one structural change this
-  skill may make is the **L2 split** (Step 5.5) — and only with explicit per-file approval, moving
-  the owner's text verbatim and leaving a pointer stub behind.
+  files, headings, sections, or clearly missing workflow bullets. The only structural changes this
+  skill may make are the **L2 split** (Step 5.5) and the **L2 relocation into `context/`**
+  (Step 5.7) — each only with explicit per-file approval, moving the owner's text verbatim and
+  leaving a pointer stub / updated links behind.
 - **Confirm every change before writing.** Inventory and planning can run without approval, but
   every file creation, section insertion, bullet append, or template patch must be shown to the user
   and explicitly confirmed before it is applied. Batch confirmations are allowed only when the user
@@ -37,10 +38,12 @@ At the target root, confirm `CONTEXT.md` exists. Then inventory the current iCon
   file is canonical before any merge/archive/delete action.
   Use exact basenames from a directory listing rather than probing both paths with `test -e`, because
   case-insensitive filesystems can resolve both aliases to one file.
-- **L2 context (7 files, split by concern)**: `CONTEXT.md`, `DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`,
-  `DESIGN.md`, `SKILLS.md` — plus `ROLE.md`. A project still holding all of §1–13 in one
-  `CONTEXT.md`, or a six-file project still holding §10 in `CONTEXT.md`, is a
-  **split candidate** → Step 5.5
+- **L2 context (context map at the root + concern files in `context/`)**: `CONTEXT.md`,
+  `context/DEV.md`, `context/PRODUCT.md`, `context/QA.md`, `context/SECURITY.md`,
+  `context/DESIGN.md`, `context/SKILLS.md`, `context/ROLE.md`. A project still holding all of
+  §1–13 in one `CONTEXT.md`, or a six-file project still holding §10 in `CONTEXT.md`, is a
+  **split candidate** → Step 5.5. A project whose concern files or `ROLE.md` sit at the repo root
+  instead of `context/` (the pre-1.17 layout) is a **relocate candidate** → Step 5.7.
 - L3/status: `PLAN.md`, `plans/README.md`, `plans/_TEMPLATE/`
 - Shared scaffolding: `docs/openapi.yaml`, `styles/css/tokens.css`, `styles/components/`,
   `.vscode/launch.json`, `docker-compose.yml`
@@ -91,9 +94,12 @@ Check the §10 source/install registry too: every external direct dependency nee
 upstream Git/source URL and install guidance. Treat a missing URL as an additive gap; never guess a
 repository or replace an owner-pinned fork/ref without confirmation.
 
-If `DEV.md` / `PRODUCT.md` / `QA.md` / `SECURITY.md` / `DESIGN.md` / `SKILLS.md` are missing, inspect
-whether their owned sections still exist in `CONTEXT.md`. Use `split out of CONTEXT.md (Step 5.5)`
-only when there is owner text to move; otherwise use `create from latest template (Step 4/5)`.
+If `context/DEV.md` / `context/PRODUCT.md` / `context/QA.md` / `context/SECURITY.md` /
+`context/DESIGN.md` / `context/SKILLS.md` are missing, inspect
+whether their owned sections still exist in `CONTEXT.md` or in a **root-level legacy file**
+(`DEV.md` at the repo root etc. — Step 5.7). Use `split out of CONTEXT.md (Step 5.5)`
+only when there is owner text to move; use `relocate the root-level file into context/ (Step 5.7)`
+when the file exists at the root; otherwise use `create from latest template (Step 4/5)`.
 Treat either action as a proposal, not a decision.
 
 ## Step 3 — Confirm the change plan
@@ -126,15 +132,17 @@ Only apply file backfills that the user confirmed in Step 3.
 ## Step 5 — Backfill missing sections
 Patch only missing sections/headings:
 - **L2 files** — insert missing §1–13 sections or missing §11 subsections from the latest
-  templates, each into its owning file (`PRODUCT.md` §1/§2/§13 · `DEV.md` §3–7 · `SKILLS.md` §10 · `CONTEXT.md` §11 ·
-  `SECURITY.md` §8/§11.6 · `QA.md` §9 · `DESIGN.md` §12). On a not-yet-split project, insert into
+  templates, each into its owning file (`context/PRODUCT.md` §1/§2/§13 · `context/DEV.md` §3–7 ·
+  `context/SKILLS.md` §10 · `CONTEXT.md` §11 · `context/SECURITY.md` §8/§11.6 · `context/QA.md` §9 ·
+  `context/DESIGN.md` §12). On a not-yet-split project, insert into
   `CONTEXT.md` and offer the split separately (Step 5.5) — don't force it. If the only legacy
-  ownership is §10 in `CONTEXT.md`, offer the `SKILLS.md` move instead of duplicating §10.
+  ownership is §10 in `CONTEXT.md`, offer the `context/SKILLS.md` move instead of duplicating §10.
   Preserve all existing text. If exact insertion is risky, append a clearly titled
   "Backfilled from latest iContext template" block near the relevant parent section.
   For `SKILLS.md`, add only the approved missing registry row or invocation route (for example,
   `/investigate`) or source/install entry; never rewrite or reorder the owner's existing tables.
-- **`ROLE.md`** — ensure the Requirement Review Protocol exists. If absent, append it from the
+- **`context/ROLE.md`** — ensure the Requirement Review Protocol exists. If absent (or the file is
+  still at the root, Step 5.7), append it from the
   latest template so future plans can use multi-agent requirement review.
 - **Plan templates** — ensure `plans/_TEMPLATE/README.md`, `bu.md`, `po.md`, `dev.md`, `qa.md`,
   `ops.md`, and `stk.md` exist and include the latest §4 Requirement Discovery / Requirement Review
@@ -148,21 +156,24 @@ Only apply section backfills that the user confirmed in Step 3. If a patch becom
 different from what was confirmed, stop and ask again before writing.
 
 ## Step 5.5 — Refactor legacy L2 ownership into the latest split
-Latest iContext splits Layer 2 into **seven files at the repo root**, one per concern. Older projects
-either have all of §1–13 inside a single `CONTEXT.md`, or use the six-file split while §10 still
-lives in `CONTEXT.md`. This step offers either refactor. It is **opt-in and never automatic** —
-only move a file's sections when the owner approves that row.
+Latest iContext keeps Layer 2 as the **context map (`CONTEXT.md`) at the repo root plus six
+concern files and `ROLE.md` in `context/`**, one per concern. Older projects either have all of
+§1–13 inside a single `CONTEXT.md`, or use the six-file split while §10 still lives in
+`CONTEXT.md`. This step offers either refactor. It is **opt-in and never automatic** — only move a
+file's sections when the owner approves that row. New files are created **inside `context/`**; if
+the concern files sit at the repo root today, pair this step with the relocation in Step 5.7 (or
+run 5.7 first so the split lands directly in `context/`).
 
 ### 5.5.1 Target shape
 | File | Sections it owns | Owners |
 |------|------------------|--------|
-| `CONTEXT.md` | context map · §11 Workflow (minus §11.6) | all |
-| `DEV.md` | §3 Architecture · §4 Tech Stack · §5 Repo · §6 Services · §7 Data Model | `DEV OPS` |
-| `PRODUCT.md` | §1 Product Overview · §2 Key Decisions · §13 Open Questions | `STK BU PO` |
-| `QA.md` | §9 Testing & Quality Gates (coverage gate, AC traceability, scenario standard) | `QA DEV OPS` |
-| `SECURITY.md` | §8 Security Model · §11.6 `security-review` wiring | `DEV QA OPS` |
-| `DESIGN.md` | §12 Design Tokens & Design System | `DEV` + design |
-| `SKILLS.md` | §10 direct skill dependencies · invocation routes · ordering · fallbacks | all |
+| `CONTEXT.md` (repo root) | context map · §11 Workflow (minus §11.6) | all |
+| `context/DEV.md` | §3 Architecture · §4 Tech Stack · §5 Repo · §6 Services · §7 Data Model | `DEV OPS` |
+| `context/PRODUCT.md` | §1 Product Overview · §2 Key Decisions · §13 Open Questions | `STK BU PO` |
+| `context/QA.md` | §9 Testing & Quality Gates (coverage gate, AC traceability, scenario standard) | `QA DEV OPS` |
+| `context/SECURITY.md` | §8 Security Model · §11.6 `security-review` wiring | `DEV QA OPS` |
+| `context/DESIGN.md` | §12 Design Tokens & Design System | `DEV` + design |
+| `context/SKILLS.md` | §10 direct skill dependencies · invocation routes · ordering · fallbacks | all |
 
 **Section numbers do not change.** A section keeps its number wherever it lives, so every `§N`
 reference in existing plans, docs, ADRs, and notes still resolves. This is what makes the refactor
@@ -170,12 +181,13 @@ safe on a project with dozens of plans — **never renumber.**
 
 ### 5.5.2 Detect
 Split applies when `CONTEXT.md` exists **and** it still contains a section owned by a missing
-`DEV.md` / `PRODUCT.md` / `QA.md` / `SECURITY.md` / `DESIGN.md` / `SKILLS.md`. Report the state per file:
-- **missing** → candidate to create by moving sections out of `CONTEXT.md`
+`context/DEV.md` / `context/PRODUCT.md` / `context/QA.md` / `context/SECURITY.md` /
+`context/DESIGN.md` / `context/SKILLS.md`. Report the state per file:
+- **missing** → candidate to create by moving sections out of `CONTEXT.md` (create it in `context/`)
 - **exists** → leave alone; only backfill missing sections inside it (Step 5)
 - **partial** (file exists but the section is still duplicated in `CONTEXT.md`) → flag the
   duplication explicitly; ask which copy is authoritative. Never silently pick one.
-- **dangling pointer** (`CONTEXT.md` says `Moved to SKILLS.md` but `SKILLS.md` is missing) → stop
+- **dangling pointer** (`CONTEXT.md` says `Moved to SKILLS.md` but `context/SKILLS.md` is missing) → stop
   that row and ask whether to recover §10 from version history, another branch/copy, or owner input.
   Do not replace potentially lost project-specific routing with template defaults.
 
@@ -185,19 +197,19 @@ The owner may split some files and not others.
 
 | # | New file | Sections moved out of `CONTEXT.md` | Lines moved | Approve? |
 |---|----------|------------------------------------|-------------|----------|
-| 1 | `DEV.md` | §3–7 | <!-- n --> | |
-| 2 | `PRODUCT.md` | §1, §2, §13 | <!-- n --> | |
-| 3 | `QA.md` | §9 | <!-- n --> | |
-| 4 | `SECURITY.md` | §8, §11.6 | <!-- n --> | |
-| 5 | `DESIGN.md` | §12 | <!-- n --> | |
-| 6 | `SKILLS.md` | §10 | <!-- n --> | |
+| 1 | `context/DEV.md` | §3–7 | <!-- n --> | |
+| 2 | `context/PRODUCT.md` | §1, §2, §13 | <!-- n --> | |
+| 3 | `context/QA.md` | §9 | <!-- n --> | |
+| 4 | `context/SECURITY.md` | §8, §11.6 | <!-- n --> | |
+| 5 | `context/DESIGN.md` | §12 | <!-- n --> | |
+| 6 | `context/SKILLS.md` | §10 | <!-- n --> | |
 
 Also list, in the same confirmation, every reference that will be rewritten (5.5.5) so the owner
 sees the full blast radius up front.
 
 ### 5.5.4 Apply — move, never copy
 For each approved file:
-1. **Create** it from `../icontext-init/templates/<FILE>` — this supplies the header, the sibling
+1. **Create** it from `../icontext-init/templates/context/<FILE>` — this supplies the header, the sibling
    links, the owners line, and the "keeping this in sync" footer. For `SKILLS.md`, initially keep
    only that scaffolding; do not retain the template §10 body before placing the owner's §10.
 2. **Move the owner's existing section text in verbatim.** The owner's wording is the source of
@@ -208,7 +220,7 @@ For each approved file:
    anchors and the reading order survive:
    ```markdown
    ### 9. Testing & Quality Gates
-   ➜ **Moved to [QA.md](./QA.md) §9** — <one-line summary of what's there now>.
+   ➜ **Moved to [QA.md](./context/QA.md) §9** — <one-line summary of what's there now>.
    ```
    Keep 2–4 headline bullets in the stub only when a reader genuinely needs them without opening
    the other file (e.g. the coverage gate). Everything else goes to the new file.
@@ -227,16 +239,17 @@ nesting, a section that mixes two concerns), stop and ask the owner rather than 
 ### 5.5.5 Rewrite references
 After moving, update pointers so nothing dangles — additive edits only:
 - **L1 files** (`CLAUDE.md`, selected `AGENTS.md`/`agents.md`, selected `AGENT.md`/`agent.md`,
-  `GEMINI.md`) — add the six concern files to
-  "Read first", and add the "one concern, one file" hard rule.
-- **`CONTEXT.md` §11.3** — add the L2 sibling trigger table (which file to update for which change).
+  `GEMINI.md`) — point the "Read first" entries at the `context/` concern files and add the
+  "one concern, one file" hard rule.
+- **`CONTEXT.md` §11.3** — add the L2 sibling trigger table (which file to update for which change),
+  with links into `context/`.
 - **Plan role files** (`plans/*/`, `plans/_TEMPLATE/`) — retarget the `> ref:` lines:
-  `bu.md`/`po.md` → `PRODUCT.md` · `qa.md` → `QA.md` · `ops.md` → `SECURITY.md` ·
-  `dev.md` → `DEV.md` (+ `DESIGN.md` when the plan has UI).
-- **Plan folder `README.md` files** — add `SKILLS.md` to the context references so the plan's
+  `bu.md`/`po.md` → `context/PRODUCT.md` · `qa.md` → `context/QA.md` · `ops.md` →
+  `context/SECURITY.md` · `dev.md` → `context/DEV.md` (+ `context/DESIGN.md` when the plan has UI).
+- **Plan folder `README.md` files** — add `context/SKILLS.md` to the context references so the plan's
   discovery, review, security, and implementation routes resolve to the registry.
 - **Bare `§3–7` / `§8` / `§9` / `§10` / `§11.6` / `§12` mentions** in prose → qualify them with the file name
-  (`SECURITY.md §11.6`), since the number alone no longer says which file.
+  (`context/SECURITY.md` §11.6), since the number alone no longer says which file.
 - Leave existing plan **content** untouched. Only the ref lines change.
 
 ### 5.5.6 If the owner declines
@@ -257,6 +270,59 @@ Treat each item as a separate confirmed gap from Step 3:
 5. Verify `git status` allows while `git commit`, `git push`, a direct DB client, and a seed/migration
    command ask, first against the guard and then through the real host hook path when wired. These are
    dry-run payloads only; do not execute the restricted actions.
+
+## Step 5.7 — Relocate legacy root-level L2 siblings into `context/`
+Projects created before v1.17 keep the concern files (`DEV.md`, `PRODUCT.md`, `QA.md`,
+`SECURITY.md`, `DESIGN.md`, `SKILLS.md`) and `ROLE.md` directly at the repo root. The latest
+layout keeps `CONTEXT.md` at the root as the L2 entry point and holds everything else in
+`context/`. This step offers that move. Like Step 5.5 it is **opt-in and never automatic**, and
+it is a pure relocation: file contents stay verbatim apart from the link fixes below — never
+reword, reorder, or "improve" owner text while moving. On a still-monolithic project, don't run
+5.5 and then 5.7 as a double move — Step 5.5 now creates the new files directly in `context/`.
+
+### 5.7.1 Detect
+Relocation applies when any of `DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`,
+`SKILLS.md`, or `ROLE.md` exists **at the repo root**. Report per file:
+- **at root** → candidate to move to `context/<FILE>`
+- **already in `context/`** → leave alone
+- **both** (e.g. `DEV.md` at the root and `context/DEV.md`) → stop that row and ask which copy is
+  authoritative; never merge or delete one silently.
+
+### 5.7.2 Propose, per file
+Present one row per root-level file **before writing anything**, and get an explicit yes/no on
+each. The owner may move some files and not others. Also list the inbound references that will be
+rewritten (5.7.3) so the owner sees the blast radius up front.
+
+| # | Move | Approve? |
+|---|------|----------|
+| 1 | `DEV.md` → `context/DEV.md` | |
+| 2 | `PRODUCT.md` → `context/PRODUCT.md` | |
+| 3 | `QA.md` → `context/QA.md` | |
+| 4 | `SECURITY.md` → `context/SECURITY.md` | |
+| 5 | `DESIGN.md` → `context/DESIGN.md` | |
+| 6 | `SKILLS.md` → `context/SKILLS.md` | |
+| 7 | `ROLE.md` → `context/ROLE.md` | |
+
+### 5.7.3 Apply — move files, fix links
+For each approved file:
+1. Create `context/` if needed, then **move** the file into it (a rename-aware move such as
+   `git mv` keeps history; a plain move is fine too). Staging is allowed; never commit (§11.7).
+2. Fix relative links **inside** the moved file: sibling links (`./DEV.md`, `./QA.md`, …) stay
+   valid because the siblings move together; links to `CONTEXT.md`, `PLAN.md`, `.icontext/`,
+   `docs/`, `styles/` gain a `../` prefix (`./CONTEXT.md` → `../CONTEXT.md`).
+3. Rewrite inbound references — link-only, additive edits; never rewrite prose:
+   - `CONTEXT.md` — context-map table, `➜ Moved to …` stubs, §11.0 read list, §11.3 trigger
+     table: `./DEV.md` → `./context/DEV.md` etc.
+   - L1 files — "Read first" entries and hard-rule path mentions → `context/<FILE>`.
+   - Plan role files and plan folder `README.md` — `../../DEV.md` → `../../context/DEV.md` etc.
+   - Any other doc that links to the moved files — find them with a repo-wide search before
+     declaring the move done.
+4. **Verify nothing dangles:** re-run a repo-wide search for the old paths
+   (`](./DEV.md)`, `](../../DEV.md)`, `](DEV.md)`) and confirm no both-copies conflict remains.
+5. Report each moved file and the rewritten references in the final gap table.
+
+If the owner declines, leave the files at the root, mark the row `skipped`, and keep reading the
+concern files wherever they live — a root-level sibling is a legacy layout, not a defect.
 
 ## Step 6 — Mandatory owner checks
 Ask the owner only when a missing mandatory field would make the context misleading:

@@ -1,6 +1,6 @@
 # NNN · OPS (DevOps / Deploy) — <Feature Name>
 
-> ref: [CONTEXT.md](../../CONTEXT.md) · **security:** [SECURITY.md](../../SECURITY.md) §8 · §11.6 · index: [README.md](./README.md)
+> ref: [CONTEXT.md](../../CONTEXT.md) · **security:** [SECURITY.md](../../context/SECURITY.md) §8 · §11.6 · index: [README.md](./README.md)
 > Owns: security/privacy posture, deploy, migrations, env.
 
 ## 8. Security & Privacy · `DEV QA OPS`

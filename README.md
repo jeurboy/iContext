@@ -1,15 +1,15 @@
 # iContext
 
-**Version 1.16.0** · six portable agent-skills that bootstrap, audit, visualize, load-test, and maintain a **layered project
+**Version 1.17.0** · six portable agent-skills that bootstrap, audit, visualize, load-test, and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
 | Skill | Command | Does |
 |-------|---------|------|
-| **icontext-init** | `/icontext-init` | Scaffold the context backbone (L1 agent files · L2 `CONTEXT.md` + `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` + `DESIGN.md` + `SKILLS.md` · L3 `plans/`) + service skeletons. **Greenfield** (new), **brownfield** (read & summarize an existing codebase), or **update/sync** (fill only the missing pieces of an existing backbone). Confirms every L2 section with you first; **idempotent & non-destructive** — re-running never deletes or overwrites your context. |
-| **icontext-update** | `/icontext-update` | Update an existing iContext project that already has `CONTEXT.md` to the latest template shape. **Refactors legacy L2 ownership into the seven-file split** (`DEV.md` · `PRODUCT.md` · `QA.md` · `SECURITY.md` · `DESIGN.md` · `SKILLS.md` alongside `CONTEXT.md`) with per-file approval, moving owner text verbatim and leaving pointer stubs. It also upgrades six-file projects by moving legacy §10 from `CONTEXT.md` into `SKILLS.md`, then adds only approved missing sections/artifacts. |
+| **icontext-init** | `/icontext-init` | Scaffold the context backbone (L1 agent files · L2 `CONTEXT.md` at the root + the `context/` folder holding `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` + `DESIGN.md` + `SKILLS.md` + `ROLE.md` · L3 `plans/`) + service skeletons. **Greenfield** (new), **brownfield** (read & summarize an existing codebase), or **update/sync** (fill only the missing pieces of an existing backbone). Confirms every L2 section with you first; **idempotent & non-destructive** — re-running never deletes or overwrites your context. |
+| **icontext-update** | `/icontext-update` | Update an existing iContext project that already has `CONTEXT.md` to the latest template shape. **Refactors legacy L2 ownership into the latest split** (concern files in `context/`: `DEV.md` · `PRODUCT.md` · `QA.md` · `SECURITY.md` · `DESIGN.md` · `SKILLS.md`, with `CONTEXT.md` at the root) with per-file approval, moving owner text verbatim and leaving pointer stubs. It also upgrades six-file projects by moving legacy §10 from `CONTEXT.md` into `context/SKILLS.md`, relocates pre-1.17 root-level concern files into `context/` (Step 5.7), then adds only approved missing sections/artifacts. |
 | **icontext-audit** | `/icontext-audit` | Audit an existing iContext project for latest-template completeness, context/repo drift, plan-status sync, stale placeholders, and unnecessary Markdown cleanup candidates. It asks for an explicit decision on every missing, stale, unclear, or cleanup item before updating, archiving, or deleting anything, then re-audits and reports the final gap table. |
-| **icontext-visualize** | `/icontext-visualize` | Export an existing iContext project as an interactive static dependency graph: `context-graph.html` + `context-graph.js`. It reads the seven-file L2 set (`CONTEXT.md` + `DEV.md` + `PRODUCT.md` + `QA.md` + `SECURITY.md` + `DESIGN.md` + `SKILLS.md`) into a dedicated **L2 lane**, plus agent files, plans, docs, styles, services, and Markdown references without editing source context. |
+| **icontext-visualize** | `/icontext-visualize` | Export an existing iContext project as an interactive static dependency graph: `context-graph.html` + `context-graph.js`. It reads the L2 set (`CONTEXT.md` + the `context/` concern files, resolved from `context/` first and the repo root second) into a dedicated **L2 lane**, plus agent files, plans, docs, styles, services, and Markdown references without editing source context. |
 | **icontext-feature** | `/icontext-feature` | Add one feature plan — a **folder** `plans/NNN-name/` split into role files — with the standard §0–11 structure, role owners, task-status lifecycle, selectable requirement discovery (`/grill-with-docs` or `/wayfinder`), `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pre-checks required scaffolding (style guide · `docs/openapi.yaml` · `.vscode/launch.json`) and offers to create what's missing. |
 | **icontext-loadtest** | `/icontext-loadtest` | Ask which page/screen/route to test on every invocation, trace its real client/API fan-out and hidden writes, then generate guarded k6 profiles, route metrics, and HTML/JSON reports from bundled templates. Never runs load traffic without a separate exact environment approval. |
 
@@ -18,23 +18,28 @@ session already knowing your architecture, conventions, and plan status.
 ```
 Layer 1  CLAUDE.md · AGENTS.md/agents.md · AGENT.md/agent.md · GEMINI.md
                                                 agent boilerplate (hard rules, vendor-neutral)
-Layer 2  CONTEXT.md                          context map · workflow §11
-         DEV.md                              §3–7 architecture · stack · repo · services · data model
-         PRODUCT.md                          §1 product overview · §2 key decisions · §13 open questions
-         QA.md                               §9 testing standard + quality gates
-         SECURITY.md                         §8 security model · §11.6 security-review wiring
-         DESIGN.md                           §12 design tokens + design system
-         SKILLS.md                           §10 skill dependencies · triggers · routing · fallbacks
+Layer 2  CONTEXT.md                          context map · workflow §11 (repo-root entry point)
+         context/                            L2 concern folder — one file per concern
+           DEV.md                            §3–7 architecture · stack · repo · services · data model
+           PRODUCT.md                        §1 product overview · §2 key decisions · §13 open questions
+           QA.md                             §9 testing standard + quality gates
+           SECURITY.md                       §8 security model · §11.6 security-review wiring
+           DESIGN.md                         §12 design tokens + design system
+           SKILLS.md                         §10 skill dependencies · triggers · routing · fallbacks
+           ROLE.md                           multi-agent role panel (BU/PO/DEV/QA/OPS/STK)
 Layer 3  plans/NNN-name/                     one folder per feature, each refs the L2 files
          PLAN.md · plans/README.md           status dashboards (kept in sync, 3 places)
 ```
 
-**L2 is split across seven files by concern, and section numbers are stable.** A section keeps its `§N` wherever it
-lives, so existing `§8` / `§9` / `§10` / `§12` references keep resolving after the split. `CONTEXT.md`
+**L2 keeps `CONTEXT.md` at the repo root as the entry point and holds the six concern files plus
+`ROLE.md` in `context/`, split by concern; section numbers are stable.** A section keeps its `§N`
+wherever it lives, so existing `§8` / `§9` / `§10` / `§12` references keep resolving after the
+split. `CONTEXT.md`
 opens with a **context map** (§ → file → owners) and leaves a `➜ Moved to …` stub where a
 section moved out. One concern lives in exactly one file — link to it, never copy it.
 Projects created before the split still work; `/icontext-update` offers the refactor, including
-moving §10 from a legacy six-file project into `SKILLS.md`.
+moving §10 from a legacy six-file project into `context/SKILLS.md` and relocating pre-1.17
+root-level concern files into `context/` (Step 5.7).
 
 Each plan is a **folder split by role** — sections **0–11** distributed across files by their
 primary owner (BU/PO/DEV/QA/OPS/STK):
@@ -65,7 +70,7 @@ dependency graph of the current context; run `/icontext-loadtest` for page-speci
 ## Skill dependency routing
 
 Generated projects keep the complete direct-dependency registry and invocation matrix in
-[`SKILLS.md`](./icontext-init/templates/SKILLS.md) §10. It owns required/alternative/recommended/
+[`SKILLS.md`](./icontext-init/templates/context/SKILLS.md) §10. It owns required/alternative/recommended/
 optional classification, when and when not to invoke each skill, composition order, and fallbacks.
 Individual skill packages still own their own trigger and procedure in their `SKILL.md`; the
 project-level `SKILLS.md` owns how those skills are composed.
@@ -177,6 +182,24 @@ python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validat
 ```
 
 ## Changelog
+
+### 1.17.0
+- **`context/` folder for Layer 2** — the six concern files (`DEV.md`, `PRODUCT.md`, `QA.md`,
+  `SECURITY.md`, `DESIGN.md`, `SKILLS.md`) and `ROLE.md` now live in a dedicated `context/` folder
+  instead of loose at the repo root. `CONTEXT.md` stays at the root as the L2 entry point (context
+  map + workflow §11), and the L1 agent files stay at the root where every AI tool discovers them.
+  Section numbers §1–13 are unchanged, so existing references keep resolving.
+- **Legacy relocation (update Step 5.7)** — `/icontext-update` detects pre-1.17 projects whose
+  concern files still sit at the root and offers a per-file, approval-first move into `context/`:
+  contents stay verbatim, only relative links change (`./CONTEXT.md` → `../CONTEXT.md` inside the
+  moved files; inbound refs in `CONTEXT.md`, the L1 files, and plan `ref:` lines are rewritten and
+  verified dangling-free). The L2 split (Step 5.5) now creates new files directly in `context/`,
+  so monolithic projects don't do a double move.
+- **Layout awareness everywhere** — init scaffolds and inventories the new layout, update/audit
+  treat root-level siblings as a `relocate candidate` (not a defect) and route them to Step 5.7,
+  feature plan templates ref `../../context/<FILE>.md`, load-test reads the `context/` siblings,
+  and the visualize exporter resolves each L2 file in `context/` first, then at the root, so both
+  layouts export the same graph.
 
 ### 1.16.0
 - **Merge-conflict routing** — generated `DEV.md` §5.1 documents the `resolving-merge-conflicts`

@@ -40,13 +40,13 @@ for file in \
   icontext-init/templates/AGENT.md \
   icontext-init/templates/GEMINI.md \
   icontext-init/templates/CONTEXT.md \
-  icontext-init/templates/DEV.md \
-  icontext-init/templates/PRODUCT.md \
-  icontext-init/templates/QA.md \
-  icontext-init/templates/SECURITY.md \
-  icontext-init/templates/DESIGN.md \
-  icontext-init/templates/SKILLS.md \
-  icontext-init/templates/ROLE.md \
+  icontext-init/templates/context/DEV.md \
+  icontext-init/templates/context/PRODUCT.md \
+  icontext-init/templates/context/QA.md \
+  icontext-init/templates/context/SECURITY.md \
+  icontext-init/templates/context/DESIGN.md \
+  icontext-init/templates/context/SKILLS.md \
+  icontext-init/templates/context/ROLE.md \
   icontext-init/templates/PLAN.md \
   icontext-init/templates/docker-compose.yml \
   icontext-init/templates/docs/openapi.yaml \
@@ -56,11 +56,11 @@ for file in \
   require_file "$file"
 done
 
-rg -q "^### 10\." icontext-init/templates/SKILLS.md ||
+rg -q "^### 10\." icontext-init/templates/context/SKILLS.md ||
   fail "SKILLS.md must own section 10"
-rg -q "/investigate" icontext-init/templates/SKILLS.md ||
+rg -q "/investigate" icontext-init/templates/context/SKILLS.md ||
   fail "SKILLS.md must route system bugs through gstack /investigate"
-rg -q "https://github\.com/garrytan/gstack\.git" icontext-init/templates/SKILLS.md ||
+rg -q "https://github\.com/garrytan/gstack\.git" icontext-init/templates/context/SKILLS.md ||
   fail "SKILLS.md must include the upstream gstack Git URL"
 rg -q "Moved to \[SKILLS\.md\].*§10" icontext-init/templates/CONTEXT.md ||
   fail "CONTEXT.md must point section 10 to SKILLS.md"
@@ -77,6 +77,27 @@ for file in \
   icontext-feature/templates/plan-template/README.md; do
   rg -q "SKILLS\.md" "$file" || fail "$file must link to SKILLS.md"
 done
+
+for file in CLAUDE.md AGENTS.md AGENT.md GEMINI.md; do
+  rg -q "context/DEV\.md" "icontext-init/templates/$file" ||
+    fail "$file must point agents at the context/ L2 folder"
+done
+
+for file in \
+  icontext-init/templates/plans/_TEMPLATE/README.md \
+  icontext-feature/templates/plan-template/README.md; do
+  rg -q "\.\./\.\./context/SKILLS\.md" "$file" ||
+    fail "$file must link to context/SKILLS.md"
+done
+
+rg -q "\]\(\./context/DEV\.md\)" icontext-init/templates/CONTEXT.md ||
+  fail "CONTEXT.md must link the context map into the context/ folder"
+rg -q "Step 5\.7" icontext-update/PROCEDURE.md ||
+  fail "icontext-update must define Step 5.7 for the legacy context/ relocation"
+rg -q "relocate candidate" icontext-audit/PROCEDURE.md ||
+  fail "icontext-audit must flag root-level concern files as a relocate candidate"
+rg -q "resolveL2" icontext-visualize/scripts/export-context-graph.js ||
+  fail "context graph exporter must resolve L2 files in context/ and at the root"
 
 rg -q "(§10.*SKILLS\.md|SKILLS\.md.*§10)" icontext-update/PROCEDURE.md ||
   fail "icontext-update must migrate legacy section 10 into SKILLS.md"
@@ -95,33 +116,33 @@ rg -Fq 'page_example: scenario("page_example", null' icontext-loadtest/templates
 if rg -ni "calcounter|cold[ _-]home|nutrition-goals|refresh_tokens" icontext-loadtest/templates >/dev/null; then
   fail "load-test templates must contain only generic mock data"
 fi
-rg -q "icontext-loadtest" icontext-init/templates/DEV.md ||
+rg -q "icontext-loadtest" icontext-init/templates/context/DEV.md ||
   fail "DEV.md must document icontext-loadtest tooling"
-rg -q "icontext-loadtest" icontext-init/templates/SKILLS.md ||
+rg -q "icontext-loadtest" icontext-init/templates/context/SKILLS.md ||
   fail "SKILLS.md must route load-test work to icontext-loadtest"
-rg -q "resolving-merge-conflicts" icontext-init/templates/DEV.md ||
+rg -q "resolving-merge-conflicts" icontext-init/templates/context/DEV.md ||
   fail "DEV.md must document the resolving-merge-conflicts workflow"
-rg -q "resolving-merge-conflicts" icontext-init/templates/SKILLS.md ||
+rg -q "resolving-merge-conflicts" icontext-init/templates/context/SKILLS.md ||
   fail "SKILLS.md must route merge conflicts to resolving-merge-conflicts"
 rg -q "resolving-merge-conflicts" icontext-update/PROCEDURE.md ||
   fail "icontext-update must backfill the resolving-merge-conflicts route"
 rg -q "resolving-merge-conflicts" icontext-audit/PROCEDURE.md ||
   fail "icontext-audit must check the resolving-merge-conflicts route"
-rg -q "to-spec" icontext-init/templates/SKILLS.md ||
+rg -q "to-spec" icontext-init/templates/context/SKILLS.md ||
   fail "SKILLS.md must route tracker-spec requests to to-spec"
 rg -q "to-spec" icontext-update/PROCEDURE.md ||
   fail "icontext-update must backfill the to-spec route"
 rg -q "to-spec" icontext-audit/PROCEDURE.md ||
   fail "icontext-audit must check the to-spec route"
-rg -q 'code-review` \(mattpocock\)' icontext-init/templates/SKILLS.md ||
+rg -q 'code-review` \(mattpocock\)' icontext-init/templates/context/SKILLS.md ||
   fail "SKILLS.md must route standards/spec reviews to the mattpocock code-review skill"
 rg -q 'mattpocock `code-review`' icontext-update/PROCEDURE.md ||
   fail "icontext-update must backfill the mattpocock code-review route"
 rg -q 'mattpocock `code-review`' icontext-audit/PROCEDURE.md ||
   fail "icontext-audit must check the mattpocock code-review route"
-rg -q 'implement` \(mattpocock\)' icontext-init/templates/SKILLS.md ||
+rg -q 'implement` \(mattpocock\)' icontext-init/templates/context/SKILLS.md ||
   fail "SKILLS.md must route user-invoked implementation to the mattpocock implement skill"
-rg -q 'implement` \(mattpocock\)' icontext-init/templates/DEV.md ||
+rg -q 'implement` \(mattpocock\)' icontext-init/templates/context/DEV.md ||
   fail "DEV.md must document the mattpocock implement execution flow"
 rg -q 'mattpocock `implement`' icontext-update/PROCEDURE.md ||
   fail "icontext-update must backfill the mattpocock implement route"
@@ -217,7 +238,7 @@ for file in README.md bu.md po.md dev.md qa.md ops.md stk.md; do
 done
 
 for section in 3 4 5 6 7; do
-  rg -q "^### $section\\." icontext-init/templates/DEV.md ||
+  rg -q "^### $section\\." icontext-init/templates/context/DEV.md ||
     fail "DEV.md must own section $section"
   rg -q "Moved to \\[DEV\\.md\\].*§$section" icontext-init/templates/CONTEXT.md ||
     fail "CONTEXT.md must point section $section to DEV.md"

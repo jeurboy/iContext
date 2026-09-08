@@ -6,8 +6,11 @@ development workflow, `AGENTS.md`/`agents.md` and `AGENT.md`/`agent.md` aliases,
 `/wayfinder`), `ROLE.md` multi-agent requirement review, refreshed plan templates, style/docs
 scaffolding, or service `STRUCTURE.md` files.
 
-It also owns Layer-2 restructuring. On a monolithic project it offers the concern-file split; on
-an older six-file project it offers to move §10 from `CONTEXT.md` into `SKILLS.md`. Every move is
+It also owns Layer-2 restructuring. On a monolithic project it offers the concern-file split
+(new files are created directly in `context/`); on
+an older six-file project it offers to move §10 from `CONTEXT.md` into `context/SKILLS.md`; and on
+a pre-1.17 project whose concern files still sit at the repo root it offers to relocate them into
+`context/`. Every move is
 approved per file, preserves the owner's text verbatim, and leaves a pointer stub behind.
 
 The update inventory also checks `.icontext/hooks/` and CONTEXT.md §11.7. After approval it adds

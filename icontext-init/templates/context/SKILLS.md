@@ -2,7 +2,7 @@
 
 > **Split out of `CONTEXT.md`.** Holds §10. Section numbers are unchanged, so every existing
 > `§10` reference in plans and docs still resolves — only the file moved.
-> Read [CONTEXT.md](./CONTEXT.md) first for the context map and workflow.
+> Read [CONTEXT.md](../CONTEXT.md) first for the context map and workflow.
 > Siblings: [DEV.md](./DEV.md) · [PRODUCT.md](./PRODUCT.md) · [QA.md](./QA.md) ·
 > [SECURITY.md](./SECURITY.md) · [DESIGN.md](./DESIGN.md)
 

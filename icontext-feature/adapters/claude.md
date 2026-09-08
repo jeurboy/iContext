@@ -12,7 +12,7 @@ adapters — Claude normally reads `SKILL.md` → `PROCEDURE.md` directly.
    - **Next plan number** → `Bash` to list `plans/NNN-*/` and compute `NNN`.
    - **Feature brief + optional persona prompt** → `AskUserQuestion`.
    - **Requirement workflow** → gather the minimal brief, ask the user to choose `/grill-with-docs`
-     or `/wayfinder`, run the selected route, then use `ROLE.md` as a multi-agent requirement review
+     or `/wayfinder`, run the selected route, then use `context/ROLE.md` as a multi-agent requirement review
      panel before writing final plan content. Recommend `/wayfinder` for large, foggy requirements
      without a clear solution path.
    - **Write plan** → copy `templates/plan-template/` to `plans/NNN-<slug>/` (role files

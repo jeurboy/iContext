@@ -3,7 +3,7 @@
 > **Split out of `CONTEXT.md`.** Holds §8 (security model) and §11.6 (`security-review` lifecycle
 > wiring). Section numbers are unchanged, so every existing `§8` / `§11.6` reference in plans and
 > docs still resolves — only the file moved.
-> Siblings: [CONTEXT.md](./CONTEXT.md) (context map + workflow) · [DEV.md](./DEV.md) (development) · [PRODUCT.md](./PRODUCT.md) ·
+> Siblings: [CONTEXT.md](../CONTEXT.md) (context map + workflow) · [DEV.md](./DEV.md) (development) · [PRODUCT.md](./PRODUCT.md) ·
 > [DESIGN.md](./DESIGN.md) · [QA.md](./QA.md) · [SKILLS.md](./SKILLS.md)
 
 **Owners:** `DEV QA OPS` · **Read by:** anyone adding a route, page, dependency, or secret.

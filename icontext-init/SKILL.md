@@ -3,7 +3,9 @@ name: icontext-init
 description: Establish or refresh the whole-project iContext backbone so agents understand a
              codebase's architecture, conventions, workflow, and plan status. Use for greenfield
              setup, brownfield onboarding, or update/sync when CONTEXT.md, L1 agent files
-             (CLAUDE.md, AGENTS.md/agents.md, AGENT.md/agent.md, GEMINI.md), DEV.md, SKILLS.md, ROLE.md, plans/, docs/openapi.yaml,
+             (CLAUDE.md, AGENTS.md/agents.md, AGENT.md/agent.md, GEMINI.md), the context/ L2
+             folder (DEV.md, PRODUCT.md, QA.md, SECURITY.md, DESIGN.md, SKILLS.md, ROLE.md),
+             plans/, docs/openapi.yaml,
              project safety hooks,
              styles/, service skeletons, or data/security sections are missing or stale. It
              interviews section-by-section and only adds missing context. Do NOT use for

@@ -262,6 +262,14 @@ function isPointerStub(body) {
   return /(?:\u279c|=>|->)\s*\*\*Moved to/i.test(body) || /^\s*\u279c\s/m.test(body);
 }
 
+// L2 concern files live in context/ (v1.17+ layout); older projects keep them at the repo root.
+// Resolve per project so both layouts export the same graph.
+function resolveL2(root, name) {
+  if (exists(path.join(root, 'context', name))) return path.join('context', name);
+  if (exists(path.join(root, name))) return name;
+  return null;
+}
+
 function makeGraph(root, title) {
   const contextFile = path.join(root, 'CONTEXT.md');
   if (!exists(contextFile)) {
@@ -298,14 +306,17 @@ function makeGraph(root, title) {
 
   // Layer 2 is split by concern. Each file owns a fixed set of CONTEXT.md sections; section
   // numbers stay stable across the split, so a project that predates it (everything still in
-  // CONTEXT.md) simply produces no L2 nodes rather than a broken graph.
-  const presentL2 = L2_FILES.filter((entry) => exists(path.join(root, entry.name)));
+  // CONTEXT.md) simply produces no L2 nodes rather than a broken graph. Files resolve to
+  // context/<name> first, then to the legacy root-level location.
+  const presentL2 = L2_FILES
+    .map((entry) => ({ ...entry, relPath: resolveL2(root, entry.name) }))
+    .filter((entry) => entry.relPath);
   for (const entry of presentL2) {
     const id = `l2:${entry.name}`;
     addNode(id, entry.name, 'l2', {
-      path: entry.name,
+      path: entry.relPath,
       summary: `${entry.concern} — owns ${entry.sections}`,
-      markdown: markdownPayload(root, entry.name),
+      markdown: markdownPayload(root, entry.relPath),
     });
     addEdge('context:CONTEXT.md', id, entry.concern, 'l2-split');
     addEdge('project', id, 'context', 'owns');
@@ -315,9 +326,9 @@ function makeGraph(root, title) {
   // behind in CONTEXT.md ("Moved to ...") are skipped so a moved section appears exactly once.
   const sectionSources = [{ name: 'CONTEXT.md', owner: 'context:CONTEXT.md', text: contextText }]
     .concat(presentL2.map((entry) => ({
-      name: entry.name,
+      name: entry.relPath,
       owner: `l2:${entry.name}`,
-      text: readText(path.join(root, entry.name)),
+      text: readText(path.join(root, entry.relPath)),
     })));
   for (const source of sectionSources) {
     for (const section of headingSections(source.text).filter((h) => h.depth <= 3)) {
@@ -347,12 +358,13 @@ function makeGraph(root, title) {
   }
 
   for (const name of ['ROLE.md', 'PLAN.md', 'plans/README.md']) {
-    const file = path.join(root, name);
+    const relPath = name === 'ROLE.md' ? (resolveL2(root, 'ROLE.md') || 'ROLE.md') : name;
+    const file = path.join(root, relPath);
     if (!exists(file)) continue;
     const type = name === 'ROLE.md' ? 'role' : 'status';
-    const text = markdownPayload(root, name);
-    addNode(`file:${name}`, name, type, { path: name, markdown: text });
-    addEdge('context:CONTEXT.md', `file:${name}`, name === 'ROLE.md' ? 'role panel' : 'status sync', 'tracks');
+    const text = markdownPayload(root, relPath);
+    addNode(`file:${relPath}`, relPath, type, { path: relPath, markdown: text });
+    addEdge('context:CONTEXT.md', `file:${relPath}`, name === 'ROLE.md' ? 'role panel' : 'status sync', 'tracks');
   }
 
   const apiDoc = ['docs/openapi.yaml', 'docs/openapi.yml'].find((name) => exists(path.join(root, name)));
@@ -436,7 +448,7 @@ function makeGraph(root, title) {
 
   for (const file of referencedFiles) {
     if (file === 'CONTEXT.md') continue;
-    if (L2_FILES.some((entry) => entry.name === file)) continue;
+    if (presentL2.some((entry) => entry.relPath === file)) continue;
     const id = `file:${file}`;
     const type = file.endsWith('.md') ? 'doc' : 'file';
     const markdown = markdownPayload(root, file);
@@ -452,7 +464,14 @@ function makeGraph(root, title) {
     .map((file) => rel(root, file))
     .filter((file) => file.endsWith('.md'))
     .filter((file) => !file.startsWith('plans/') || file === 'plans/README.md')
-    .filter((file) => !['CONTEXT.md', ...l1Files, ...L2_FILES.map((entry) => entry.name), 'ROLE.md', 'PLAN.md'].includes(file))
+    .filter((file) => ![
+      'CONTEXT.md',
+      ...l1Files,
+      ...L2_FILES.map((entry) => entry.name),
+      ...presentL2.map((entry) => entry.relPath),
+      'ROLE.md',
+      'PLAN.md',
+    ].includes(file))
     .slice(0, 80);
   for (const file of markdownDocs) {
     const id = `file:${file}`;

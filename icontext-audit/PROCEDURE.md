@@ -38,13 +38,17 @@ Inventory the expected backbone:
   without its own explicit decision.
   Detect the actual casing from directory entries, not two independent existence checks; on a
   case-insensitive filesystem both alias paths can resolve to the same inode.
-- L2 files: `CONTEXT.md`, `DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`, `SKILLS.md`,
-  `ROLE.md`.
+- L2 files: `CONTEXT.md` (repo-root entry point) plus the `context/` folder — `context/DEV.md`,
+  `context/PRODUCT.md`, `context/QA.md`, `context/SECURITY.md`, `context/DESIGN.md`,
+  `context/SKILLS.md`, `context/ROLE.md`.
   A project holding all of sections 1-13 in one `CONTEXT.md` is **not a defect** — it predates the
   L2 split. Report it as a `split candidate` and point the owner at `/icontext-update` Step 5.5;
   never split it here.
   A six-file project with §10 still in `CONTEXT.md` is also a `SKILLS.md split candidate`; point
   it at the same update step and do not create a duplicate §10 during audit.
+  A project whose concern files or `ROLE.md` sit at the repo root instead of `context/` (the
+  pre-1.17 layout) is a `relocate candidate`, not a defect — point the owner at
+  `/icontext-update` Step 5.7; never move files during audit.
   A §10 pointer stub with no `SKILLS.md` target is a dangling-reference defect and requires owner
   recovery input; do not silently reconstruct project-specific dependencies from the template.
 - L3/status files: `PLAN.md`, `plans/README.md`, `plans/_TEMPLATE/`
@@ -71,8 +75,9 @@ Build a template-completeness table. Do not edit yet.
 
 Check:
 - The L2 files contain the latest section set **across all of them** — a section counts as present
-  wherever it lives (`PRODUCT.md` 1/2/13 · `DEV.md` 3-7 · `SKILLS.md` 10 · `CONTEXT.md` 11 · `SECURITY.md` 8/11.6 ·
-  `QA.md` 9 · `DESIGN.md` 12), and section numbers are stable across the split so existing
+  wherever it lives (`context/PRODUCT.md` 1/2/13 · `context/DEV.md` 3-7 · `context/SKILLS.md` 10 · `CONTEXT.md` 11 ·
+  `context/SECURITY.md` 8/11.6 · `context/QA.md` 9 · `context/DESIGN.md` 12), and section numbers
+  are stable across the split so existing
   references still resolve. Flag a section that appears in **two** files as a duplication defect,
   except for a `➜ Moved to …` pointer stub in `CONTEXT.md`, which is navigation rather than content.
   Sections to check: 1-13, section 11.0 main workflow,
@@ -95,7 +100,7 @@ Check:
   including the latest Requirement Discovery / Requirement Review / Persona Panel shape and the
   `ops.md` section 8.1 Security review table.
 - L1 files (including the selected lowercase/uppercase aliases) point agents to `CONTEXT.md` and
-  `SKILLS.md`, preserve the project rules, and include
+  `context/SKILLS.md`, preserve the project rules, and include
   current workflow guidance.
 - The portable mutation guard protects every `git commit`, `git push`, direct DB command, and
   migration/seed/reset/import/restore action with an interactive per-invocation confirmation. If the
@@ -148,8 +153,8 @@ Before asking or editing, present an audit register like this:
 
 | ID | Type | File / section | Evidence | Question for owner | Proposed action |
 |----|------|----------------|----------|--------------------|-----------------|
-| A1 | missing | `SECURITY.md` section 8 | heading absent | What auth/security model should be recorded? | add confirmed section |
-| A2 | stale | `DEV.md` section 6 | `backend/` exists, context says `api/` | Should section 6 use `backend/`? | patch service list |
+| A1 | missing | `context/SECURITY.md` section 8 | heading absent | What auth/security model should be recorded? | add confirmed section |
+| A2 | stale | `context/DEV.md` section 6 | `backend/` exists, context says `api/` | Should section 6 use `backend/`? | patch service list |
 | A3 | cleanup | `OLD_PLAN.md` | superseded by `plans/002-name/` | Keep, merge, archive, or delete? | archive if approved |
 
 Use stable IDs so the user can answer by ID.
@@ -176,7 +181,8 @@ Apply only approved actions:
   merge the active host's documented project hook without overwriting unrelated hooks. Dry-run safe
   and restricted payloads through the guard and the real host path when available.
 - Patch missing L2 sections or subsections additively. Keep existing owner prose. Route a legacy
-  §10 move to `icontext-update` instead of copying it into `SKILLS.md` during audit.
+  §10 move to `icontext-update` instead of copying it into `context/SKILLS.md` during audit, and
+  route a root-level concern-file layout to `icontext-update` Step 5.7 instead of relocating here.
 - Patch stale context only for confirmed values, citing repo evidence when useful.
 - Update plan status in all required places when approved.
 - For cleanup, merge/archive/delete exactly as approved. If archiving and the project has no

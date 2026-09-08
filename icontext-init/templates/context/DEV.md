@@ -1,7 +1,7 @@
 # {{PROJECT_NAME}} — DEV.md (Layer 2 · development & architecture)
 
 > **Owners:** `DEV OPS` · Sections: §3–7
-> Read [CONTEXT.md](./CONTEXT.md) first for the full context map and workflow.
+> Read [CONTEXT.md](../CONTEXT.md) first for the full context map and workflow.
 > Siblings: [PRODUCT.md](./PRODUCT.md) · [QA.md](./QA.md) ·
 > [SECURITY.md](./SECURITY.md) · [DESIGN.md](./DESIGN.md) · [SKILLS.md](./SKILLS.md)
 
@@ -42,10 +42,11 @@
 - Context backbone lives at the root:
   - **L1 agent files** — `CLAUDE.md` / one of `AGENTS.md` or `agents.md` / one of `AGENT.md` or
     `agent.md` / `GEMINI.md` (preserve the casing selected for the project's agent tooling)
-  - **L2 context (7 files, split by concern)** — `CONTEXT.md` (context map + workflow) ·
-    `DEV.md` (this file: development + architecture) · `PRODUCT.md` · `QA.md` · `SECURITY.md` ·
-    `DESIGN.md` · `SKILLS.md` (skill dependencies + routing) — see the context map in `CONTEXT.md`
-  - **L3 + shared** — `ROLE.md`, `PLAN.md`, `plans/`, `styles/`, `docs/`, `.icontext/hooks/`
+  - **L2 context (context map at the root + concern files in `context/`)** — `CONTEXT.md` at the
+    repo root (context map + workflow) · `context/DEV.md` (this file: development + architecture) ·
+    `context/PRODUCT.md` · `context/QA.md` · `context/SECURITY.md` · `context/DESIGN.md` ·
+    `context/SKILLS.md` (skill dependencies + routing) — see the context map in `CONTEXT.md`
+  - **L3 + shared** — `context/ROLE.md`, `PLAN.md`, `plans/`, `styles/`, `docs/`, `.icontext/hooks/`
 
 ### 5.1 การแก้ Merge Conflict · Merge-conflict resolution
 - เมื่อ git merge หรือ rebase ค้างอยู่ที่ conflict ให้เรียก skill `resolving-merge-conflicts`
@@ -60,13 +61,13 @@
 - หลังแก้ครบทุก hunk ให้รัน automated checks ของโปรเจกต์ตามลำดับ typecheck → tests → format
   แล้วแก้ทุกอย่างที่ merge ทำให้พังก่อนจบงาน
 - การจบ merge/rebase (stage + commit หรือ `rebase --continue` จนครบทุก commit) ยังอยู่ภายใต้เกต
-  [CONTEXT.md](./CONTEXT.md) §11.7 เสมอ — ต้องได้ per-invocation confirmation ก่อนทุกครั้ง แม้ upstream
+  [CONTEXT.md](../CONTEXT.md) §11.7 เสมอ — ต้องได้ per-invocation confirmation ก่อนทุกครั้ง แม้ upstream
   skill จะระบุให้ commit อัตโนมัติ เพราะกฎของโปรเจกต์มีลำดับเหนือกว่า default ของ skill ภายนอก
   (SKILLS.md §10.5)
 - ถ้า skill ไม่พร้อมใช้ ให้แก้ด้วยมือตามลำดับขั้นเดียวกันนี้ และบันทึกลง plan ที่เกี่ยวข้องว่าใช้ manual fallback
 
 ### 5.2 การ Implement · Implementation execution flow
-> Canonical flow คือ loop ใน [CONTEXT.md](./CONTEXT.md) §11.5 — section นี้ถอดเป็นขั้นปฏิบัติสำหรับการ
+> Canonical flow คือ loop ใน [CONTEXT.md](../CONTEXT.md) §11.5 — section นี้ถอดเป็นขั้นปฏิบัติสำหรับการ
 > execute จริงเท่านั้น ไม่ใช่ flow ชุดใหม่ หากสองที่ขัดกัน ให้ยึด §11.5 เสมอ
 
 - ก่อนเริ่ม: plan ต้องอยู่ที่ status `ready to implement` (review chain §11.4 ผ่านแล้ว) และมี spec/plan/
@@ -87,7 +88,7 @@
   6. **Security review** — รัน `security-review` detectors ตาม §11.6 เฉพาะไฟล์ที่ slice แตะ ก่อนออกจาก loop
   7. **Fold feedback** — นำ feedback กลับเข้า slice ถัดไป
 - การ commit เข้า current branch (ท้าย slice หรือตามที่ upstream skill สั่ง) ต้องผ่าน per-invocation
-  confirmation ตาม [CONTEXT.md](./CONTEXT.md) §11.7 เสมอ — กฎโปรเจกต์เหนือกว่า default ของ skill ภายนอก
+  confirmation ตาม [CONTEXT.md](../CONTEXT.md) §11.7 เสมอ — กฎโปรเจกต์เหนือกว่า default ของ skill ภายนอก
   (SKILLS.md §10.5) และ hook `.icontext/hooks/guard-command.sh` จะ intercept ให้ถามอยู่ดี
 - ถ้าไม่ใช้ skill ให้ implement ด้วยมือตามลำดับขั้นใน section นี้ได้ทั้งหมด (manual fallback ตาม §10)
 
@@ -118,6 +119,6 @@
 ## Keeping this in sync
 - Architecture, stack, repo, service, or data-model changes belong here; keep the affected plan,
   `docs/openapi.yaml`, service `STRUCTURE.md`, and DB migrations aligned in the same change
-  ([CONTEXT.md](./CONTEXT.md) §11.3).
+  ([CONTEXT.md](../CONTEXT.md) §11.3).
 - If a technical decision changes product scope, security, testing, or design, update the matching
   L2 sibling in the same change. Link across files; never duplicate a section.

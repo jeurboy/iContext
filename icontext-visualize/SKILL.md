@@ -4,13 +4,14 @@ description: Export an existing iContext project as an interactive dependency gr
              JavaScript. Use whenever the user asks to visualize context, export context
              dependencies, inspect how CONTEXT.md connects to plans/services/docs/styles/API
              artifacts, create a graph from iContext files, or produce an HTML/JS context map.
-             It reads the Layer-2 context set (CONTEXT.md plus DEV.md, PRODUCT.md, QA.md, SECURITY.md,
-             DESIGN.md, SKILLS.md when the project has split them), L1 agent files including
-             AGENTS.md/agents.md and AGENT.md/agent.md aliases, ROLE.md, PLAN.md, plans, docs, styles, service
+             It reads the L2 set (CONTEXT.md plus the context/ concern folder — DEV.md, PRODUCT.md,
+             QA.md, SECURITY.md, DESIGN.md, SKILLS.md, ROLE.md — resolved in context/ first, then at
+             the repo root on older projects), L1 agent files including AGENTS.md/agents.md and
+             AGENT.md/agent.md aliases, PLAN.md, plans, docs, styles, service
              STRUCTURE files, manifests, and Markdown references; writes context-graph.html and
-             context-graph.js with a dedicated Layer-2 lane, readable lane layout, label-density controls, click focus with
-             dependency fade, zoom, pan, start-node focus, animated dragging, plan-status badges, and
-             a click-to-view Markdown panel; verifies the files were generated; and does not modify
+             context-graph.js with a dedicated Layer-2 lane, label-density controls, click focus with
+             dependency fade, zoom, pan, plan-status badges, and a Markdown view panel; verifies the
+             files were generated; and does not modify
              source context unless the user separately asks.
 allowed-tools:
   - Read
@@ -30,8 +31,9 @@ view of an existing iContext project. The bundled exporter is
 ## Mappings
 - **Update check** - run `bash check-update.sh`.
 - **Layer-2 split** - `DEV.md`, `PRODUCT.md`, `QA.md`, `SECURITY.md`, `DESIGN.md`, and `SKILLS.md` render as `l2`
-  nodes in their own lane below `CONTEXT.md`, each owning its sections. A project that keeps
-  everything in one `CONTEXT.md` exports fine with no `l2` nodes.
+  nodes in their own lane below `CONTEXT.md`, each owning its sections. They resolve in `context/`
+  first, then at the repo root on pre-1.17 projects. A project that keeps everything in one
+  `CONTEXT.md` exports fine with no `l2` nodes.
 - **Exporter** - run `node scripts/export-context-graph.js --root <project-root> --out <output-dir>`.
 - **Runtime** - requires Node.js, but no npm install or external package.
 - **Default output** - use `<project-root>/context-graph/context-graph.html` and
