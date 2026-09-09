@@ -3,10 +3,13 @@ name: icontext-feature
 description: Generate a numbered feature plan (plans/NNN-name/ folder, split by role) with the standard
              section-0-to-11 structure + role owners + task-status lifecycle + optional persona
              panel and selectable requirement discovery using /grill-with-docs for clear-ish features,
-             /wayfinder for large/foggy requirements without a clear solution path. Use AFTER
+             /wayfinder for large/foggy requirements without a clear solution path. When the request
+             extends a feature that already has a plan (any status, incl. done), route to CR mode
+             instead — a CR-<M>.md file inside the existing plan's folder that links back to the
+             original plan, not a new plan. Use AFTER
              icontext-init, whenever adding a new feature or capability to a project that already has
              a CONTEXT.md backbone — even if the user just says "plan this feature", "write a plan
-             for X", or "spec out the next thing". Stops at the plan - does not implement.
+             for X", or "spec out the next thing". Stops at the plan/CR - does not implement.
 allowed-tools:
   - Read
   - Write
@@ -58,7 +61,10 @@ Portable across agents - see [adapters/](./adapters/). SKILL.md is the Claude Co
   `docs/openapi.yaml`, and `.vscode/launch.json`. For any that are missing, ask with
   `AskUserQuestion` (multi-select) whether to create them, then create approved ones from the
   `icontext-init` templates. Don't block if declined.
-- **Find next number** - use `Bash` to list `plans/` and compute `NNN`.
+- **Step 2 route + numbering** - use `Bash` to list `plans/` and compute `NNN`. If the feature
+  already has a plan (confirm from the brief + `plans/README.md`), route to **CR mode** instead:
+  no new folder/number, next `CR-<M>` = highest existing `CR-*.md` in that plan folder + 1, and
+  the CR must link back to the original plan. Ambiguous owner → ask the user.
 - **Feature brief + persona prompt** - gather with `AskUserQuestion`.
 - **Plan preparation** - after writing and registering the plan, run gstack `/autoplan` (or the
   individual review chain) before moving toward `ready to implement`.
@@ -70,6 +76,10 @@ Portable across agents - see [adapters/](./adapters/). SKILL.md is the Claude Co
 - **Write plan** - a plan is a **folder** `plans/NNN-<slug>/`. Copy `templates/plan-template/`
   (role files bu/po/dev/qa/ops/stk.md + README.md), fill sections, set `Task status: plan` in the
   folder README, ref `CONTEXT.md`. Then register status in `plans/README.md` + `PLAN.md`.
+  **CR mode:** write `plans/NNN-<slug>/CR-<M>.md` from `templates/cr-template.md` instead —
+  single file carrying only the delta (decisions `D-CR<M>-#` · design · ACs · tasks) with its own
+  status line; discovery + persona output go into the CR's own sections. Register the CR in the
+  plan folder README (CR table) + `plans/README.md` + `PLAN.md` as a sub-entry of the owning plan.
 
 ## Stop rule
-Finish at the written plan. Do not implement the feature.
+Finish at the written plan (or CR). Do not implement the feature.

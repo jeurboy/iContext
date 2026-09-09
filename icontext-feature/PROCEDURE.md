@@ -4,12 +4,17 @@
 > Requires a project initialized by `icontext-init` (has `CONTEXT.md`, `plans/`, `PLAN.md`,
 > `context/ROLE.md`).
 
-Create one feature plan using the standard structure. **Stop at the plan — do not implement.**
+Create one feature plan using the standard structure. If the request extends or changes a
+feature that **already has a plan**, the output is a **CR** (`CR-<M>.md`) inside that plan's
+folder instead of a new plan (Step 2). **Stop at the plan/CR — do not implement.**
 
 ## Operating rules
 - Never `git commit` / `git push` unless explicitly told.
 - Every plan **must ref `CONTEXT.md`** and carry a task status:
   `to do → plan → ready to implement → implement → ready to test → done`.
+- A change to a feature that **already has a plan** (any status, including `done`) is a
+  **CR** — a single `CR-<M>.md` file inside that plan's folder, linking back to the original
+  plan — **not** a new plan folder/number (routing in Step 2).
 - The plan structure is defined in **CONTEXT.md §11.1** (sections 0–11 with role owners).
 - Requirement workflow is part of the plan, not optional polish: gather a brief, ask the user to
   choose a discovery route (`/grill-with-docs` or `/wayfinder`), run the selected route, then review
@@ -43,9 +48,30 @@ update is available, mention it, then continue.
      `templates/.vscode/launch.json` (substitute `{{VARS}}`).
    Create only the artifacts the user approves, then proceed to Step 2.
 
-## Step 2 — Next plan number
-List the `plans/NNN-*/` folders, take the highest `NNN`, +1 (zero-padded, 3 digits).
-`_TEMPLATE/` and `README.md` don't count.
+## Step 2 — Route: new plan or CR on an existing plan
+List the `plans/NNN-*/` folders (`_TEMPLATE/` and `README.md` don't count), then route:
+
+- **New capability, no owning plan** → new plan: take the highest `NNN`, +1 (zero-padded,
+  3 digits). Continue as written below.
+- **Extends or changes a feature that already has a plan** (any status — including a closed
+  `done` plan) → **CR mode**: do **not** open a new plan folder or number. Write a single
+  **CR file inside the existing plan folder** instead:
+  1. Find the owning plan from the brief + `plans/README.md`. If several plans look like the
+     owner — or none obviously is — ask the user; don't guess.
+  2. Next CR number = highest existing `CR-*.md` in that folder + 1 (`CR-1`, `CR-2`, …).
+  3. Write `plans/NNN-<slug>/CR-<M>.md` from this skill's `templates/cr-template.md` (a
+     project's `plans/_TEMPLATE/` predating CR support won't carry it — always use the
+     skill's template). The CR **must declare the link back to the original plan**: plan
+     number + name, its current status, and what it reuses from the original — it extends
+     the original plan; it is not a new plan.
+  4. CR carries only the **delta**: decisions (`D-CR<M>-#`), design changes per layer, ACs,
+     tasks, and its own status line (same lifecycle as a plan). Leave the original plan
+     files untouched — the only additions to the folder are the CR file and the CR table
+     in its `README.md`.
+
+Routing is confirmed from the Step 3 brief: if the brief reveals the feature already has a
+plan, switch to CR mode before writing anything. When in doubt (the request could be read
+as either a new feature or an extension), ask the user.
 
 ## Step 3 — Gather the minimal brief
 Ask: feature name (→ slug), one-paragraph intent, services touched (use the real service names from
@@ -86,12 +112,15 @@ requirement before locking scope.
 - Each reviewer returns: Works · Concern · Suggestion · Plan impact.
 - Put the selected discovery route and outcome in the plan's **§4.0 Requirement Discovery** (`stk.md`),
   put the review output in **§4.1 Requirement Review**, and fold accepted changes into the relevant
-  role files before Step 6.
+  role files before Step 6. **CR mode:** same two steps apply — the discovery decisions and the
+  panel output go into the CR file's **Requirement discovery** and **Persona panel** sections
+  instead of `stk.md`.
 
 Optional: ask whether to run an additional lightweight persona panel. If yes, put it in **§4.2
 Persona Panel**; if no, mark §4.2 as skipped.
 
 ## Step 5 — Write the plan (a folder split by role)
+*(New plans only — in CR mode the CR file was created in Step 2 and this step is skipped.)*
 A plan is a **folder** `plans/NNN-<slug>/`, not a single file. Copy the project's
 `plans/_TEMPLATE/` (or this skill's `templates/plan-template/`) to `plans/NNN-<slug>/`. It
 contains role files; each of sections 0–11 lives in exactly one (map = CONTEXT.md §11.1):
@@ -118,6 +147,11 @@ Add the new plan (task status `plan`) to **both** `plans/README.md` (the index) 
 The rule "update status in 3 places" applies on every later status change too:
 the plan folder's `README.md` · `plans/README.md` · `PLAN.md`.
 
+**CR mode:** the CR file's own status line is canonical. Register it by adding a **CR table**
+(row: `CR-<M>` · title · status) to the original plan folder's `README.md`, then mirror the CR
+in `plans/README.md` and `PLAN.md` as a sub-entry of the owning plan (e.g.
+`032-promotion-engine — CR-1 (plan)`). Every later CR status change updates those same places.
+
 ## Step 7 — Prepare the plan with `/autoplan` + plan-phase security review
 Run gstack `/autoplan` to review scope, architecture, design (if UI), and developer experience (if
 developer-facing). If `/autoplan` is unavailable, run the individual plan review skills listed in
@@ -135,9 +169,14 @@ The plan remains
 the user asks to proceed toward implementation or confirms the review outcomes. On any status
 change, update all three status locations from Step 6.
 
+**CR mode:** run the same preparation when the CR adds new surface (dependencies, routes, data
+model); for a small delta the user may skip `/autoplan` — if so, record the skip and why in the
+CR file. The CR's status line follows the same rule: `plan` until review changes are applied.
+
 ## Step 8 — Stop
-Report the new plan path + status and whether `/autoplan` has already been applied. If the run
-stopped at an unresolved `/wayfinder` map, report the map path/link, next frontier ticket, and that
-no iContext plan was created yet. Do not implement.
+Report the new plan path + status and whether `/autoplan` has already been applied. **CR mode:**
+report the CR path instead (`plans/NNN-<slug>/CR-<M>.md`) + the owning plan it links back to.
+If the run stopped at an unresolved `/wayfinder` map, report the map path/link, next frontier
+ticket, and that no iContext plan was created yet. Do not implement.
 (Reminder of `done` gates: API spec synced,
 User Stories complete, tests > 80%, security review clean — no unresolved high/critical finding.)

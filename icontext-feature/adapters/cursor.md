@@ -5,7 +5,9 @@
 > the selected route, review requirements through `context/ROLE.md` as a multi-agent panel, write
 > `plans/NNN-<slug>/ (folder, role files)` from
 > `templates/plan-template/` (task status `plan`, ref CONTEXT.md), register in `plans/README.md`
-> and `PLAN.md`, then run `/autoplan` or the equivalent review chain before implementation. Stop at
-> the plan; don't implement; don't commit.
+> and `PLAN.md`, then run `/autoplan` or the equivalent review chain before implementation. If the
+> feature already has a plan, write `CR-<M>.md` inside that plan's folder from
+> `templates/cr-template.md` instead — a single delta file linking back to the original plan
+> (PROCEDURE.md Step 2). Stop at the plan/CR; don't implement; don't commit.
 
 Tool mapping: questions → inline chat · file ops → terminal/editor.

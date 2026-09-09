@@ -41,6 +41,13 @@ API spec synced (`docs/openapi.yaml`) · User Stories complete (po.md §3) · te
 (qa.md §9 / [QA.md](../../context/QA.md)) · security review clean ([SECURITY.md](../../context/SECURITY.md) §11.6)
 · style guide updated if UI changed ([DESIGN.md](../../context/DESIGN.md) §12).
 
+### Change requests (CR) — changes to this feature go here, not into a new plan
+<!-- แก้/ขยาย feature นี้หลังจากแผนนี้ (แม้ปิดไปแล้ว) → สร้าง CR-M.md ใน folder นี้จาก
+     icontext-feature templates/cr-template.md — CR ต้องประกาศเชื่อมกลับมาที่แผนนี้ -->
+| CR | Title | Status |
+|----|-------|--------|
+<!-- e.g. | [CR-1](./CR-1.md) | Promotion scope รายรุ่นรถ | ready to test | -->
+
 ### L2 context this plan must stay in sync with
 [CONTEXT.md](../../CONTEXT.md) (context map/workflow) · [DEV.md](../../context/DEV.md) (development/architecture) · [PRODUCT.md](../../context/PRODUCT.md) (direction,
 decisions) · [QA.md](../../context/QA.md) (test standard) · [SECURITY.md](../../context/SECURITY.md) (security model) ·

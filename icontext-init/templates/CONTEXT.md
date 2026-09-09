@@ -158,9 +158,19 @@ The folder also has `README.md` (index + canonical Status). Template: `plans/_TE
 Task status lifecycle: `to do → plan → ready to implement → implement → ready to test → done`
 (ready to implement = review chain §11.4 done).
 
+**Change requests (CR):** a change to a feature that **already has a plan** (any status,
+including `done`) is **not** a new plan — it is a single `CR-<M>.md` file inside that plan's
+folder (routed by `/icontext-feature` Step 2, template in the skill). The CR links back to the
+original plan (number + status + what it reuses) and carries only the delta: decisions
+(`D-CR<M>-#`), design changes, ACs, tasks, and its own status line on the same lifecycle. The
+plan folder's `README.md` keeps a CR table; the original plan files stay untouched.
+
 #### 11.2 Rules for every plan
 - **ref CONTEXT.md** always.
 - **Update status in 3 places in one go:** the plan's `README.md` · `plans/README.md` · `PLAN.md`.
+  For a CR, the same rule applies to the CR's status: the CR file's status line (canonical) ·
+  the CR table row in the plan folder's `README.md` · `plans/README.md` + `PLAN.md` (as a
+  sub-entry of the owning plan).
 - **sync API spec** (`docs/openapi.yaml`) before `done`.
 - **User Stories complete** before `done`.
 - **test > 80%** before `done`.

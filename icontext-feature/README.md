@@ -2,8 +2,11 @@
 
 Generate one feature plan (`plans/NNN-<slug>/ (folder, role files)`) using the standard §0–11
 structure with role owners, a status lifecycle, selectable requirement discovery (`/grill-with-docs`
-or `/wayfinder`), `context/ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pairs with
-`icontext-init`. Stops at the plan — never implements.
+or `/wayfinder`), `context/ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation.
+When the request extends a feature that **already has a plan** (any status, incl. `done`), it routes to
+**CR mode** instead: a single `CR-<M>.md` inside that plan's folder, linking back to the original plan —
+no new plan number (PROCEDURE.md Step 2, template `templates/cr-template.md`). Pairs with
+`icontext-init`. Stops at the plan/CR — never implements.
 
 ## Prerequisite — discovery skills
 The plan flow **runs requirement discovery before writing it** and then reviews the requirement
