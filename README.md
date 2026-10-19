@@ -1,6 +1,6 @@
 # iContext
 
-**Version 1.19.0** · seven portable agent-skills that bootstrap, audit, visualize, load-test, and maintain a **layered project
+**Version 1.20.0** · seven portable agent-skills that bootstrap, audit, visualize, load-test, and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
@@ -185,6 +185,11 @@ python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validat
 ```
 
 ## Changelog
+
+### 1.20.0
+- **`icontext-feature` asks full plan vs CR on every run** — no silent inference. For a CR it finds the
+  owning plan and asks the user to confirm it every time; with no existing plan it optionally offers to
+  create a new full plan instead (declining stops with no CR written).
 
 ### 1.19.0
 - **New skill: `icontext-feature-review`** — summarizes one existing feature plan (folder + `CR-*.md`)

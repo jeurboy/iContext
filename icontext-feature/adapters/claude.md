@@ -9,9 +9,10 @@ adapters — Claude normally reads `SKILL.md` → `PROCEDURE.md` directly.
 2. Tool mapping:
    - **Update check (FIRST, every run)** → `bash check-update.sh` via `Bash`; surface its output
      (local **version** + update availability).
-   - **Next plan number / CR routing** → `Bash` to list `plans/NNN-*/` and compute `NNN`; if the
-     feature already has a plan, route to CR mode instead — next `CR-<M>` from `CR-*.md` in that
-     folder (PROCEDURE.md Step 2).
+   - **Full plan vs CR (ask every run)** → `AskUserQuestion`: full plan or CR? Full plan: `Bash` to
+     list `plans/NNN-*/` and compute `NNN`. CR: find the owning plan and confirm it with
+     `AskUserQuestion` every time; none found → ask (optional) whether to create a new full plan.
+     Next `CR-<M>` from `CR-*.md` in the confirmed folder (PROCEDURE.md Step 2).
    - **Feature brief + optional persona prompt** → `AskUserQuestion`.
    - **Requirement workflow** → gather the minimal brief, ask the user to choose `/grill-with-docs`
      or `/wayfinder`, run the selected route, then use `context/ROLE.md` as a multi-agent requirement review

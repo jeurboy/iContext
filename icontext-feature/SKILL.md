@@ -25,6 +25,10 @@ allowed-tools:
 > anything changes. It's best-effort and never blocks (offline/unpublished just prints "skipped").
 > If an update is available, mention it, then continue.
 
+> **Then ask: full plan or CR? (every run, required).** Never infer it. If **CR**, search for the
+> owning plan and have the user **confirm it every time**; if none exists, ask (optional) whether to
+> create a new full plan instead — declining stops with no CR written.
+>
 > **Then gather a minimal brief, choose a discovery route, and review requirements before writing
 > (required).** Capture the feature name, intent, touched services, and known constraints, then ask
 > the user to choose:
@@ -61,10 +65,11 @@ Portable across agents - see [adapters/](./adapters/). SKILL.md is the Claude Co
   `docs/openapi.yaml`, and `.vscode/launch.json`. For any that are missing, ask with
   `AskUserQuestion` (multi-select) whether to create them, then create approved ones from the
   `icontext-init` templates. Don't block if declined.
-- **Step 2 route + numbering** - use `Bash` to list `plans/` and compute `NNN`. If the feature
-  already has a plan (confirm from the brief + `plans/README.md`), route to **CR mode** instead:
-  no new folder/number, next `CR-<M>` = highest existing `CR-*.md` in that plan folder + 1, and
-  the CR must link back to the original plan. Ambiguous owner → ask the user.
+- **Step 2 full plan vs CR (ask every run)** - use `AskUserQuestion` to ask "full plan or CR?".
+  Full plan: use `Bash` to list `plans/` and compute `NNN`. CR: find the owning plan, then confirm
+  it with `AskUserQuestion` every time (candidates listed, user picks/corrects). No owning plan:
+  ask (optional) whether to create a new full plan; if declined, stop. Next `CR-<M>` = highest
+  existing `CR-*.md` in the confirmed plan folder + 1, and the CR must link back to the plan.
 - **Feature brief + persona prompt** - gather with `AskUserQuestion`.
 - **Plan preparation** - after writing and registering the plan, run gstack `/autoplan` (or the
   individual review chain) before moving toward `ready to implement`.

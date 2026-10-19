@@ -12,6 +12,9 @@ folder instead of a new plan (Step 2). **Stop at the plan/CR — do not implemen
 - Never `git commit` / `git push` unless explicitly told.
 - Every plan **must ref `CONTEXT.md`** and carry a task status:
   `to do → plan → ready to implement → implement → ready to test → done`.
+- Every run starts by **asking whether this is a full plan or a CR** (Step 2). A CR needs its
+  owning plan **confirmed by the user each time**; with no existing plan, ask (optional) whether
+  to create a new full plan instead.
 - A change to a feature that **already has a plan** (any status, including `done`) is a
   **CR** — a single `CR-<M>.md` file inside that plan's folder, linking back to the original
   plan — **not** a new plan folder/number (routing in Step 2).
@@ -48,30 +51,36 @@ update is available, mention it, then continue.
      `templates/.vscode/launch.json` (substitute `{{VARS}}`).
    Create only the artifacts the user approves, then proceed to Step 2.
 
-## Step 2 — Route: new plan or CR on an existing plan
+## Step 2 — Ask: full plan or CR (every run), then route
+**Always ask the user first, on every invocation** — never infer the mode silently from the
+request. Ask: is this a **full plan** (new capability, new `plans/NNN-<slug>/` folder) or a
+**CR** (change request on a feature that already has a plan)?
+
 List the `plans/NNN-*/` folders (`_TEMPLATE/` and `README.md` don't count), then route:
 
-- **New capability, no owning plan** → new plan: take the highest `NNN`, +1 (zero-padded,
-  3 digits). Continue as written below.
-- **Extends or changes a feature that already has a plan** (any status — including a closed
-  `done` plan) → **CR mode**: do **not** open a new plan folder or number. Write a single
-  **CR file inside the existing plan folder** instead:
-  1. Find the owning plan from the brief + `plans/README.md`. If several plans look like the
-     owner — or none obviously is — ask the user; don't guess.
-  2. Next CR number = highest existing `CR-*.md` in that folder + 1 (`CR-1`, `CR-2`, …).
-  3. Write `plans/NNN-<slug>/CR-<M>.md` from this skill's `templates/cr-template.md` (a
+- **Full plan** → take the highest `NNN`, +1 (zero-padded, 3 digits). Continue as written below.
+- **CR** → do **not** open a new plan folder or number. Find the existing plan first:
+  1. Search for the owning plan from the request + `plans/README.md` + the plan folders.
+     **Always ask the user to confirm the owning plan, every time** — show the best candidate(s)
+     (number · name · status) and let the user pick or correct; never proceed on a guess, even
+     when only one candidate matches.
+  2. **No existing plan found (or the user rejects every candidate)** → tell the user there is
+     nothing to attach the CR to and ask whether to **create a new full plan instead**. This is
+     optional: if the user declines, stop and report that no CR was written; don't force a plan.
+     If they accept, continue as **Full plan**.
+  3. Next CR number = highest existing `CR-*.md` in the confirmed folder + 1 (`CR-1`, `CR-2`, …).
+  4. Write `plans/NNN-<slug>/CR-<M>.md` from this skill's `templates/cr-template.md` (a
      project's `plans/_TEMPLATE/` predating CR support won't carry it — always use the
      skill's template). The CR **must declare the link back to the original plan**: plan
      number + name, its current status, and what it reuses from the original — it extends
      the original plan; it is not a new plan.
-  4. CR carries only the **delta**: decisions (`D-CR<M>-#`), design changes per layer, ACs,
+  5. CR carries only the **delta**: decisions (`D-CR<M>-#`), design changes per layer, ACs,
      tasks, and its own status line (same lifecycle as a plan). Leave the original plan
      files untouched — the only additions to the folder are the CR file and the CR table
      in its `README.md`.
 
-Routing is confirmed from the Step 3 brief: if the brief reveals the feature already has a
-plan, switch to CR mode before writing anything. When in doubt (the request could be read
-as either a new feature or an extension), ask the user.
+If the Step 3 brief later reveals the answer was wrong (e.g. chosen full plan but an owning
+plan exists), stop and re-ask before writing anything.
 
 ## Step 3 — Gather the minimal brief
 Ask: feature name (→ slug), one-paragraph intent, services touched (use the real service names from
