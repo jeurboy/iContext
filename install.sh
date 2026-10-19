@@ -20,7 +20,7 @@ set -euo pipefail
 
 REPO_URL="${ICONTEXT_REPO:-https://github.com/jeurboy/iContext.git}"
 ICONTEXT_HOME="${ICONTEXT_HOME:-$HOME/.icontext}"
-SKILLS=(icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-loadtest)
+SKILLS=(icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-feature-review icontext-loadtest)
 
 TOOL="claude"
 MODE="copy"
@@ -76,7 +76,7 @@ install_claude() {                      # $1 = destination skills dir
 
 pointer_body() {                        # $1 = adapter name
   cat <<EOF
-iContext gives you six workflows to scaffold, audit, visualize, load-test, and maintain this project's layered context.
+iContext gives you seven workflows to scaffold, audit, visualize, load-test, and maintain this project's layered context.
 
 Skill files (read these to run the workflow):
 - \`$ICONTEXT_HOME/icontext-init/PROCEDURE.md\` — scaffold or update/sync the context backbone
@@ -88,6 +88,8 @@ Skill files (read these to run the workflow):
 - \`$ICONTEXT_HOME/icontext-visualize/PROCEDURE.md\` — export a static HTML/JS dependency graph
   from CONTEXT.md, plans, services, docs, styles, and related Markdown files.
 - \`$ICONTEXT_HOME/icontext-feature/PROCEDURE.md\` — add one feature plan (role-split folder).
+- \`$ICONTEXT_HOME/icontext-feature-review/PROCEDURE.md\` — summarize one feature plan into a plain-language
+  review (requirement + technical: architecture · DB · API) with cross-checks and a verdict.
 - \`$ICONTEXT_HOME/icontext-loadtest/PROCEDURE.md\` — ask for a target page every invocation,
   trace its real API fan-out, and generate guarded k6 scripts/reports without running by default.
 
@@ -97,6 +99,7 @@ Tool-specific notes (when present):
 - \`$ICONTEXT_HOME/icontext-audit/adapters/$1.md\`
 - \`$ICONTEXT_HOME/icontext-visualize/adapters/$1.md\`
 - \`$ICONTEXT_HOME/icontext-feature/adapters/$1.md\`
+- \`$ICONTEXT_HOME/icontext-feature-review/adapters/$1.md\`
 - \`$ICONTEXT_HOME/icontext-loadtest/adapters/$1.md\`
 To start: follow icontext-init's PROCEDURE.md, use icontext-update for missing template backfills,
 use icontext-audit for drift/cleanup checks, icontext-visualize for graph exports, then

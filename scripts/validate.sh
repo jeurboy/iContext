@@ -18,7 +18,7 @@ require_executable() {
   test -x "$1" || fail "not executable: $1"
 }
 
-for skill in icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-loadtest; do
+for skill in icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-feature-review icontext-loadtest; do
   require_file "$skill/SKILL.md"
   require_file "$skill/PROCEDURE.md"
   require_file "$skill/VERSION"

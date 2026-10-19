@@ -1,6 +1,6 @@
 # iContext
 
-**Version 1.17.0** · six portable agent-skills that bootstrap, audit, visualize, load-test, and maintain a **layered project
+**Version 1.19.0** · seven portable agent-skills that bootstrap, audit, visualize, load-test, and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
@@ -11,6 +11,7 @@ session already knowing your architecture, conventions, and plan status.
 | **icontext-audit** | `/icontext-audit` | Audit an existing iContext project for latest-template completeness, context/repo drift, plan-status sync, stale placeholders, and unnecessary Markdown cleanup candidates. It asks for an explicit decision on every missing, stale, unclear, or cleanup item before updating, archiving, or deleting anything, then re-audits and reports the final gap table. |
 | **icontext-visualize** | `/icontext-visualize` | Export an existing iContext project as an interactive static dependency graph: `context-graph.html` + `context-graph.js`. It reads the L2 set (`CONTEXT.md` + the `context/` concern files, resolved from `context/` first and the repo root second) into a dedicated **L2 lane**, plus agent files, plans, docs, styles, services, and Markdown references without editing source context. |
 | **icontext-feature** | `/icontext-feature` | Add one feature plan — a **folder** `plans/NNN-name/` split into role files — with the standard §0–11 structure, role owners, task-status lifecycle, selectable requirement discovery (`/grill-with-docs` or `/wayfinder`), `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pre-checks required scaffolding (style guide · `docs/openapi.yaml` · `.vscode/launch.json`) and offers to create what's missing. |
+| **icontext-feature-review** | `/icontext-feature-review` | Summarize one existing feature plan (folder + `CR-*.md`) into a single plain-language `REVIEW.md` with two lenses — **requirement** (goal · decisions · scope · story→AC→test trace · open questions) and **technical** (architecture · DB/migration · API · UI routes · security · deploy) — plus cross-checks against `docs/openapi.yaml`, `context/DEV.md` §7 and the 3-place status sync, ending in a readiness verdict. Read-only on plans/code. |
 | **icontext-loadtest** | `/icontext-loadtest` | Ask which page/screen/route to test on every invocation, trace its real client/API fan-out and hidden writes, then generate guarded k6 profiles, route metrics, and HTML/JSON reports from bundled templates. Never runs load traffic without a separate exact environment approval. |
 
 ## The 3-layer context model
@@ -151,6 +152,7 @@ iContext/
 ├── icontext-audit/     SKILL.md · PROCEDURE.md · VERSION · check-update.sh · adapters/
 ├── icontext-visualize/ SKILL.md · PROCEDURE.md · VERSION · check-update.sh · scripts/ · adapters/
 ├── icontext-feature/   SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/ · adapters/
+├── icontext-feature-review/ SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/review-template.md · adapters/
 └── icontext-loadtest/  SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/ · adapters/
 ```
 
@@ -178,10 +180,17 @@ python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validat
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-audit
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-visualize
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-feature
+python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-feature-review
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-loadtest
 ```
 
 ## Changelog
+
+### 1.19.0
+- **New skill: `icontext-feature-review`** — summarizes one existing feature plan (folder + `CR-*.md`)
+  into a single plain-language `REVIEW.md` with requirement and technical lenses, cross-checks against
+  `docs/openapi.yaml`, `context/DEV.md` §7 and the 3-place status sync, and ends with a readiness
+  verdict. Read-only on plans/code. Wired into `install.sh` and `scripts/validate.sh`.
 
 ### 1.17.0
 - **`context/` folder for Layer 2** — the six concern files (`DEV.md`, `PRODUCT.md`, `QA.md`,

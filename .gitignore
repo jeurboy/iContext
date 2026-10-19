@@ -3,3 +3,8 @@
 .agents/
 .claude/
 skills-lock.json
+.agent
+.codex
+.cursor
+.gemini
+.kilocode
