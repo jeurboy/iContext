@@ -1,8 +1,47 @@
 # iContext
 
-**Version 1.22.0** · eight portable agent-skills that bootstrap, audit, visualize, load-test, and maintain a **layered project
+**Version 1.23.0** · nine portable agent-skills that bootstrap, implement, audit, visualize, load-test, and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
+
+**Contents:** [Quick start](#quick-start) · [The skills](#the-skills) ·
+[How the workflow runs](#how-the-workflow-runs) · [Dependency skills](#dependency-skills--who-runs-where) ·
+[The 3-layer context model](#the-3-layer-context-model) · [Install](#install) ·
+[Conventions](#conventions-baked-in) · [Changelog](#changelog)
+
+## Quick start
+
+```bash
+# 1. Install (Claude Code — other tools: see Install below)
+curl -fsSL https://raw.githubusercontent.com/jeurboy/iContext/main/install.sh | bash -s -- claude
+```
+
+Then, inside your project:
+
+1. `/icontext-init` — once, to create the project context.
+2. `/icontext-feature` — for each new feature (or change), to write its plan.
+3. `/icontext-implement` — when a plan is `ready to implement`, to build it.
+
+Everything else is optional and can run whenever you need it.
+
+## The skills
+
+| Phase | Skill | Use it when you want to… |
+|-------|-------|--------------------------|
+| Setup | **`/icontext-init`** | start iContext in a project — new code (greenfield), existing code (brownfield), or fill gaps (update/sync) |
+| Setup | **`/icontext-update`** | bring an older iContext project up to the latest template shape |
+| Plan | **`/icontext-feature`** | write a plan for a new feature, or a change request (CR) for an existing one |
+| Plan | **`/icontext-feature-review`** | get a plain-language summary of a plan, with a readiness verdict |
+| Build | **`/icontext-implement`** | build a `ready to implement` plan, slice by slice, up to `ready to test` |
+| Check | **`/icontext-audit`** | health-check the context: missing parts, drift, stale status, cleanup |
+| Check | **`/icontext-loadtest`** | generate k6 load-test scripts for one page, screen, or route |
+| Tools | **`/icontext-visualize`** | export the context as an interactive HTML dependency graph |
+| Tools | **`/icontext-self-update`** | update the installed iContext skills (and their dependency skills) |
+
+Every skill asks before it writes, and none of them delete or overwrite your existing context.
+
+<details>
+<summary><b>Full description of each skill</b></summary>
 
 | Skill | Command | Does |
 |-------|---------|------|
@@ -12,10 +51,183 @@ session already knowing your architecture, conventions, and plan status.
 | **icontext-visualize** | `/icontext-visualize` | Export an existing iContext project as an interactive static dependency graph: `context-graph.html` + `context-graph.js`. It reads the L2 set (`CONTEXT.md` + the `context/` concern files, resolved from `context/` first and the repo root second) into a dedicated **L2 lane**, plus agent files, plans, docs, styles, services, and Markdown references without editing source context. |
 | **icontext-feature** | `/icontext-feature` | Add one feature plan — a **folder** `plans/NNN-name/` split into role files — with the standard §0–11 structure, role owners, task-status lifecycle, selectable requirement discovery (`/grill-with-docs` or `/wayfinder`), `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pre-checks required scaffolding (style guide · `docs/openapi.yaml` · `.vscode/launch.json`) and offers to create what's missing. |
 | **icontext-feature-review** | `/icontext-feature-review` | Summarize one existing feature plan (folder + `CR-*.md`) into a single plain-language `REVIEW.md` with two lenses — **requirement** (goal · decisions · scope · story→AC→test trace · open questions) and **technical** (architecture · DB/migration · API · UI routes · security · deploy) — plus cross-checks against `docs/openapi.yaml`, `context/DEV.md` §7 and the 3-place status sync, ending in a readiness verdict. Read-only on plans/code. |
+| **icontext-implement** | `/icontext-implement` | Execute one `ready to implement` plan (folder + pending `CR-*.md`) through the §11.5 loop to `ready to test`. Summarizes the plan first via `/icontext-feature-review`, slices the §10 tasks, and runs each slice with **implementer sub-agents on a cheap/low-effort model — the user confirms every spawn (count · scope · model) as a hard rule**. After coding: `/unslop` on written artifacts, sync `docs/openapi.yaml` + `styles/` + `DEV.md` §7; before commit: `/impeccable` re-check (if design work) → `/deslop` on the diff → optional `/thermo-nuclear-code-quality-review` (asked every time) → the §11.7 commit confirmation. |
 | **icontext-loadtest** | `/icontext-loadtest` | Ask which page/screen/route to test on every invocation, trace its real client/API fan-out and hidden writes, then generate guarded k6 profiles, route metrics, and HTML/JSON reports from bundled templates. Never runs load traffic without a separate exact environment approval. |
 | **icontext-self-update** | `/icontext-self-update` | Update the installed `icontext-*` skill packages **themselves** to the latest published version — every discovered location (`~/.agents/skills` · `~/.claude/skills` · project `.claude/skills` · the `~/.icontext` cache), copy or symlink mode, `--ff-only` pulls, one confirmed old → new table — and refresh the single shared `scripts/check-update.sh`. It then updates the workspace's **dependency skills** (`skills-lock.json`, e.g. mattpocock/skills) through the Skills CLI (`npx skills check` → confirm → `npx skills update`). Never commits or pushes. |
 
+</details>
+
+## How the workflow runs
+
+The big picture — three steps, plus tools you can use at any time:
+
+```mermaid
+flowchart LR
+    A["1 · Set up<br/>/icontext-init"] --> B["2 · Plan a feature<br/>/icontext-feature"]
+    B --> C["3 · Build it<br/>/icontext-implement"]
+    C --> D(["done"])
+    C -.->|"bug or change found"| B
+    B -.->|"optional"| R["/icontext-feature-review"]
+```
+
+Each plan moves through one status lifecycle, kept in sync in 3 places
+(the plan's `README.md`, `plans/README.md`, `PLAN.md`):
+
+`to do` → `plan` → `ready to implement` → `implement` → `ready to test` → `done`
+
+**Anytime tools** — they never block feature work: `/icontext-update` (template changed or an
+artifact is missing) · `/icontext-audit` (full health check) · `/icontext-visualize` (graph
+export, read-only) · `/icontext-loadtest` (k6 scripts) · `/icontext-self-update` (skills outdated).
+
+### Step 1 · Set up — `/icontext-init`
+
+Run once per project. It interviews you section by section, then creates `CONTEXT.md`, the
+`context/` folder, the agent files, `plans/`, and `PLAN.md`. Re-running it only fills in what
+is missing. After that, you are ready to plan features.
+
+### Step 2 · Plan — `/icontext-feature` (stops at the plan, writes no code)
+
+```mermaid
+flowchart TD
+    S(["New idea or change"]) --> Q{"New feature, or a change<br/>to one that has a plan?"}
+    Q -->|"new feature"| D{"How clear is it?"}
+    Q -->|"change"| CR["Write CR-M.md in the<br/>existing plan folder"]
+    D -->|"clear enough"| G["/grill-with-docs"]
+    D -->|"big or foggy"| W["/wayfinder"]
+    G --> P["ROLE.md panel review"]
+    W --> P
+    P --> WR["Write plans/NNN-name/<br/>status: plan"]
+    WR --> AP["gstack /autoplan"]
+    CR --> AP
+    AP --> SEC["security-review: supply-chain"]
+    SEC --> OK(["status: ready to implement"])
+```
+
+| # | What happens | Skill / tool | Result |
+|---|--------------|--------------|--------|
+| 1 | Choose: full plan or CR? (asked every run; a CR needs you to confirm the owning plan) | `/icontext-feature` | plan path or CR path |
+| 2 | Sharpen the requirement — pick **one** route | `/grill-with-docs` for clear-ish work · `/wayfinder` for big/foggy work (planning pauses until critical tickets are resolved) | clear scope, edge cases, decisions |
+| 3 | Review from every role: BU · PO · DEV · QA · OPS · STK | `ROLE.md` panel | plan §4 |
+| 4 | Write the role-split plan folder and register it | — | `plans/NNN-name/`, status `plan` |
+| 5 | Challenge the plan: CEO · engineering · design · DevEx | gstack `/autoplan` (fallback: `/plan-*-review` chain) | review feedback folded in |
+| 6 | Check dependency / build / release security | `security-review` · supply-chain | `ops.md` §8.1 |
+| ✓ | | | status **`ready to implement`** |
+
+The CR path skips steps 2–4: the CR file holds only the delta and links back to the plan.
+`/icontext-feature-review` can summarize any plan at any time; it never edits or implements.
+
+### Step 3 · Build — `/icontext-implement` (`ready to implement` → `ready to test`)
+
+```mermaid
+flowchart TD
+    RTI(["ready to implement"]) --> REV["/icontext-feature-review<br/>blockers stop here"]
+    REV --> SL["Slice the tasks into<br/>small verifiable units"]
+    SL --> LOOP
+    subgraph LOOP["Repeat for each slice"]
+        direction TB
+        G{"Spawn gate:<br/>you approve each sub-agent"} --> C["Sub-agents write the code"]
+        C --> T["Review the diff · run tests"]
+        T --> O["Owner review"]
+        O --> SC["Security scan of<br/>the touched files"]
+    end
+    LOOP -->|"all slices green"| U["/unslop the docs · sync<br/>openapi · styles · DEV.md §7"]
+    U --> RTT(["ready to test"])
+    RTT --> PC["Pre-commit checks"]
+    PC --> CM["You confirm → commit / push"]
+    RTT --> QA["Final QA + done gates"]
+    QA --> DONE(["done"])
+```
+
+**A · Before any code**
+
+1. Summarize the plan with `/icontext-feature-review` (developer audience). Blockers stop here.
+2. Slice the §10 tasks and any pending `CR-*.md` into small, verifiable units.
+
+**B · For each slice (repeat until every User Story passes)**
+
+1. Write the slice brief.
+2. **Spawn gate (hard rule):** you confirm every sub-agent — count · scope · cheap model —
+   including retries.
+3. Implementer sub-agents write the code (non-overlapping scopes). Alternatives: mattpocock
+   `/implement`, or write it directly.
+4. The orchestrator reviews the diff against the brief and the §11.3 sync rules.
+5. Test per `qa.md` §9, and re-run the whole relevant suite after every fix.
+6. Owner review — diff and how it was tested (optional: mattpocock `/code-review` first).
+7. `security-review` on the touched files: secret · code-review · auth · dependency · docker.
+8. Fold the feedback into the plan files, then move to the next slice.
+
+**C · After all slices pass**
+
+1. `/unslop` (pstack) on the written artifacts — plan files, docs, ADRs (not code).
+2. Sync `docs/openapi.yaml`, `styles/`, and `DEV.md` §7.
+3. Set status to **`ready to test`** in all 3 places.
+
+**D · Before you commit**
+
+1. `/impeccable` re-check — only if the plan included UI/design work.
+2. `/deslop` (pstack) — remove AI code slop from the branch diff; behavior stays the same.
+3. `/thermo-nuclear-code-quality-review` — optional; you are asked every run.
+4. §11.7 confirmation — you approve this exact commit/push.
+
+**E · Done** — after a final QA pass, the done gates must all hold: User Stories complete ·
+API spec synced · coverage > 80% · security clean. Then the status becomes **`done`**.
+
+### When something goes wrong
+
+- **Bug, error, or unexpected behavior** → gstack `/investigate` finds the root cause first →
+  write a CR with `/icontext-feature` → back into `/icontext-implement`.
+- **Merge or rebase conflict** → `resolving-merge-conflicts`; finishing still needs the §11.7
+  confirmation.
+
+## Dependency skills — who runs where
+
+These outside skills run *inside* the steps above. "Required" follows the project
+`SKILLS.md` §10 classification, and every one has a documented manual fallback there for when
+it is not installed.
+
+**Plan phase (`/icontext-feature`)**
+
+| Skill | Source | When it runs | Required? | What it adds |
+|-------|--------|--------------|-----------|--------------|
+| `/grill-with-docs` | mattpocock/skills | Step 3.5 — discovery, clear-ish work | required route (pick this or `/wayfinder`) | Interviews until requirement, edge cases, decisions, and terms are sharp |
+| `/wayfinder` | mattpocock/skills | Step 3.5 — discovery, big/foggy work | alternative to `/grill-with-docs` | Maps the route; the plan waits until planning-critical tickets resolve |
+| `ROLE.md` panel | project artifact | Step 4 — before writing plan content | required | Multi-agent requirement review (BU/PO/DEV/QA/OPS/STK) → plan §4 |
+| gstack `/autoplan` (+ `/plan-*-review`) | garrytan/gstack | Step 7 — after writing, before `ready to implement` | required (chain is the fallback) | CEO · engineering · design · DevEx challenge of the plan |
+| `security-review` · **supply-chain** | ice-limited/security-skill | Step 7 — plan phase | required | Dependency/build/release review → `ops.md` §8.1 |
+
+**Build phase (`/icontext-implement`)**
+
+| Skill | Source | When it runs | Required? | What it adds |
+|-------|--------|--------------|-----------|--------------|
+| `/icontext-feature-review` | iContext | **always** at Step 2 (also standalone anytime) | required by implement | Plain-language summary + cross-checks; blockers surface before code |
+| implementer sub-agents (cheap model) | host agent | Step 4 — each slice, **behind the spawn gate** | required (or `/implement` / direct) | Write the code; the orchestrator keeps review, test, and security verdicts |
+| `/implement` | mattpocock/skills | alternative executor for one slice — user-invoked | optional | Runs a slice inside the loop order (never replaces the loop) |
+| `/code-review` | mattpocock/skills | Step 4.7 — before owner review | optional | Standards + spec-faithfulness pass on the diff |
+| `security-review` · **secret · code-review · auth · dependency · docker** | ice-limited/security-skill | Step 4.8 — every slice, touched files only | required | Closes each slice; high/critical findings fixed or explicitly accepted |
+| `/unslop` | michael-denyer/pstack-claude | Step 5 — coding for the plan is done | required (manual fallback) | Removes AI tells from written artifacts (not code) |
+| `/impeccable` | pbakaus/impeccable | Step 7.1 — pre-commit, only after UI/design work | conditional | Design-quality re-check of the changed UI (also checked at plan time) |
+| `/deslop` | michael-denyer/pstack-claude | Step 7.2 — pre-commit | required (manual fallback) | Removes AI code slop from the branch diff, behavior unchanged |
+| `/thermo-nuclear-code-quality-review` | michael-denyer/pstack-claude | Step 7.3 — pre-commit, offered every run | optional (you decide each time) | Strict maintainability/structure review; a skip is recorded in `qa.md` |
+
+**Anytime / on demand**
+
+| Skill | Source | When it runs | Required? | What it adds |
+|-------|--------|--------------|-----------|--------------|
+| gstack `/investigate` | garrytan/gstack | a bug, error, or unexpected behavior appears | required route for bugs | Root cause before fix; fix only when authorized |
+| `resolving-merge-conflicts` | mattpocock/skills | during a merge/rebase in progress | conditional | Resolves hunks preserving both intents; §11.7 gates the finish |
+| `/to-spec` | mattpocock/skills | owner asks to publish the discussion as a spec | optional | Publishes a spec to the tracker for import into a plan |
+| `ui-ux-pro-max` + `/impeccable` | nextlevelbuilder · pbakaus | UI design work in planning and building | recommended when UI | Design guidance, token discipline, and design review |
+| `/poteto-mode` | michael-denyer/pstack-claude | owner wants a goal-driven run with **no** iContext plan | optional opt-in | Picks a pstack playbook; §11.7 overrides its autonomy defaults |
+
+Generated projects keep the complete registry and invocation matrix in
+[`SKILLS.md`](./icontext-init/templates/context/SKILLS.md) §10: classification, when (and when
+not) to invoke each skill, composition order, and fallbacks. Each skill package still owns its own
+trigger and procedure in its `SKILL.md`; the project-level `SKILLS.md` owns how they compose.
+
 ## The 3-layer context model
+
+In short: **L1** tells any agent the hard rules, **L2** describes the project, and **L3** holds
+one plan per feature.
 
 ```
 Layer 1  CLAUDE.md · AGENTS.md/agents.md · AGENT.md/agent.md · GEMINI.md
@@ -33,18 +245,18 @@ Layer 3  plans/NNN-name/                     one folder per feature, each refs t
          PLAN.md · plans/README.md           status dashboards (kept in sync, 3 places)
 ```
 
-**L2 keeps `CONTEXT.md` at the repo root as the entry point and holds the six concern files plus
-`ROLE.md` in `context/`, split by concern; section numbers are stable.** A section keeps its `§N`
-wherever it lives, so existing `§8` / `§9` / `§10` / `§12` references keep resolving after the
-split. `CONTEXT.md`
-opens with a **context map** (§ → file → owners) and leaves a `➜ Moved to …` stub where a
-section moved out. One concern lives in exactly one file — link to it, never copy it.
-Projects created before the split still work; `/icontext-update` offers the refactor, including
-moving §10 from a legacy six-file project into `context/SKILLS.md` and relocating pre-1.17
-root-level concern files into `context/` (Step 5.7).
+- **`CONTEXT.md` is the entry point.** It sits at the repo root and opens with a context map
+  (§ → file → owners).
+- **One concern lives in exactly one file** — link to it, never copy it.
+- **Section numbers never change.** A section keeps its `§N` wherever it lives, so `§8` / `§9` /
+  `§10` / `§12` references keep resolving. Where a section moved out, `CONTEXT.md` keeps a
+  `➜ Moved to …` stub.
+- **Older projects still work.** `/icontext-update` offers the refactor, including moving §10 from
+  a legacy six-file project into `context/SKILLS.md` and relocating pre-1.17 root-level concern
+  files into `context/` (Step 5.7).
 
-Each plan is a **folder split by role** — sections **0–11** distributed across files by their
-primary owner (BU/PO/DEV/QA/OPS/STK):
+Each plan is a **folder split by role** — sections **0–11** go to the file of their primary
+owner (BU/PO/DEV/QA/OPS/STK):
 
 ```
 plans/NNN-name/
@@ -57,36 +269,19 @@ plans/NNN-name/
 └── stk.md      4 Requirement Discovery / Requirement Review / Persona Panel
 ```
 
-Main feature workflow:
-choose `/grill-with-docs` or `/wayfinder` for requirement discovery → `ROLE.md` multi-agent
-requirement review → write the role-split plan → gstack `/autoplan` plan preparation →
-`security-review` **supply-chain** (plan phase) → iterative implementation, each slice closed by
-`security-review` **secret · code-review · auth · dependency · docker** → QA gates.
-
-Context maintenance workflow:
-run `/icontext-update` when the template itself changed or a known artifact is missing; run
-`/icontext-audit` when you want a full health check against the latest template, real repo state,
-plan status, and Markdown cleanup candidates; run `/icontext-visualize` when you want an HTML/JS
-dependency graph of the current context; run `/icontext-loadtest` for page-specific capacity scripts.
-
-## Skill dependency routing
-
-Generated projects keep the complete direct-dependency registry and invocation matrix in
-[`SKILLS.md`](./icontext-init/templates/context/SKILLS.md) §10. It owns required/alternative/recommended/
-optional classification, when and when not to invoke each skill, composition order, and fallbacks.
-Individual skill packages still own their own trigger and procedure in their `SKILL.md`; the
-project-level `SKILLS.md` owns how those skills are composed.
-
 ## Self-update check
-Each skill ships a `VERSION`; its `check-update.sh` is a thin stub that execs the **one shared**
-[`scripts/check-update.sh`](./scripts/check-update.sh) (synced to `~/.icontext/scripts/` at
-install). On **every run** (Step 0) it compares the local version to the published one on GitHub
-and prints a one-line result — best-effort and non-blocking (offline/unpublished just prints
-"skipped"). Run the shared script with no arguments to check all skills at once. When an update
-exists, run **`/icontext-self-update`** — it pulls the repo `--ff-only`, re-syncs every install
-location after a confirmed old → new table, refreshes the shared script, and updates the
-workspace's dependency skills (`skills-lock.json`) via the Skills CLI. The manual route
-(`git pull && ./install.sh`) still works.
+
+On **every run** (Step 0), each skill compares its local `VERSION` with the published one on
+GitHub and prints a one-line result. It never blocks: offline or unpublished just prints
+"skipped".
+
+- **To update:** run **`/icontext-self-update`**. It pulls the repo `--ff-only`, shows an
+  old → new table for you to confirm, re-syncs every install location, refreshes the shared
+  script, and updates the workspace's dependency skills (`skills-lock.json`) via the Skills CLI.
+- **Manual route:** `git pull && ./install.sh` still works.
+- **How it's built:** each skill's `check-update.sh` is a thin stub that execs the **one shared**
+  [`scripts/check-update.sh`](./scripts/check-update.sh) (synced to `~/.icontext/scripts/` at
+  install). Run the shared script with no arguments to check all skills at once.
 
 ## Install
 
@@ -160,6 +355,7 @@ iContext/
 ├── icontext-visualize/ SKILL.md · PROCEDURE.md · VERSION · check-update.sh · scripts/ · adapters/
 ├── icontext-feature/   SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/ · adapters/
 ├── icontext-feature-review/ SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/review-template.md · adapters/
+├── icontext-implement/  SKILL.md · PROCEDURE.md · VERSION · check-update.sh · adapters/
 ├── icontext-loadtest/  SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/ · adapters/
 └── icontext-self-update/ SKILL.md · PROCEDURE.md · VERSION · check-update.sh · adapters/
 ```
@@ -189,11 +385,35 @@ python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validat
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-visualize
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-feature
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-feature-review
+python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-implement
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-loadtest
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-self-update
 ```
 
 ## Changelog
+
+### 1.23.0
+- **README workflow map** — a new section maps every skill and dependency in order: three mermaid
+  diagrams (setup & maintenance · plan phase · implement phase → commit) with a plain-text
+  sequence under each, plus a lifecycle-ordered dependency table (19 rows: where each gstack ·
+  mattpocock · pstack · impeccable · security-review skill runs, whether it is required, and what
+  it contributes). Replaces the old prose-only workflow paragraphs.
+- **New skill: `icontext-implement`** — executes one `ready to implement` plan (folder + pending
+  `CR-*.md`) through the §11.5 loop to `ready to test`. It summarizes the plan first via
+  `/icontext-feature-review` (blockers surface before code exists), slices the §10 tasks into
+  verifiable units, then runs each slice with **implementer sub-agents on a cheap/low-effort
+  model — every spawn is confirmed by the user individually (count · scope · model), a hard rule
+  covering retries too**; the orchestrator keeps slicing, review, test verdicts, and security.
+  After coding: `/unslop` (pstack) over written artifacts, then syncs `docs/openapi.yaml` +
+  `styles/` + `context/DEV.md` §7 and advances the 3-place status. Pre-commit chain:
+  `/impeccable` re-check when design work happened (pbakaus/impeccable) → `/deslop` (pstack) on
+  the branch diff → **optional** `/thermo-nuclear-code-quality-review` offered every run → the
+  §11.7 per-invocation commit confirmation. Registry row + routes added to the `SKILLS.md` §10
+  template and wired into `icontext-update` (backfill), `icontext-audit` (gap check),
+  `install.sh`, and `scripts/validate.sh`.
+
+<details>
+<summary><b>Older versions (1.0.0 – 1.22.0)</b></summary>
 
 ### 1.22.0
 - **pstack workflow stack (`poteto-mode`) wired into the §10 registry** — generated `SKILLS.md`
@@ -420,3 +640,5 @@ python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validat
 
 ### 1.0.0
 - Initial context-init toolkit for web/mobile projects.
+
+</details>

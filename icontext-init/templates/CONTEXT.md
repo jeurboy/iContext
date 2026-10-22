@@ -127,10 +127,15 @@ sync:
    to challenge scope, architecture, design, and developer experience. Apply accepted changes, then
    run the **plan-phase security review** (`security-review` → **supply-chain**, SECURITY.md §11.6) and record
    its findings in the plan's `ops.md` §8. Only then move the plan to `ready to implement`.
-6. **Implementation loop** — implement in small slices following §11.5. Each slice ends with the
+6. **Implementation loop** — `/icontext-implement` drives it: summarize the plan via
+   `icontext-feature-review` first, then implement in small slices following §11.5 with
+   implementer sub-agents on a cheap/low-effort model — the owner confirms **every** spawn
+   (count · scope · model). Each slice ends with the
    **implement-phase security review** (`security-review` → secret · code-review · auth ·
    dependency · docker, SECURITY.md §11.6). Keep `DEV.md`, the plan, `docs/openapi.yaml`, styles, and data
-   model in sync when architecture changes.
+   model in sync when architecture changes; before the first commit run the quality chain
+   (`/unslop` on written artifacts when coding is done · `/impeccable` re-check if design work ·
+   `/deslop` on the diff · optional `/thermo-nuclear-code-quality-review` offered every time).
 7. **Final QA + done gates** — move to `ready to test`, run the test plan, confirm User Stories are
    complete, sync the API spec, keep coverage > 80%, confirm no unresolved high/critical
    `security-review` finding (SECURITY.md §11.6), then mark `done` in all three status locations.

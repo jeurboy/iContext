@@ -70,8 +70,8 @@ not authorise traffic. If yes, finish the audit and all separately approved main
 invoke `/icontext-loadtest`. That workflow asks which page/screen/route to test every time, traces
 the real request fan-out and hidden writes, and generates/validates offline by default.
 
-Also check `context/SKILLS.md` §10 for the `icontext-feature-review` and `icontext-self-update`
-rows and routes and flag them as template gaps when missing. Updating the installed skill packages
+Also check `context/SKILLS.md` §10 for the `icontext-feature-review`, `icontext-implement`, and
+`icontext-self-update` rows and routes and flag them as template gaps when missing. Updating the installed skill packages
 themselves is out of scope here; point the owner to `/icontext-self-update`.
 
 ## Step 2 - Compare against the latest template

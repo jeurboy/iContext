@@ -21,7 +21,7 @@ set -euo pipefail
 
 REPO_URL="${ICONTEXT_REPO:-https://github.com/jeurboy/iContext.git}"
 ICONTEXT_HOME="${ICONTEXT_HOME:-$HOME/.icontext}"
-SKILLS=(icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-feature-review icontext-loadtest icontext-self-update)
+SKILLS=(icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-feature-review icontext-implement icontext-loadtest icontext-self-update)
 
 TOOL="claude"
 MODE="copy"
@@ -80,7 +80,7 @@ install_claude() {                      # $1 = destination skills dir
 
 pointer_body() {                        # $1 = adapter name
   cat <<EOF
-iContext gives you eight workflows to scaffold, audit, visualize, load-test, and maintain this project's layered context.
+iContext gives you nine workflows to scaffold, audit, visualize, load-test, implement, and maintain this project's layered context.
 
 Skill files (read these to run the workflow):
 - \`$ICONTEXT_HOME/icontext-init/PROCEDURE.md\` — scaffold or update/sync the context backbone
@@ -94,6 +94,9 @@ Skill files (read these to run the workflow):
 - \`$ICONTEXT_HOME/icontext-feature/PROCEDURE.md\` — add one feature plan (role-split folder).
 - \`$ICONTEXT_HOME/icontext-feature-review/PROCEDURE.md\` — summarize one feature plan into a plain-language
   review (requirement + technical: architecture · DB · API) with cross-checks and a verdict.
+- \`$ICONTEXT_HOME/icontext-implement/PROCEDURE.md\` — execute one ready-to-implement plan through the
+  §11.5 loop to ready-to-test with confirmed cheap-model implementer sub-agents, then the
+  unslop/deslop + design re-check + optional thermo-nuclear quality chain before any commit.
 - \`$ICONTEXT_HOME/icontext-loadtest/PROCEDURE.md\` — ask for a target page every invocation,
   trace its real API fan-out, and generate guarded k6 scripts/reports without running by default.
 - \`$ICONTEXT_HOME/icontext-self-update/PROCEDURE.md\` — update the installed icontext-* skill
@@ -107,11 +110,13 @@ Tool-specific notes (when present):
 - \`$ICONTEXT_HOME/icontext-visualize/adapters/$1.md\`
 - \`$ICONTEXT_HOME/icontext-feature/adapters/$1.md\`
 - \`$ICONTEXT_HOME/icontext-feature-review/adapters/$1.md\`
+- \`$ICONTEXT_HOME/icontext-implement/adapters/$1.md\`
 - \`$ICONTEXT_HOME/icontext-loadtest/adapters/$1.md\`
 - \`$ICONTEXT_HOME/icontext-self-update/adapters/$1.md\`
 To start: follow icontext-init's PROCEDURE.md, use icontext-update for missing template backfills,
 use icontext-audit for drift/cleanup checks, icontext-visualize for graph exports, then
-icontext-feature for each feature, and icontext-loadtest for page-specific capacity scripts.
+icontext-feature for each feature, icontext-implement to build it to ready-to-test, and
+icontext-loadtest for page-specific capacity scripts.
 Run icontext-self-update whenever check-update.sh reports a newer published version.
 EOF
 }

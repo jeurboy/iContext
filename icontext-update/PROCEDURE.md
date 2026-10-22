@@ -67,9 +67,10 @@ traces the real API fan-out and side effects, generates from its bundled templat
 running by default.
 
 Also propose, as ordinary additive template gaps, the `context/SKILLS.md` §10 rows and routes for
-`icontext-feature-review` (plain-language plan review) and `icontext-self-update` (skill-package and
-dependency-skill updates) when the project's registry does not have them yet — per-file approval as
-always. Updating the installed skill packages themselves is not this workflow's job; point the owner
+`icontext-feature-review` (plain-language plan review), `icontext-implement` (§11.5 execution to
+`ready to test` with confirmed cheap-model implementer sub-agents), and `icontext-self-update`
+(skill-package and dependency-skill updates) when the project's registry does not have them yet —
+per-file approval as always. Updating the installed skill packages themselves is not this workflow's job; point the owner
 to `/icontext-self-update`.
 
 ## Step 2 — Build a gap table

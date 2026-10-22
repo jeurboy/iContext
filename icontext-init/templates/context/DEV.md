@@ -72,10 +72,16 @@
 
 - ก่อนเริ่ม: plan ต้องอยู่ที่ status `ready to implement` (review chain §11.4 ผ่านแล้ว) และมี spec/plan/
   ticket source ชัดเจน
+- ตัวขับเคลื่อนหลัก: `/icontext-implement` — เริ่มด้วยสรุป plan ผ่าน `icontext-feature-review`
+  สร้าง slice list จาก §10 (+CR ที่ค้าง) แล้ววน loop ด้านล่างโดยแต่ละ slice ให้ **implementer
+  sub-agent บนโมเดลราคาถูก/effort ต่ำ** เป็นคนเขียนโค้ด — owner ต้อง **confirm ทุกครั้งก่อน spawn**
+  (จำนวน agent · scope ของแต่ละตัว · โมเดล/effort) เป็นข้อบังคับ รวมถึงรอบแก้และรอบ retry; ตัว
+  orchestrator เก็บการตัดสินใจ (slice · review · ผล test · security · การเปลี่ยน status) ไว้เอง
 - ลำดับต่อหนึ่ง slice (วนซ้ำจนครบทุก User Story):
   1. **Slice** — หยิบงานที่เล็กที่สุดที่ขยับ User Story หนึ่งอัน (po.md §3) ไปข้างหน้า
-  2. **Implement** — เขียนโค้ดตาม slice; ถ้า owner เรียก skill `implement` (mattpocock) ให้ใช้มันเป็น
-     เพียงตัว execute ขั้นนี้ (TDD ตาม seams ที่ตกลงไว้, รัน typecheck และ test file เดี่ยวระหว่างทางได้)
+  2. **Implement** — implementer sub-agent ที่ owner ยืนยันแล้วเขียนโค้ดตาม slice brief; ถ้า owner
+     เรียก skill `implement` (mattpocock) ให้ใช้มันเป็นเพียงตัว execute ขั้นนี้แทน sub-agent ก็ได้
+     (TDD ตาม seams ที่ตกลงไว้, รัน typecheck และ test file เดี่ยวระหว่างทางได้)
      แต่ลำดับขั้นที่เหลือของ loop ห้ามข้ามหรือเรียงใหม่ตาม flow ภายในของ skill เช่นห้ามเก็บ full
      suite ไว้รอท้ายสุดแทนการ retest หลังทุกการแก้
   3. **Test แบบจริง** — unit test สำหรับ API, Playwright สำหรับ UI ตาม `qa.md` §9 ของ plan พร้อมระบุ
@@ -90,6 +96,9 @@
 - การ commit เข้า current branch (ท้าย slice หรือตามที่ upstream skill สั่ง) ต้องผ่าน per-invocation
   confirmation ตาม [CONTEXT.md](../CONTEXT.md) §11.7 เสมอ — กฎโปรเจกต์เหนือกว่า default ของ skill ภายนอก
   (SKILLS.md §10.5) และ hook `.icontext/hooks/guard-command.sh` จะ intercept ให้ถามอยู่ดี
+- ก่อน commit ครั้งแรกของ plan: `/unslop` งานเขียน (plan/docs) เมื่อโค้ดจบ → sync `docs/openapi.yaml` +
+  `styles/` + [DEV.md](./DEV.md) §7 → แล้ว quality chain: `/impeccable` ซ้ำเมื่อมีงาน design, `/deslop`
+  บน branch diff, ถาม owner ทุกครั้งเรื่อง `/thermo-nuclear-code-quality-review` (optional) — ก่อนขอ §11.7
 - ถ้าไม่ใช้ skill ให้ implement ด้วยมือตามลำดับขั้นใน section นี้ได้ทั้งหมด (manual fallback ตาม §10)
 
 ### 6. รายการ Service · Services

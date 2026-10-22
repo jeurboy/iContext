@@ -18,7 +18,7 @@ require_executable() {
   test -x "$1" || fail "not executable: $1"
 }
 
-for skill in icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-feature-review icontext-loadtest icontext-self-update; do
+for skill in icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-feature-review icontext-implement icontext-loadtest icontext-self-update; do
   require_file "$skill/SKILL.md"
   require_file "$skill/PROCEDURE.md"
   require_file "$skill/VERSION"
@@ -130,6 +130,16 @@ rg -q "icontext-loadtest" icontext-init/templates/context/SKILLS.md ||
   fail "SKILLS.md must route load-test work to icontext-loadtest"
 rg -q "icontext-feature-review" icontext-init/templates/context/SKILLS.md ||
   fail "SKILLS.md must route plan reviews to icontext-feature-review"
+rg -q "icontext-implement" icontext-init/templates/context/SKILLS.md ||
+  fail "SKILLS.md must route plan implementation to icontext-implement"
+rg -q "icontext-implement" icontext-init/templates/context/DEV.md ||
+  fail "DEV.md must document icontext-implement in the execution flow"
+rg -q "icontext-implement" icontext-update/PROCEDURE.md ||
+  fail "icontext-update must backfill the icontext-implement route"
+rg -q "icontext-implement" icontext-audit/PROCEDURE.md ||
+  fail "icontext-audit must check the icontext-implement route"
+rg -q "Spawn gate" icontext-implement/PROCEDURE.md ||
+  fail "icontext-implement must gate every implementer spawn on user confirmation"
 rg -q "icontext-self-update" icontext-init/templates/context/SKILLS.md ||
   fail "SKILLS.md must route skill updates to icontext-self-update"
 rg -q "resolving-merge-conflicts" icontext-init/templates/context/DEV.md ||
@@ -286,13 +296,13 @@ if rg -n "ux-ui-pro-max" --glob '!scripts/validate.sh' . >/dev/null; then
   fail "found old companion skill spelling: ux-ui-pro-max"
 fi
 
-if rg -n "^version:" icontext-init/SKILL.md icontext-update/SKILL.md icontext-audit/SKILL.md icontext-visualize/SKILL.md icontext-feature/SKILL.md icontext-loadtest/SKILL.md icontext-self-update/SKILL.md >/dev/null; then
+if rg -n "^version:" icontext-init/SKILL.md icontext-update/SKILL.md icontext-audit/SKILL.md icontext-visualize/SKILL.md icontext-feature/SKILL.md icontext-implement/SKILL.md icontext-loadtest/SKILL.md icontext-self-update/SKILL.md >/dev/null; then
   fail "SKILL.md frontmatter must not contain version; use VERSION files"
 fi
 
 validator="$HOME/.codex/skills/.system/skill-creator/scripts/quick_validate.py"
 if command -v python3 >/dev/null && test -f "$validator"; then
-  for skill in icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-loadtest icontext-self-update; do
+  for skill in icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-implement icontext-loadtest icontext-self-update; do
     python3 "$validator" "$skill"
   done
 else
