@@ -19,10 +19,11 @@ to continue anyway.
 | `to-spec` | https://github.com/mattpocock/skills.git |
 | `code-review` | https://github.com/mattpocock/skills.git |
 | `implement` | https://github.com/mattpocock/skills.git |
+| `poteto-mode` | https://github.com/michael-denyer/pstack-claude.git |
 
 Check (Claude Code layout):
 ```bash
-for s in gstack security-review ui-ux-pro-max impeccable grill-with-docs wayfinder resolving-merge-conflicts to-spec code-review implement; do
+for s in gstack security-review ui-ux-pro-max impeccable grill-with-docs wayfinder resolving-merge-conflicts to-spec code-review implement poteto-mode; do
   test -d "$HOME/.claude/skills/$s" && echo "OK  $s" || echo "MISSING  $s"
 done
 ```
@@ -46,3 +47,15 @@ the slice-implement step (detailed in generated `DEV.md` §5.2); its final commi
 
 `security-review` phase wiring — **plan:** supply-chain · **implement:** secret · code-review ·
 auth · dependency · docker. (api · iac · kubernetes · cicd-pipeline · race-condition = ad hoc.)
+
+`poteto-mode` (pstack-claude) is **optional and user-invoked only**: an opt-in goal-driven
+execution style (bug · planning · feature · refactor · performance · prototype · PR maintenance ·
+shipping playbooks) that routes its bundled skills (`how`, `why`, `architect`, `swarm`,
+`interrogate`, `unslop`, …). It never replaces the required routes — bugs stay with gstack
+`/investigate`, merge conflicts with `resolving-merge-conflicts`, plan preparation with
+`/autoplan` + `security-review` — and the §11.7 mutation gates override its autopilot/shipping
+defaults. Install is all-or-nothing: the bundled skills cross-reference each other by sibling
+path, so copy/symlink the whole `plugins/pstack/skills/*` set (a flat install that already has
+mattpocock's skills must skip pstack's colliding `tdd`/`teach`). Skills-only installs have no
+session-start routing hook — invoke `/poteto-mode` by name. A missing `poteto-mode` never blocks
+scaffolding: the standard iContext workflow is complete without it.
