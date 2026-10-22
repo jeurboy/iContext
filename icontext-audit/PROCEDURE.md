@@ -70,6 +70,10 @@ not authorise traffic. If yes, finish the audit and all separately approved main
 invoke `/icontext-loadtest`. That workflow asks which page/screen/route to test every time, traces
 the real request fan-out and hidden writes, and generates/validates offline by default.
 
+Also check `context/SKILLS.md` §10 for the `icontext-feature-review` and `icontext-self-update`
+rows and routes and flag them as template gaps when missing. Updating the installed skill packages
+themselves is out of scope here; point the owner to `/icontext-self-update`.
+
 ## Step 2 - Compare against the latest template
 Build a template-completeness table. Do not edit yet.
 
@@ -93,7 +97,9 @@ Check:
   standards/spec pass (distinct from `security-review`'s security-scoped
   `code-review` detector), and the user-invoked mattpocock `implement` executor together with its
   `DEV.md` §5.2 execution-flow section (the §11.5 loop keeps its original step order; flag a
-  missing one as an additive gap, not a registry rewrite).
+  missing one as an additive gap, not a registry rewrite), and the optional user-invoked
+  `poteto-mode` (pstack) workflow-stack row, route, and §10.3 source/install entry (an opt-in
+  execution style that never replaces the required routes).
   Each external direct dependency also has an upstream Git/source URL and installation guidance;
   flag missing, placeholder, or obviously non-upstream URLs for owner confirmation.
 - Plan templates include `README.md`, `bu.md`, `po.md`, `dev.md`, `qa.md`, `ops.md`, and `stk.md`,

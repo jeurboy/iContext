@@ -5,7 +5,7 @@ description: Generate a numbered feature plan (plans/NNN-name/ folder, split by 
              panel and selectable requirement discovery using /grill-with-docs for clear-ish features,
              /wayfinder for large/foggy requirements without a clear solution path. When the request
              extends a feature that already has a plan (any status, incl. done), route to CR mode
-             instead — a CR-<M>.md file inside the existing plan's folder that links back to the
+             instead — a numbered CR-*.md file inside the existing plan's folder that links back to the
              original plan, not a new plan. Use AFTER
              icontext-init, whenever adding a new feature or capability to a project that already has
              a CONTEXT.md backbone — even if the user just says "plan this feature", "write a plan

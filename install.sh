@@ -6,6 +6,7 @@
 #
 # tool (default: claude):
 #   claude          Claude Code   → ~/.claude/skills/                              (global slash-command skills)
+#   agents          Any agent     → ~/.agents/skills/                              (global skills, e.g. ZCode)
 #   claude-project  Claude Code   → ./.claude/skills/                              (this project)
 #   cursor          Cursor        → ./.cursor/rules/icontext.mdc                   (project rule)
 #   copilot         GitHub Copilot→ ./.github/instructions/icontext.instructions.md
@@ -20,7 +21,7 @@ set -euo pipefail
 
 REPO_URL="${ICONTEXT_REPO:-https://github.com/jeurboy/iContext.git}"
 ICONTEXT_HOME="${ICONTEXT_HOME:-$HOME/.icontext}"
-SKILLS=(icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-feature-review icontext-loadtest)
+SKILLS=(icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-feature-review icontext-loadtest icontext-self-update)
 
 TOOL="claude"
 MODE="copy"
@@ -33,9 +34,9 @@ for a in "$@"; do
 done
 
 case "$TOOL" in
-  claude|claude-project|cursor|copilot|windsurf|cline|gemini|codex|aider) ;;
+  claude|agents|claude-project|cursor|copilot|windsurf|cline|gemini|codex|aider) ;;
   *) echo "Unknown tool: $TOOL"
-     echo "Use one of: claude | claude-project | cursor | copilot | windsurf | cline | gemini | codex | aider"
+     echo "Use one of: claude | agents | claude-project | cursor | copilot | windsurf | cline | gemini | codex | aider"
      exit 1 ;;
 esac
 
@@ -64,6 +65,9 @@ for s in "${SKILLS[@]}"; do
   rm -rf "$ICONTEXT_HOME/$s"
   cp -R "$SRC/$s" "$ICONTEXT_HOME/$s"
 done
+# every skill's check-update.sh is a stub that execs this one shared script
+mkdir -p "$ICONTEXT_HOME/scripts"
+cp "$SRC/scripts/check-update.sh" "$ICONTEXT_HOME/scripts/check-update.sh"
 
 install_claude() {                      # $1 = destination skills dir
   local dest="$1"; mkdir -p "$dest"
@@ -76,7 +80,7 @@ install_claude() {                      # $1 = destination skills dir
 
 pointer_body() {                        # $1 = adapter name
   cat <<EOF
-iContext gives you seven workflows to scaffold, audit, visualize, load-test, and maintain this project's layered context.
+iContext gives you eight workflows to scaffold, audit, visualize, load-test, and maintain this project's layered context.
 
 Skill files (read these to run the workflow):
 - \`$ICONTEXT_HOME/icontext-init/PROCEDURE.md\` — scaffold or update/sync the context backbone
@@ -92,6 +96,9 @@ Skill files (read these to run the workflow):
   review (requirement + technical: architecture · DB · API) with cross-checks and a verdict.
 - \`$ICONTEXT_HOME/icontext-loadtest/PROCEDURE.md\` — ask for a target page every invocation,
   trace its real API fan-out, and generate guarded k6 scripts/reports without running by default.
+- \`$ICONTEXT_HOME/icontext-self-update/PROCEDURE.md\` — update the installed icontext-* skill
+  packages themselves to the latest published version (discovers ~/.agents/skills, ~/.claude/skills,
+  project .claude/skills, and this cache; ff-only pulls; confirms the old → new table first).
 
 Tool-specific notes (when present):
 - \`$ICONTEXT_HOME/icontext-init/adapters/$1.md\`
@@ -101,9 +108,11 @@ Tool-specific notes (when present):
 - \`$ICONTEXT_HOME/icontext-feature/adapters/$1.md\`
 - \`$ICONTEXT_HOME/icontext-feature-review/adapters/$1.md\`
 - \`$ICONTEXT_HOME/icontext-loadtest/adapters/$1.md\`
+- \`$ICONTEXT_HOME/icontext-self-update/adapters/$1.md\`
 To start: follow icontext-init's PROCEDURE.md, use icontext-update for missing template backfills,
 use icontext-audit for drift/cleanup checks, icontext-visualize for graph exports, then
 icontext-feature for each feature, and icontext-loadtest for page-specific capacity scripts.
+Run icontext-self-update whenever check-update.sh reports a newer published version.
 EOF
 }
 
@@ -138,6 +147,7 @@ agents_pointer_target() {
 echo "iContext → $TOOL   (source: $SRC)"
 case "$TOOL" in
   claude)         install_claude "$HOME/.claude/skills" ;;
+  agents)         install_claude "$HOME/.agents/skills" ;;
   claude-project) install_claude "$PWD/.claude/skills" ;;
   cursor)         write_cursor_rule ;;
   copilot)        write_pointer  "$PWD/.github/instructions/icontext.instructions.md" copilot ;;

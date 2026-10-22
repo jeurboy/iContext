@@ -1,6 +1,6 @@
 # iContext
 
-**Version 1.20.0** · seven portable agent-skills that bootstrap, audit, visualize, load-test, and maintain a **layered project
+**Version 1.22.0** · eight portable agent-skills that bootstrap, audit, visualize, load-test, and maintain a **layered project
 context** for web/mobile builds — so any AI agent (Claude, Gemini, Codex, Cursor, …) starts every
 session already knowing your architecture, conventions, and plan status.
 
@@ -13,6 +13,7 @@ session already knowing your architecture, conventions, and plan status.
 | **icontext-feature** | `/icontext-feature` | Add one feature plan — a **folder** `plans/NNN-name/` split into role files — with the standard §0–11 structure, role owners, task-status lifecycle, selectable requirement discovery (`/grill-with-docs` or `/wayfinder`), `ROLE.md` multi-agent requirement review, and gstack `/autoplan` plan preparation. Pre-checks required scaffolding (style guide · `docs/openapi.yaml` · `.vscode/launch.json`) and offers to create what's missing. |
 | **icontext-feature-review** | `/icontext-feature-review` | Summarize one existing feature plan (folder + `CR-*.md`) into a single plain-language `REVIEW.md` with two lenses — **requirement** (goal · decisions · scope · story→AC→test trace · open questions) and **technical** (architecture · DB/migration · API · UI routes · security · deploy) — plus cross-checks against `docs/openapi.yaml`, `context/DEV.md` §7 and the 3-place status sync, ending in a readiness verdict. Read-only on plans/code. |
 | **icontext-loadtest** | `/icontext-loadtest` | Ask which page/screen/route to test on every invocation, trace its real client/API fan-out and hidden writes, then generate guarded k6 profiles, route metrics, and HTML/JSON reports from bundled templates. Never runs load traffic without a separate exact environment approval. |
+| **icontext-self-update** | `/icontext-self-update` | Update the installed `icontext-*` skill packages **themselves** to the latest published version — every discovered location (`~/.agents/skills` · `~/.claude/skills` · project `.claude/skills` · the `~/.icontext` cache), copy or symlink mode, `--ff-only` pulls, one confirmed old → new table — and refresh the single shared `scripts/check-update.sh`. It then updates the workspace's **dependency skills** (`skills-lock.json`, e.g. mattpocock/skills) through the Skills CLI (`npx skills check` → confirm → `npx skills update`). Never commits or pushes. |
 
 ## The 3-layer context model
 
@@ -77,10 +78,15 @@ Individual skill packages still own their own trigger and procedure in their `SK
 project-level `SKILLS.md` owns how those skills are composed.
 
 ## Self-update check
-Each skill ships a `VERSION` + `check-update.sh`. On **every run** (Step 0) the skill compares
-its local version to the published one on GitHub and prints a one-line result — best-effort and
-non-blocking (offline/unpublished just prints "skipped"). When an update exists it tells you to
-`git pull && ./install.sh`.
+Each skill ships a `VERSION`; its `check-update.sh` is a thin stub that execs the **one shared**
+[`scripts/check-update.sh`](./scripts/check-update.sh) (synced to `~/.icontext/scripts/` at
+install). On **every run** (Step 0) it compares the local version to the published one on GitHub
+and prints a one-line result — best-effort and non-blocking (offline/unpublished just prints
+"skipped"). Run the shared script with no arguments to check all skills at once. When an update
+exists, run **`/icontext-self-update`** — it pulls the repo `--ff-only`, re-syncs every install
+location after a confirmed old → new table, refreshes the shared script, and updates the
+workspace's dependency skills (`skills-lock.json`) via the Skills CLI. The manual route
+(`git pull && ./install.sh`) still works.
 
 ## Install
 
@@ -100,6 +106,7 @@ curl -fsSL https://raw.githubusercontent.com/jeurboy/iContext/main/install.sh | 
 | tool | target | scope |
 |------|--------|-------|
 | `claude` *(default)* | `~/.claude/skills/` | global slash-command skills |
+| `agents` | `~/.agents/skills/` | global skills for ZCode & similar agents |
 | `claude-project` | `./.claude/skills/` | this project |
 | `cursor` | `./.cursor/rules/icontext.mdc` | project rule |
 | `copilot` | `./.github/instructions/icontext.instructions.md` | project |
@@ -153,7 +160,8 @@ iContext/
 ├── icontext-visualize/ SKILL.md · PROCEDURE.md · VERSION · check-update.sh · scripts/ · adapters/
 ├── icontext-feature/   SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/ · adapters/
 ├── icontext-feature-review/ SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/review-template.md · adapters/
-└── icontext-loadtest/  SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/ · adapters/
+├── icontext-loadtest/  SKILL.md · PROCEDURE.md · VERSION · check-update.sh · templates/ · adapters/
+└── icontext-self-update/ SKILL.md · PROCEDURE.md · VERSION · check-update.sh · adapters/
 ```
 
 ## Conventions baked in
@@ -182,9 +190,48 @@ python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validat
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-feature
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-feature-review
 python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-loadtest
+python3 /Users/jeurboy/.codex/skills/.system/skill-creator/scripts/quick_validate.py icontext-self-update
 ```
 
 ## Changelog
+
+### 1.22.0
+- **pstack workflow stack (`poteto-mode`) wired into the §10 registry** — generated `SKILLS.md`
+  registers the optional, user-invoked `poteto-mode` (pstack-claude) goal-driven execution style:
+  give it a goal and it picks the playbook (bug · planning · feature · refactor · performance ·
+  prototype · PR maintenance · shipping) and routes its bundled skills (`how`, `why`,
+  `architect`, `swarm`, `interrogate`, `unslop`, …). It is never a replacement route — bugs stay
+  with gstack `/investigate`, merge conflicts with `resolving-merge-conflicts`, plan preparation
+  with `/autoplan` + `security-review` — and the §11.7 mutation gates override pstack's
+  autopilot/shipping defaults in every case; durable outcomes fold back into `plans/NNN-*` and
+  the L2 files.
+- **Source & install guidance** — §10.3 records the upstream
+  https://github.com/michael-denyer/pstack-claude.git with multi-harness install guidance
+  (Claude Code plugin marketplace; Codex, Copilot, Pi, Muse, OpenCode, Gemini CLI, Prime Agent;
+  or the skills-only route as one sibling set — cross-references break on partial installs, and
+  a flat install skips pstack's `tdd`/`teach` where mattpocock's occupy the names).
+- **Maintenance wiring** — `/icontext-update` backfills the row/route/source entry as an
+  approved additive gap; `/icontext-audit` flags its absence; `required-skills.md` documents the
+  availability check; `scripts/validate.sh` enforces all of it. The workspace dependency install
+  itself is CLI-owned: `skills-lock.json` pins all 63 pstack skills via the Skills CLI.
+
+### 1.21.0
+- **New skill: `icontext-self-update`** — updates the installed `icontext-*` skill packages
+  themselves to the latest published version: discovers every install location
+  (`~/.agents/skills` · `~/.claude/skills` · project `.claude/skills` · the `~/.icontext` cache),
+  supports copy and symlink (`--link`) installs, pulls the source repo `--ff-only`, shows a
+  per-location old → new table, and re-syncs only after approval. It also updates the workspace's
+  **dependency skills** (`skills-lock.json`, e.g. mattpocock/skills) via the Skills CLI
+  (`npx skills check` → confirm → `npx skills update`). Wired into `install.sh` (new `agents`
+  target for `~/.agents/skills`) and `scripts/validate.sh`.
+- **One shared `check-update.sh`** — every skill's `check-update.sh` is now a thin stub that execs
+  the single shared `scripts/check-update.sh` (repo root or `~/.icontext/scripts/`); the update
+  logic lives in exactly one file. Running the shared script with no arguments checks all skills.
+- **SKILLS.md §10 registry recheck** — added the missing `icontext-feature-review` row and routes
+  (a gap since 1.19.0) plus the new `icontext-self-update` row, extended the §10.3 iContext source
+  row, and wired the rows into `icontext-update` (backfill), `icontext-audit` (gap check), and
+  validation. All mattpocock registry entries verified against the workspace `skills-lock.json`.
+  Also fixed an `icontext-feature` description angle bracket flagged by `quick_validate.py`.
 
 ### 1.20.0
 - **`icontext-feature` asks full plan vs CR on every run** — no silent inference. For a CR it finds the

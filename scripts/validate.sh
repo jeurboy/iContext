@@ -18,7 +18,7 @@ require_executable() {
   test -x "$1" || fail "not executable: $1"
 }
 
-for skill in icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-feature-review icontext-loadtest; do
+for skill in icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-feature-review icontext-loadtest icontext-self-update; do
   require_file "$skill/SKILL.md"
   require_file "$skill/PROCEDURE.md"
   require_file "$skill/VERSION"
@@ -27,7 +27,15 @@ for skill in icontext-init icontext-update icontext-audit icontext-visualize ico
   require_file "$skill/adapters/codex.md"
   require_file "$skill/adapters/cursor.md"
   require_file "$skill/adapters/gemini.md"
+  # every check-update.sh must be the same thin stub pointing at the ONE shared script
+  rg -q "scripts/check-update\.sh" "$skill/check-update.sh" ||
+    fail "$skill/check-update.sh must be a stub that execs the shared scripts/check-update.sh"
 done
+
+require_executable "scripts/check-update.sh"
+stub_count="$(cksum icontext-*/check-update.sh | awk '{print $1}' | sort -u | wc -l | tr -d '[:space:]')"
+[ "$stub_count" = "1" ] ||
+  fail "all skill check-update.sh stubs must be identical copies"
 
 require_executable "icontext-visualize/scripts/export-context-graph.js"
 require_executable "icontext-loadtest/templates/load-tests/run-load-test.sh"
@@ -120,6 +128,10 @@ rg -q "icontext-loadtest" icontext-init/templates/context/DEV.md ||
   fail "DEV.md must document icontext-loadtest tooling"
 rg -q "icontext-loadtest" icontext-init/templates/context/SKILLS.md ||
   fail "SKILLS.md must route load-test work to icontext-loadtest"
+rg -q "icontext-feature-review" icontext-init/templates/context/SKILLS.md ||
+  fail "SKILLS.md must route plan reviews to icontext-feature-review"
+rg -q "icontext-self-update" icontext-init/templates/context/SKILLS.md ||
+  fail "SKILLS.md must route skill updates to icontext-self-update"
 rg -q "resolving-merge-conflicts" icontext-init/templates/context/DEV.md ||
   fail "DEV.md must document the resolving-merge-conflicts workflow"
 rg -q "resolving-merge-conflicts" icontext-init/templates/context/SKILLS.md ||
@@ -148,6 +160,14 @@ rg -q 'mattpocock `implement`' icontext-update/PROCEDURE.md ||
   fail "icontext-update must backfill the mattpocock implement route"
 rg -q 'mattpocock `implement`' icontext-audit/PROCEDURE.md ||
   fail "icontext-audit must check the mattpocock implement route"
+rg -q "poteto-mode" icontext-init/templates/context/SKILLS.md ||
+  fail "SKILLS.md must route user-invoked poteto-style runs to poteto-mode"
+rg -q "https://github\.com/michael-denyer/pstack-claude\.git" icontext-init/templates/context/SKILLS.md ||
+  fail "SKILLS.md must include the upstream pstack-claude Git URL"
+rg -q "poteto-mode" icontext-update/PROCEDURE.md ||
+  fail "icontext-update must backfill the poteto-mode route"
+rg -q "poteto-mode" icontext-audit/PROCEDURE.md ||
+  fail "icontext-audit must check the poteto-mode route"
 rg -q "AGENTS.md.*agents.md" icontext-init/PROCEDURE.md ||
   fail "icontext-init must recognize AGENTS.md/agents.md aliases"
 rg -q "AGENT.md.*agent.md" icontext-update/PROCEDURE.md ||
@@ -162,6 +182,14 @@ rg -q "Offer page-specific load-test scaffolding every run" icontext-update/PROC
   fail "icontext-update must offer load-test scaffolding every run"
 rg -q "Offer page-specific load-test scaffolding every run" icontext-audit/PROCEDURE.md ||
   fail "icontext-audit must offer load-test scaffolding every run"
+rg -q "ff-only" icontext-self-update/PROCEDURE.md ||
+  fail "icontext-self-update must use ff-only pulls only"
+rg -q "skills-lock\.json" icontext-self-update/PROCEDURE.md ||
+  fail "icontext-self-update must cover dependency skills via skills-lock.json"
+rg -q "npx.*skills@latest update" icontext-self-update/PROCEDURE.md ||
+  fail "icontext-self-update must update dependency skills through the Skills CLI"
+rg -q "restart" icontext-self-update/PROCEDURE.md ||
+  fail "icontext-self-update must remind the user to restart the agent app"
 
 for file in \
   README.md \
@@ -258,13 +286,13 @@ if rg -n "ux-ui-pro-max" --glob '!scripts/validate.sh' . >/dev/null; then
   fail "found old companion skill spelling: ux-ui-pro-max"
 fi
 
-if rg -n "^version:" icontext-init/SKILL.md icontext-update/SKILL.md icontext-audit/SKILL.md icontext-visualize/SKILL.md icontext-feature/SKILL.md icontext-loadtest/SKILL.md >/dev/null; then
+if rg -n "^version:" icontext-init/SKILL.md icontext-update/SKILL.md icontext-audit/SKILL.md icontext-visualize/SKILL.md icontext-feature/SKILL.md icontext-loadtest/SKILL.md icontext-self-update/SKILL.md >/dev/null; then
   fail "SKILL.md frontmatter must not contain version; use VERSION files"
 fi
 
 validator="$HOME/.codex/skills/.system/skill-creator/scripts/quick_validate.py"
 if command -v python3 >/dev/null && test -f "$validator"; then
-  for skill in icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-loadtest; do
+  for skill in icontext-init icontext-update icontext-audit icontext-visualize icontext-feature icontext-loadtest icontext-self-update; do
     python3 "$validator" "$skill"
   done
 else

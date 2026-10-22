@@ -66,6 +66,12 @@ in the final report. If yes, complete only the approved iContext changes first, 
 traces the real API fan-out and side effects, generates from its bundled templates, and stops without
 running by default.
 
+Also propose, as ordinary additive template gaps, the `context/SKILLS.md` §10 rows and routes for
+`icontext-feature-review` (plain-language plan review) and `icontext-self-update` (skill-package and
+dependency-skill updates) when the project's registry does not have them yet — per-file approval as
+always. Updating the installed skill packages themselves is not this workflow's job; point the owner
+to `/icontext-self-update`.
+
 ## Step 2 — Build a gap table
 Create a gap table before editing. Do not write anything yet:
 
@@ -88,7 +94,10 @@ approved change), the user-invoked `to-spec` route for publishing a discussion a
 spec, the mattpocock `code-review` standards/spec pass (distinct from `security-review`'s
 security-scoped `code-review` detector), and the user-invoked mattpocock `implement` executor
 (the §11.5 loop keeps its original step order; when its row or route is missing, also backfill
-the `DEV.md` §5.2 execution-flow section in the same approved change). A missing row or route
+the `DEV.md` §5.2 execution-flow section in the same approved change), and the optional
+user-invoked `poteto-mode` (pstack) workflow-stack row, invocation route, and §10.3 source/install
+entry (an opt-in execution style that never replaces the required routes; when its row is missing,
+backfill it together with its §10.3 upstream URL). A missing row or route
 is a section-level additive gap, not a reason to replace the owner's registry.
 Check the §10 source/install registry too: every external direct dependency needs a verified
 upstream Git/source URL and install guidance. Treat a missing URL as an additive gap; never guess a
